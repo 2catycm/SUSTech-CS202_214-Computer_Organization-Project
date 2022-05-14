@@ -1,25 +1,25 @@
 module decode32(read_data_1,read_data_2,Instruction,mem_data,ALU_result,
                  Jal,RegWrite,MemtoReg,RegDst,Sign_extend,clock,reset,opcplus4);
-    //////////////// è¾“å…¥è¾“å‡º ////////////////
-    output[31:0] read_data_1;              // è¾“å‡ºçš„ç¬¬ä¸€æ“ä½œæ•°
-    output[31:0] read_data_2;               // è¾“å‡ºçš„ç¬¬äºŒæ“ä½œæ•°
-    input[31:0]  Instruction;               // å–æŒ‡å•å…ƒæ¥çš„æŒ‡ä»¤
-    input[31:0]  mem_data;   				//  ä»DATA RAM or I/O portå–å‡ºçš„æ•°æ®
-    input[31:0]  ALU_result;   				// ä»æ‰§è¡Œå•å…ƒæ¥çš„è¿ç®—çš„ç»“æœ
-    input        Jal;                       //  æ¥è‡ªæ§åˆ¶å•å…ƒï¼Œè¯´æ˜æ˜¯JALæŒ‡ä»¤ 
-    input        RegWrite;                  // æ¥è‡ªæ§åˆ¶å•å…ƒ, æ˜¯å¦å†™å…¥å¯„å­˜å™¨
-    input        MemtoReg;              // æ¥è‡ªæ§åˆ¶å•å…ƒï¼Œè¡¨ç¤ºå†™å›æ•°æ®çš„æ¥æº
-    input        RegDst;                //æ¥è‡ªæ§åˆ¶å•å…ƒï¼Œè¡¨ç¤ºæ˜¯rdè¿˜æ˜¯rtä½œä¸ºå†™å›å¯„å­˜å™¨åœ°å€
-    output[31:0] Sign_extend;               // æ‰©å±•åçš„32ä½ç«‹å³æ•°
-    input		 clock,reset;                // æ—¶é’Ÿå’Œå¤ä½
-    input[31:0]  opcplus4;                 // æ¥è‡ªå–æŒ‡å•å…ƒï¼ŒJALä¸­ç”¨. æ˜¯PC plus 4
-    //////////////// ä»£ç é€»è¾‘ ////////////////
-    //////////////// æˆå‘˜å˜é‡ ////////////////
+    //////////////// ÊäÈëÊä³ö ////////////////
+    output[31:0] read_data_1;              // Êä³öµÄµÚÒ»²Ù×÷Êı
+    output[31:0] read_data_2;               // Êä³öµÄµÚ¶ş²Ù×÷Êı
+    input[31:0]  Instruction;               // È¡Ö¸µ¥ÔªÀ´µÄÖ¸Áî
+    input[31:0]  mem_data;   				//  ´ÓDATA RAM or I/O portÈ¡³öµÄÊı¾İ
+    input[31:0]  ALU_result;   				// ´ÓÖ´ĞĞµ¥ÔªÀ´µÄÔËËãµÄ½á¹û
+    input        Jal;                       //  À´×Ô¿ØÖÆµ¥Ôª£¬ËµÃ÷ÊÇJALÖ¸Áî 
+    input        RegWrite;                  // À´×Ô¿ØÖÆµ¥Ôª, ÊÇ·ñĞ´Èë¼Ä´æÆ÷
+    input        MemtoReg;              // À´×Ô¿ØÖÆµ¥Ôª£¬±íÊ¾Ğ´»ØÊı¾İµÄÀ´Ô´
+    input        RegDst;                //À´×Ô¿ØÖÆµ¥Ôª£¬±íÊ¾ÊÇrd»¹ÊÇrt×÷ÎªĞ´»Ø¼Ä´æÆ÷µØÖ·
+    output[31:0] Sign_extend;               // À©Õ¹ºóµÄ32Î»Á¢¼´Êı
+    input		 clock,reset;                // Ê±ÖÓºÍ¸´Î»
+    input[31:0]  opcplus4;                 // À´×ÔÈ¡Ö¸µ¥Ôª£¬JALÖĞÓÃ. ÊÇPC plus 4
+    //////////////// ´úÂëÂß¼­ ////////////////
+    //////////////// ³ÉÔ±±äÁ¿ ////////////////
     wire [4:0] rs = Instruction[25:21];
     wire [4:0] rt = Instruction[20:16];
     wire [4:0] rd = Instruction[15:11];
     wire [15:0] imm = Instruction[15:0];
-    //////////////// å®ä¾‹åŒ–å¯„å­˜å™¨ ////////////////
+    //////////////// ÊµÀı»¯¼Ä´æÆ÷ ////////////////
     reg [4:0] registerDestination;
     reg [31:0] writingData;
     always @(*) begin
@@ -34,8 +34,8 @@ module decode32(read_data_1,read_data_2,Instruction,mem_data,ALU_result,
     Registers mRegisters(clock, reset, rs, rt, 
     registerDestination, writingData, 
     RegWrite, read_data_1, read_data_2);
-    //////////////// å®ä¾‹åŒ–æ‰©å±•å™¨ ////////////////
-    wire[5:0] opcode;                       // æŒ‡ä»¤ç 
+    //////////////// ÊµÀı»¯À©Õ¹Æ÷ ////////////////
+    wire[5:0] opcode;                       // Ö¸ÁîÂë
     assign opcode = Instruction[31:26];	//OP
     SignExtension mSignExtension(opcode, imm, Sign_extend);
 endmodule
@@ -46,20 +46,20 @@ module SignExtension (
     output[31:0] extendedImmediate
 );
     // assign extendedImmediate=immediate[15]?{16{1'b1}, immediate}:{16{1'b0}, immediate};
-    //andi, ori xori å±äº zeroExtensionæƒ…å†µï¼Œå…¶ä»–I formatéƒ½æ˜¯signExtension
-    // sltiu æ˜¯ç‰¹æ®Šæƒ…å†µï¼Œå–å†³äºALUå¦‚ä½•å®ç°sltiuçš„ç®—æ³•ã€‚
-    // å¦‚æœæ˜¯ 32ä½æ•°-ext(16ä½ç«‹å³æ•°) ç„¶ååˆ¤æ–­ç¬¦å·ï¼Œé‚£ä¹ˆç”¨é›¶æ‰©å±•æ¯”è¾ƒåˆç†ã€‚
-    // å‚è€ƒhttps://stackoverflow.com/questions/29284428/in-mips-when-to-use-a-signed-extend-when-to-use-a-zero-extend
-    // ä¼˜åŒ–ä¸€ä¸‹é€»è¾‘ï¼Ÿ éƒ½æ˜¯001å¼€å¤´ï¼Œè¿ç»­çš„3,4,5,6ï¼Ÿ ç­”ï¼šæ²¡æ³•ä¼˜åŒ–ï¼Œå¡è¯ºå›¾æ²¡ä»€ä¹ˆè§„å¾‹ã€‚
-    // another question: LUI æ˜¯ä»€ä¹ˆextensionï¼Ÿä¹Ÿæ˜¯å–å†³äºALUæ€ä¹ˆå®ç°ã€‚
-    // ç›®å‰æˆ‘æ˜¯æŒ‰ç…§sign extensionå»å¤„ç†ã€‚
+    //andi, ori xori ÊôÓÚ zeroExtensionÇé¿ö£¬ÆäËûI format¶¼ÊÇsignExtension
+    // sltiu ÊÇÌØÊâÇé¿ö£¬È¡¾öÓÚALUÈçºÎÊµÏÖsltiuµÄËã·¨¡£
+    // Èç¹ûÊÇ 32Î»Êı-ext(16Î»Á¢¼´Êı) È»ºóÅĞ¶Ï·ûºÅ£¬ÄÇÃ´ÓÃÁãÀ©Õ¹±È½ÏºÏÀí¡£
+    // ²Î¿¼https://stackoverflow.com/questions/29284428/in-mips-when-to-use-a-signed-extend-when-to-use-a-zero-extend
+    // ÓÅ»¯Ò»ÏÂÂß¼­£¿ ¶¼ÊÇ001¿ªÍ·£¬Á¬ĞøµÄ3,4,5,6£¿ ´ğ£ºÃ»·¨ÓÅ»¯£¬¿¨ÅµÍ¼Ã»Ê²Ã´¹æÂÉ¡£
+    // another question: LUI ÊÇÊ²Ã´extension£¿Ò²ÊÇÈ¡¾öÓÚALUÔõÃ´ÊµÏÖ¡£
+    // Ä¿Ç°ÎÒÊÇ°´ÕÕsign extensionÈ¥´¦Àí¡£
     assign extendedImmediate=(6'b001100 == opcode || 6'b001101 == opcode ||
     6'b001110 == opcode|| 6'b001011==opcode)?{{16{1'b0}},immediate}:
     {{16{immediate[15]}}, immediate}; 
-    //Verilogè¯­æ³•ï¼šhttps://stackoverflow.com/questions/49539345/error-in-compilation-replication-operator-in-verilog
+    //VerilogÓï·¨£ºhttps://stackoverflow.com/questions/49539345/error-in-compilation-replication-operator-in-verilog
 endmodule
 module Registers(
-    input clock,reset,               // æ—¶é’Ÿå’Œå¤ä½
+    input clock,reset,               // Ê±ÖÓºÍ¸´Î»
     input [4:0] registerSource1, //registerSource1
     input [4:0] registerSource2, //registerSource2
     input [4:0] registerDestination, //registerDestination
@@ -75,11 +75,11 @@ module Registers(
     integer i;
     always @(posedge clock, posedge reset) begin
         if (reset) begin
-            for (i=0; i<32; i=i+1) begin //for æ˜¯è¾…åŠ©ç”Ÿæˆç”µè·¯çš„æ‰‹æ®µã€‚
-                mRegisters[i] <= 32'h00000000; // æŠŠæ‰€æœ‰å¯„å­˜å™¨å¤ä½ä¸º0ã€‚
+            for (i=0; i<32; i=i+1) begin //for ÊÇ¸¨ÖúÉú³ÉµçÂ·µÄÊÖ¶Î¡£
+                mRegisters[i] <= 32'h00000000; // °ÑËùÓĞ¼Ä´æÆ÷¸´Î»Îª0¡£
             end
         end else begin
-            if (regWrite && registerDestination!=0) //$0è¦ç„Šæ­»ä¸º0
+            if (regWrite && registerDestination!=0) //$0Òªº¸ËÀÎª0
                 mRegisters[registerDestination] <= writingData;
         end
     end
