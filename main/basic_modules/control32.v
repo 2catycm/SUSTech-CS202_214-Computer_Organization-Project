@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2022/05/10 21:53:59
+// Create Date: 2022/05/02 23:30:37
 // Design Name: 
 // Module Name: control32
 // Project Name: 
@@ -20,38 +20,59 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module control32(Opcode,Function_opcode,Jr,RegDST,ALUSrc,MemtoReg,RegWrite,MemWrite,Branch,nBranch,Jmp,Jal,I_format,Sftmd,ALUOp);
-    input[5:0]   Opcode;            // 来自IFetch模块的指令高6bit，instruction[31..26]
-    input[5:0]   Function_opcode;  	// 来自IFetch模块的指令低6bit，用于区分r-类型中的指令，instructions[5..0]
-    output       Jr;         	 // 为1表明当前指令是jr，为0表示当前指令不是jr
-    output       RegDST;          // 为1表明目的寄存器是rd，否则目的寄存器是rt
-    output       ALUSrc;          // 为1表明第二个操作数（ALU中的Binput）是立即数（beq，bne除外），为0时表示第二个操作数来自寄存器
-    output       MemtoReg;     // 为1表明需要从存储器或I/O读数据到寄存器
-    output       RegWrite;   	  //  为1表明该指令需要写寄存器
-    output       MemWrite;       //  为1表明该指令需要写存储器
-    output       Branch;        //  为1表明是beq指令，为0时表示不是beq指令
-    output       nBranch;       //  为1表明是Bne指令，为0时表示不是bne指令
-    output       Jmp;            //  为1表明是J指令，为0时表示不是J指令
-    output       Jal;            //  为1表明是Jal指令，为0时表示不是Jal指令
-    output       I_format;      //  为1表明该指令是除beq，bne，LW，SW之外的其他I-类型指令
-    output       Sftmd;         //  为1表明是移位指令，为0表明不是移位指令
-    output[1:0]  ALUOp;        //  是R-类型或I_format=1时位1（高bit位）为1, beq、bne指令则位0（低bit位）为1
-wire R_format;
-assign Jr =((Opcode==6'b000000)&&(Function_opcode==6'b001000)) ? 1'b1 : 1'b0;
-assign Jal = (Opcode==6'b000011)? 1'b1:1'b0;
-assign Jmp = (Opcode==6'b000010)? 1'b1:1'b0;
-assign Branch = (Opcode==6'b000100)? 1'b1:1'b0;
-assign nBranch = (Opcode==6'b000101)? 1'b1:1'b0;
-assign MemWrite = (Opcode==6'b101011)? 1'b1:1'b0;
-assign R_format = (Opcode==6'b000000)? 1'b1:1'b0;
-assign RegDST = R_format;
-assign MemtoReg = (Opcode==6'b100011)? 1'b1:1'b0;
-assign RegWrite = (R_format || MemtoReg || Jal || I_format) && !(Jr);
-assign I_format = (Opcode[5:3]==3'b001)?1'b1:1'b0;
-assign ALUSrc = I_format||(Opcode==6'b100011)||(Opcode==6'b101011);
-assign ALUOp = {(R_format || I_format),(Branch || nBranch)};
-assign Sftmd = (((Function_opcode==6'b000000)||(Function_opcode==6'b000010)
-||(Function_opcode==6'b000011)||(Function_opcode==6'b000100)
-||(Function_opcode==6'b000110)||(Function_opcode==6'b000111))
-&& R_format)? 1'b1:1'b0;
+module control32(Opcode,Function_opcode,Jr,Branch,nBranch,Jmp,Jal, Alu_resultHigh, RegDST, MemorIOtoReg, RegWrite, MemRead, MemWrite, IORead, IOWrite,
+ALUSrc,ALUOp,Sftmd,I_format,R_format,Lw,sw);
+    input[5:0] Opcode; // instruction[31:26], opcode
+    input[5:0] Function_opcode; // instructions[5:0], funct
+    output Jr; // 1 indicates the instruction is "jr", otherwise it's not "jr" output Jmp, // 1 indicate the instruction is "j", otherwise it's not
+    output Branch; // 1 indicate the instruction is "beq" , otherwise it's not
+    output nBranch; // 1 indicate the instruction is "bne", otherwise it's not
+    output Jmp;
+    output Jal;
+    input[21:0] Alu_resultHigh; // From the execution unit Alu_Result[31..10]
+    output RegDST; // 1 indicate destination register is "rd"(R),otherwise it's "rt"(I)
+    output MemorIOtoReg; // 1 indicates that data needs to be read from memory or I/O to the register
+    output RegWrite; // 1 indicates that the instruction needs to write to the register
+    output MemRead; // 1 indicates that the instruction needs to read from the memory
+    output MemWrite; // 1 indicates that the instruction needs to write to the memory
+    output IORead; // 1 indicates I/O read
+    output IOWrite; // 1 indicates I/O write
+    output ALUSrc; // 1 indicate the 2nd data is immidiate (except "beq","bne")
+    output Sftmd; // 1 indicate the instruction is shift instruction
+    output I_format;/* 1 indicate the instruction is I-type but isn't "beq","bne","LW" or "SW" */
+    output R_format;
+    output Lw;
+    output sw;
+    output[1:0] ALUOp;/* if the instruction is R-type or I_format, ALUOp is 2'b10;
+    if the instruction is"beq" or "bne", ALUOp is 2'b01??
+    if the instruction is"lw" or "sw", ALUOp is 2'b00??*/ 
+    
+    
+    assign Lw = (Opcode==6'b100011)? 1'b1:1'b0;
+    assign sw = (Opcode==6'b101011)? 1'b1:1'b0;
+    
+    assign Jr =((Opcode==6'b000000)&&(Function_opcode==6'b001000)) ? 1'b1 : 1'b0;
+    assign Jal = (Opcode==6'b000011)? 1'b1:1'b0;
+    assign Jmp = (Opcode==6'b000010)? 1'b1:1'b0;
+    assign Branch = (Opcode==6'b000100)? 1'b1:1'b0;
+    assign nBranch = (Opcode==6'b000101)? 1'b1:1'b0;
+    assign MemWrite = (Opcode==6'b101011)? 1'b1:1'b0;
+    assign R_format = (Opcode==6'b000000)? 1'b1:1'b0;
+    assign RegDST = R_format;
+    assign I_format = (Opcode[5:3]==3'b001)?1'b1:1'b0;
+    assign ALUSrc = I_format||(Opcode==6'b100011)||(Opcode==6'b101011);
+    assign ALUOp = {(R_format || I_format),(Branch || nBranch)};
+    assign Sftmd = (((Function_opcode==6'b000000)||(Function_opcode==6'b000010)
+    ||(Function_opcode==6'b000011)||(Function_opcode==6'b000100)
+    ||(Function_opcode==6'b000110)||(Function_opcode==6'b000111))
+    && R_format)? 1'b1:1'b0;
+    
+    
+    assign RegWrite = (R_format || Lw || Jal || I_format) && !(Jr) ; // Write memory or write IO
+    assign MemWrite = ((sw==1) && (Alu_resultHigh[21:0] != 22'h3FFFFF)) ? 1'b1:1'b0;
+    assign MemRead = ((Lw==1) && (Alu_resultHigh[21:0] != 22'h3FFFFF)) ? 1'b1:1'b0; // Read memory
+    assign IORead = ((Lw==1) && (Alu_resultHigh[21:0] == 22'h3FFFFF)) ? 1'b1:1'b0; // Read input port
+    assign IOWrite = ((sw==1) && (Alu_resultHigh[21:0] == 22'h3FFFFF)) ? 1'b1:1'b0; // Write output port
+    // Read operations require reading data from memory or I/O to write to the register
+    assign MemorIOtoReg = IORead || MemRead;
 endmodule
