@@ -45,5 +45,28 @@ IFetch ifetch_instance(
     .reset(reset),
     .opcplus4(link_addr)
     );
+     wire MemRead,MemWrite, IORead, IOWrite, ALUSrc, I_format, Sftmd;
+      wire[1:0]ALUOp;
+    ControllerIO controller_instance(
+            .Opcode(Instruction[31:26]), 
+            .Function_opcode(Instruction[5:0]), 
+            .Jr(Jr), 
+            .Jmp(Jmp), 
+            .Jal(Jal), 
+            .Branch(Branch), 
+            .nBranch(nBranch),
+            .RegDST(RegDst), 
+            .Alu_resultHigh(ALU_Result[31:10]), 
+            .MemorIOtoReg(MemorIOtoReg), 
+            .RegWrite(RegWrite), 
+            .MemRead(MemRead), 
+            .MemWrite(MemWrite), 
+            .IORead(IORead), 
+            .IOWrite(IOWrite), 
+            .ALUSrc(ALUSrc), 
+            .I_format(I_format), 
+            .Sftmd(Sftmd), 
+            .ALUOp(ALUOp)
+        );
 
 endmodule
