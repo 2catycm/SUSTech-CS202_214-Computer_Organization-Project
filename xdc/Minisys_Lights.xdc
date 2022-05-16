@@ -1,4 +1,5 @@
 # 灯光绑定
+# 是板子下面的24个小led灯。分为左（RLD）、中（YLD）、右（GLD）各8个。
 set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Left[7]}]
 set_property -dict {PACKAGE_PIN L13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Left[6]}]
 set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Left[5]}]
