@@ -1,5 +1,0 @@
-set_property -dict {PACKAGE_PIN U4  IOSTANDARD LVCMOS33} [get_ports {EGO1_Button[4]}]
-set_property -dict {PACKAGE_PIN V1  IOSTANDARD LVCMOS33} [get_ports {EGO1_Button[3]}]
-set_property -dict {PACKAGE_PIN R15 IOSTANDARD LVCMOS33} [get_ports {EGO1_Button[2]}]
-set_property -dict {PACKAGE_PIN R17 IOSTANDARD LVCMOS33} [get_ports {EGO1_Button[1]}]
-set_property -dict {PACKAGE_PIN R11 IOSTANDARD LVCMOS33} [get_ports {EGO1_Button[0]}]
