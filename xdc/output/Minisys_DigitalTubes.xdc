@@ -1,4 +1,4 @@
-# ä¸ƒæ®µæ•°ç ç®¡çš„ç»‘å®š
+# Æß¶ÎÊıÂë¹ÜµÄ°ó¶¨
 set_property -dict {PACKAGE_PIN A18 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTubes_NotEnable[7]}]
 set_property -dict {PACKAGE_PIN A20 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTubes_NotEnable[6]}]
 set_property -dict {PACKAGE_PIN B20 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTubes_NotEnable[5]}]
@@ -8,7 +8,7 @@ set_property -dict {PACKAGE_PIN D19 IOSTANDARD LVCMOS33} [get_ports {Minisys_Dig
 set_property -dict {PACKAGE_PIN E19 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTubes_NotEnable[1]}]
 set_property -dict {PACKAGE_PIN C19 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTubes_NotEnable[0]}]
 
-# ä»0åˆ°7ï¼Œè¡¨ç¤ºæ ‡å‡†ä¸ƒæ®µæ•°ç ç®¡çš„ A,B,C,D,E,F,G,DP æ®µã€‚
+# ´Ó0µ½7£¬±íÊ¾±ê×¼Æß¶ÎÊıÂë¹ÜµÄ A,B,C,D,E,F,G,DP ¶Î¡£
 set_property -dict {PACKAGE_PIN E13 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTube_Shape[7]}]
 set_property -dict {PACKAGE_PIN C15 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTube_Shape[6]}]
 set_property -dict {PACKAGE_PIN C14 IOSTANDARD LVCMOS33} [get_ports {Minisys_DigitalTube_Shape[5]}]

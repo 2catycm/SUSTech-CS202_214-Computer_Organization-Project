@@ -1,5 +1,5 @@
-# Buttonï¼ˆæŒ‰é”®å¼€å…³ï¼‰æœ‰5ä¸ªã€‚
-# åœ¨æ¿å­ä¸Šçš„æ ‡è¯†æ˜¯ S1(R1), S2, ..., S5(P2) æŒ‰ç…§ä¸œè¥¿åŒ—ä¸­å—çš„é¡ºåºã€‚
+# Button£¨°´¼ü¿ª¹Ø£©ÓĞ5¸ö¡£
+# ÔÚ°å×ÓÉÏµÄ±êÊ¶ÊÇ S1(R1), S2, ..., S5(P2) °´ÕÕ¶«Î÷±±ÖĞÄÏµÄË³Ğò¡£
 set_property -dict {PACKAGE_PIN R1  IOSTANDARD LVCMOS33} [get_ports {Minisys_Button[4]}]
 set_property -dict {PACKAGE_PIN P1  IOSTANDARD LVCMOS33} [get_ports {Minisys_Button[3]}]
 set_property -dict {PACKAGE_PIN P5 IOSTANDARD LVCMOS33} [get_ports {Minisys_Button[2]}]

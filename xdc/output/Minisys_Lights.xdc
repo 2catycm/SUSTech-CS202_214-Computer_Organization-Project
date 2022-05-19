@@ -1,6 +1,6 @@
-# ç¯å…‰ç»‘å®š
-# æ˜¯æ¿å­ä¸‹é¢çš„24ä¸ªå°ledç¯ã€‚
-# åˆ†ä¸ºé«˜ï¼ˆRLDï¼‰ã€ä¸­ï¼ˆYLDï¼‰ã€ä½ï¼ˆGLDï¼‰å„8ä¸ªã€‚é«˜ä¸­ä½è¡¨ç¤ºä½œä¸ºäºŒè¿›åˆ¶æ•°ï¼Œå·¦è¾¹æ˜¯é«˜æ¯”ç‰¹ä½(significant bit)ã€‚
+# µÆ¹â°ó¶¨
+# ÊÇ°å×ÓÏÂÃæµÄ24¸öĞ¡ledµÆ¡£
+# ·ÖÎª¸ß£¨RLD£©¡¢ÖĞ£¨YLD£©¡¢µÍ£¨GLD£©¸÷8¸ö¡£¸ßÖĞµÍ±íÊ¾×÷Îª¶ş½øÖÆÊı£¬×ó±ßÊÇ¸ß±ÈÌØÎ»(significant bit)¡£
 set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_High[7]}]
 set_property -dict {PACKAGE_PIN L13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_High[6]}]
 set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_High[5]}]
@@ -28,7 +28,7 @@ set_property -dict {PACKAGE_PIN D22 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lig
 set_property -dict {PACKAGE_PIN E22 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Low[1]}]
 set_property -dict {PACKAGE_PIN A21 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Low[0]}]
 
-# ä¸åŒºåˆ†å·¦ä¸­å³ï¼Œä¹Ÿå¯ä»¥æ¥å—
+# ²»Çø·Ö×óÖĞÓÒ£¬Ò²¿ÉÒÔ½ÓÊÜ
 set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights[23]}]
 set_property -dict {PACKAGE_PIN L13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights[22]}]
 set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights[21]}]

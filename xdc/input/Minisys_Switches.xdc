@@ -1,6 +1,6 @@
-# å¼€å…³ç»‘å®š
-# æ˜¯æ¿å­ä¸‹é¢çš„24ä¸ªå¼€å…³ã€‚
-# åˆ†ä¸ºé«˜ï¼ˆRLDï¼‰ã€ä¸­ï¼ˆYLDï¼‰ã€ä½ï¼ˆGLDï¼‰å„8ä¸ªã€‚é«˜ä¸­ä½è¡¨ç¤ºä½œä¸ºäºŒè¿›åˆ¶æ•°ï¼Œå·¦è¾¹æ˜¯é«˜æ¯”ç‰¹ä½(significant bit)ã€‚
+# ¿ª¹Ø°ó¶¨
+# ÊÇ°å×ÓÏÂÃæµÄ24¸ö¿ª¹Ø¡£
+# ·ÖÎª¸ß£¨RLD£©¡¢ÖĞ£¨YLD£©¡¢µÍ£¨GLD£©¸÷8¸ö¡£¸ßÖĞµÍ±íÊ¾×÷Îª¶ş½øÖÆÊı£¬×ó±ßÊÇ¸ß±ÈÌØÎ»(significant bit)¡£
 set_property -dict {PACKAGE_PIN Y9 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_High[7]}]
 set_property -dict {PACKAGE_PIN W9 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_High[6]}]
 set_property -dict {PACKAGE_PIN Y7 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_High[5]}]
@@ -28,7 +28,7 @@ set_property -dict {PACKAGE_PIN T4 IOSTANDARD LVCMOS33} [get_ports {Minisys_Swit
 set_property -dict {PACKAGE_PIN R4 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Low[1]}]
 set_property -dict {PACKAGE_PIN W4 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Low[0]}]
 
-# ä¸åŒºåˆ†å·¦ä¸­å³ï¼Œä¹Ÿå¯ä»¥æ¥å—
+# ²»Çø·Ö×óÖĞÓÒ£¬Ò²¿ÉÒÔ½ÓÊÜ
 set_property -dict {PACKAGE_PIN Y9  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[23]}]
 set_property -dict {PACKAGE_PIN W9  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[22]}]
 set_property -dict {PACKAGE_PIN Y7  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[21]}]

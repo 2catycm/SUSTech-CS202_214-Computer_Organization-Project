@@ -1,7 +1,7 @@
-/////////////////////////////ГЁ╩Г╩÷Ф≈╤И▓÷Е▓▄Е╓█Д╫█////////////////////////////////////
-# MinisysГ └Ф≈╤И▓÷Д©║Е▐╥Ф≤╞100MHz(1sФ°┴100MД╦╙cycle)
+/////////////////////////////о╣мЁй╠жс╨м╦╢н╩////////////////////////////////////
+# Minisys╣дй╠жспе╨ейг100MHz(1sсп100M╦Жcycle)
 set_property -dict {PACKAGE_PIN Y18 IOSTANDARD LVCMOS33} [get_ports Minisys_Clock]
-# Ф²©Е╜░Д╦┼Ф═┤Х╝╟Д╨├S6Г └Ф▄┴И▓╝Ф≤╞Е╓█Д╫█Ф▄┴И▓╝Ц─┌
+# ╟Евсио╠Й╪гакS6╣д╟╢е╔йг╦╢н╩╟╢е╔║ё
 set_property -dict {PACKAGE_PIN S6 IOSTANDARD LVCMOS33} [get_ports Minisys_Reset]
 
 
