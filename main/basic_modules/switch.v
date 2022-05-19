@@ -23,25 +23,25 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 
-module Switch(switclk, switrst, switchread, switchcs,switchaddr, switchrdata, switch_i);
-    input switclk;			        //  æ—¶é’Ÿä¿¡å·
-    input switrst;			        //  å¤ä½ä¿¡å·
-    input switchcs;			        //  ä»memorioæ¥çš„switchç‰‡ï¿½?ï¿½ä¿¡ï¿½?  !!!!!!!!!!
-    input[1:0] switchaddr;		    //  åˆ°switchæ¨¡å—çš„åœ°ï¿½?ä½ç«¯  !!!!!!!!!!!!!!!
-    input switchread;			    //  è¯»ä¿¡ï¿½?
-    output [15:0] switchrdata;	    //  é€åˆ°CPUçš„æ‹¨ç å¼€å…³ï¿½?ï¿½æ³¨æ„æ•°æ®ï¿½?ï¿½çº¿åªæœ‰16ï¿½?
-    input [23:0] switch_i;		    //  ä»æ¿ä¸Šè¯»ï¿½?24ä½å¼€å…³æ•°ï¿½?
+module Switch(switclk, switchrst, switchread, switchctl,switchaddr, switchrdata, switch_input);
+    input switclk;			        //  Ê±ÖÓĞÅºÅ
+    input switchrst;			        //  ¸´Î»ĞÅºÅ
+    input switchctl;			        //  ´ÓmemorioÀ´µÄswitchÆ¬  !!!!!!!!!!
+    input[1:0] switchaddr;		    //  µ½switchÄ£¿éµÄµØ??µÍ¶Ë  !!!!!!!!!!!!!!!
+    input switchread;			    //  controller À´µÄ
+    output [15:0] switchrdata;	    //  ËÍµ½CPUµÄ²¦Âë¿ª¹Ø???×¢ÒâÊı¾İ???ÏßÖ»ÓĞ16??
+    input [23:0] switch_input;		    //  ´Ó°åÉÏ¶ÁµÄ24Î»Êı
 
     reg [15:0] switchrdata;
-    always@(negedge switclk or posedge switrst) begin
-        if(switrst) begin
+    always@(negedge switclk or posedge switchrst) begin
+        if(switchrst) begin
             switchrdata <= 0;
         end
-		else if(switchcs && switchread) begin
+		else if(switchctl && switchread) begin
 			if(switchaddr==2'b00)
-				switchrdata[15:0] <= switch_i[15:0];   // data output,lower 16 bits non-extended
+				switchrdata[15:0] <= switch_input[15:0];   // data output,lower 16 bits non-extended
 			else if(switchaddr==2'b10)
-				switchrdata[15:0] <= { 8'h00, switch_i[23:16] }; //data output, upper 8 bits extended with zero
+				switchrdata[15:0] <= { 8'h00, switch_input[23:16] }; //data output, upper 8 bits extended with zero
 			else 
 				switchrdata <= switchrdata;
         end

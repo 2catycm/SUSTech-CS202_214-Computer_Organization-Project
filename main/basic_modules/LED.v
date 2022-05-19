@@ -24,13 +24,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module LED(led_clk, ledrst, ledwrite, ledcs, ledaddr,ledwdata, ledout);
-    input led_clk;    		    // æ—¶é’Ÿä¿¡å·
-    input ledrst; 		        // å¤ä½ä¿¡å·
-    input ledwrite;		       	// å†™ä¿¡å·
-    input ledcs;		      	// ä»memorioæ¥çš„LEDç‰‡é€‰ä¿¡å·   !!!!!!!!!!!!!!
-    input[1:0] ledaddr;	        // åˆ°LEDæ¨¡å—çš„åœ°å€ä½ç«¯  !!!!!!!!!!!!!!!!!!!!
-    input[15:0] ledwdata;	  	// å†™åˆ°LEDæ¨¡å—çš„æ•°æ®ï¼Œæ³¨æ„æ•°æ®çº¿åªæœ‰16æ ¹
-    output[23:0] ledout;		// å‘æ¿å­ä¸Šè¾“å‡ºçš„24ä½LEDä¿¡å·
+    input led_clk;    		    // Ê±ÖÓĞÅºÅ
+    input ledrst; 		        // ¸´Î»ĞÅºÅ
+    input ledwrite;		       	// Ğ´ĞÅºÅ
+    input ledcs;		      	// ´ÓmemorioÀ´µÄLEDÆ¬Ñ¡ĞÅºÅ   !!!!!!!!!!!!!!
+    input[1:0] ledaddr;	        // µ½LEDÄ£¿éµÄµØÖ·µÍ¶Ë  !!!!!!!!!!!!!!!!!!!!
+    input[15:0] ledwdata;	  	// Ğ´µ½LEDÄ£¿éµÄÊı¾İ£¬×¢ÒâÊı¾İÏßÖ»ÓĞ16¸ù
+    output[23:0] ledout;		// Ïò°å×ÓÉÏÊä³öµÄ24Î»LEDĞÅºÅ
   
     reg [23:0] ledout;
     

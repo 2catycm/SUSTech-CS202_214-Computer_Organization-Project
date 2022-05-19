@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 module CPUTOP(
-input[23:0]switch, output[23:0]LED, input cpu_clk, input reset
+input[23:0]switch_topin, output[23:0]led_topout, input cpu_clk, input reset
 );
     // Control signals
 wire Branch, nBranch, Jmp, Jal, Jr, Zero, RegWrite, RegDst;
@@ -60,7 +60,7 @@ Ifetc32 ifetch_instance(
                     .Read_data_2(read_data_2), 
                     .Sign_extend(Sign_extend), 
                     .Function_opcode(Instruction[5:0]), 
-                    .opcode(Instruction[31:26]), 
+                    .Exe_opcode(Instruction[31:26]), 
                     .ALUOp(ALUOp), 
                     .Shamt(Instruction[10:6]), 
                     .Sftmd(Sftmd), 
@@ -75,14 +75,14 @@ Ifetc32 ifetch_instance(
                 
         wire[31:0]write_data_fromMemoryIO;
         wire[31:0] m_wdata; // 写到memory的数据
-        assign m_wdata = write_data_fromMemoryIO;
+        assign m_wdata = write_data_fromMemoryIO;//这个也是ior_data
         wire[31:0]m_rdata; //从memory读出来的数据
         wire[31:0]addr_out;//指导memory写到哪
          dmemory32 memory_instance(
                .readData(m_rdata), 
                .address(addr_out), 
                .writeData(m_wdata), 
-               .Memwrite(MemWrite), 
+               .memWrite(MemWrite), 
                .clock(cpu_clk)
            );
            wire [31:0] r_wdata;//写到register的数据
@@ -92,7 +92,7 @@ Ifetc32 ifetch_instance(
                .read_data_1(read_data_1), //decoder的输出
                .read_data_2(read_data_2),//decoder的输出,这个输出是给memory的输出
                .Instruction(Instruction),
-               .read_data(r_wdata),
+               .mem_data(r_wdata),
                .ALU_result(ALU_Result),
                .Jal(Jal),
                .RegWrite(RegWrite),
@@ -125,6 +125,24 @@ Ifetc32 ifetch_instance(
                    .SwitchCtrl(switchctl)
                );
                
-               
+              Switch switch_instance(
+                       .switclk(cpu_clk),
+                       .switchrst(reset), 
+                       .switchread(IORead), 
+                       .switchctl(switchctl),
+                       .switchaddr(addr_in[1:0]), 
+                       .switchrdata(ioread_data), //这个是15位的
+                       .switch_input(switch_topin)
+                   );
+                   
+                 LED led_instance(
+                       .led_clk(cpu_clk), 
+                       .ledrst(reset), 
+                       .ledwrite(IOWrite),//从controller来的 
+                       .ledcs(ledctl), 
+                       .ledaddr(addr_in[1:0]),
+                       .ledwdata(write_data_fromMemoryIO[15:0]), 
+                       .ledout(led_topout)
+                   );
                
 endmodule
