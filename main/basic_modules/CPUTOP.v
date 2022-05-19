@@ -9,11 +9,11 @@ wire [31:0] Instruction;
 wire [31:0] Addr_Result; //这个是ALU算出来的地址,给到ifetch
 wire [31:0] read_data_1;     
 wire [31:0] read_data_2; 
-wire [31:0] read_data;
+
 wire [31:0] link_addr;
 
 
-IFetch ifetch_instance(
+Ifetc32 ifetch_instance(
         .Instruction(Instruction), 
         .branch_base_addr(branch_base_addr),
         .Addr_result(Addr_Result),
@@ -34,7 +34,7 @@ IFetch ifetch_instance(
     
      wire MemRead,MemWrite, IORead, IOWrite, ALUSrc, I_format, Sftmd;
       wire[1:0]ALUOp;
-    ControllerIO controller_instance(
+    control32 controller_instance(
             .Opcode(Instruction[31:26]), 
             .Function_opcode(Instruction[5:0]), 
             .Jr(Jr), 
@@ -73,8 +73,9 @@ IFetch ifetch_instance(
                     .Addr_Result(Addr_Result)
                 );
                 
-        
+        wire[31:0]write_data_fromMemoryIO;
         wire[31:0] m_wdata; // 写到memory的数据
+        assign m_wdata = write_data_fromMemoryIO;
         wire[31:0]m_rdata; //从memory读出来的数据
         wire[31:0]addr_out;//指导memory写到哪
          dmemory32 memory_instance(
@@ -84,11 +85,14 @@ IFetch ifetch_instance(
                .Memwrite(MemWrite), 
                .clock(cpu_clk)
            );
+           wire [31:0] r_wdata;//写到register的数据
+//           wire [31:0]r_rdata;//这个就是read——data2
+
            decode32 decoder_instance(
                .read_data_1(read_data_1), //decoder的输出
-               .read_data_2(read_data_2),//decoder的输出
+               .read_data_2(read_data_2),//decoder的输出,这个输出是给memory的输出
                .Instruction(Instruction),
-               .read_data(read_data),
+               .read_data(r_wdata),
                .ALU_result(ALU_Result),
                .Jal(Jal),
                .RegWrite(RegWrite),
@@ -102,6 +106,8 @@ IFetch ifetch_instance(
                
     
             wire [31:0] addr_in;
+            wire [15:0] ioread_data;//这个是经过处理的16bit数据
+            wire ledctl,switchctl;
             assign addr_in = Addr_Result; //这一段单纯保持名字相同
              MemOrIO memoryIO_instance(
                    .mRead(MemRead), 
@@ -109,13 +115,16 @@ IFetch ifetch_instance(
                    .ioRead(IORead), 
                    .ioWrite(IOWrite),
                    .addr_in(addr_in), 
-                   .addr_out(address), 
-                   .m_rdata(read_data_from_memory), 
+                   .addr_out(addr_out), 
+                   .m_rdata(m_rdata), //从memory读出的数据
                    .io_rdata(ioread_data), 
-                   .r_wdata(read_data), 
-                   .r_rdata(Read_data_2), 
-                   .write_data(write_data), 
-                   .LEDCtrl(ledcs), 
-                   .SwitchCtrl(switchcs)
+                   .r_wdata(r_wdata), 
+                   .r_rdata(read_data_2), 
+                   .write_data(write_data_fromMemoryIO), 
+                   .LEDCtrl(ledctl), 
+                   .SwitchCtrl(switchctl)
                );
+               
+               
+               
 endmodule

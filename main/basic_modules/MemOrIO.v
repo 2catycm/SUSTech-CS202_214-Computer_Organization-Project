@@ -31,7 +31,7 @@ input[31:0] m_rdata; // data read from Data-Memory
 input[15:0] io_rdata; // data read from IO,16 bits
 output[31:0] r_wdata; // data to Decoder(register file)
 input[31:0] r_rdata; // data read from Decoder(register file)
-output reg[31:0] write_data; // data to memor y or I/O£¨m_wdata, io_wdata£©
+output reg[31:0] write_data; // data to memory or I/O£¨m_wdata, io_wdata£©
 output LEDCtrl; // LED Chip Select
 output SwitchCtrl; // Switch Chip Select
 assign addr_out= addr_in;
@@ -39,8 +39,8 @@ assign addr_out= addr_in;
 // While the data is from io, it should be the lower 16bit of r_wdata. 
 assign r_wdata = (mRead == 1)? m_rdata:{16'b0,io_rdata};
 // Chip select signal of Led and Switch are all active high;
-assign LEDCtrl= (addr_in==32'hfffffc60||addr_in==32'hfffffc62)? 1 : 0;
-assign SwitchCtrl= (addr_in==32'hfffffc70||addr_in==32'hfffffc72)? 1 : 0;
+ assign LEDCtrl = (ioWrite == 1'b1) ? 1'b1 : 1'b0;
+  assign SwitchCtrl = (ioRead == 1'b1) ? 1'b1 : 1'b0;
 always @* begin
 if((mWrite==1)||(ioWrite==1))
 //wirte_data could go to either memory or IO. where is it from?
