@@ -9,7 +9,7 @@ set_property -dict {PACKAGE_PIN AB8 IOSTANDARD LVCMOS33} [get_ports {Minisys_Swi
 set_property -dict {PACKAGE_PIN AA8 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_High[2]}]
 set_property -dict {PACKAGE_PIN V8 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_High[1]}]
 set_property -dict {PACKAGE_PIN V9 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_High[0]}]
-
+# 
 set_property -dict {PACKAGE_PIN AB6 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Middle[7]}]
 set_property -dict {PACKAGE_PIN AB7 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Middle[6]}]
 set_property -dict {PACKAGE_PIN V7 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Middle[5]}]
@@ -18,7 +18,7 @@ set_property -dict {PACKAGE_PIN Y6 IOSTANDARD LVCMOS33} [get_ports {Minisys_Swit
 set_property -dict {PACKAGE_PIN T6 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Middle[2]}]
 set_property -dict {PACKAGE_PIN R6 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Middle[1]}]
 set_property -dict {PACKAGE_PIN V5 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Middle[0]}]
-
+# 
 set_property -dict {PACKAGE_PIN U6 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Low[7]}]
 set_property -dict {PACKAGE_PIN W5 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Low[6]}]
 set_property -dict {PACKAGE_PIN W6 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches_Low[5]}]
@@ -45,11 +45,11 @@ set_property -dict {PACKAGE_PIN Y6  IOSTANDARD LVCMOS33} [get_ports {Minisys_Swi
 set_property -dict {PACKAGE_PIN T6  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[10]}]
 set_property -dict {PACKAGE_PIN R6  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[9]}]
 set_property -dict {PACKAGE_PIN V5  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[8]}]
-set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[7]}]
-set_property -dict {PACKAGE_PIN L13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[6]}]
-set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[5]}]
-set_property -dict {PACKAGE_PIN K14 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[4]}]
-set_property -dict {PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[3]}]
-set_property -dict {PACKAGE_PIN M20 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[2]}]
-set_property -dict {PACKAGE_PIN N20 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[1]}]
-set_property -dict {PACKAGE_PIN N19 IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[0]}]
+set_property -dict {PACKAGE_PIN U6  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[7]}]
+set_property -dict {PACKAGE_PIN W5  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[6]}]
+set_property -dict {PACKAGE_PIN W6  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[5]}]
+set_property -dict {PACKAGE_PIN U5  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[4]}]
+set_property -dict {PACKAGE_PIN T5  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[3]}]
+set_property -dict {PACKAGE_PIN T4  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[2]}]
+set_property -dict {PACKAGE_PIN R4  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[1]}]
+set_property -dict {PACKAGE_PIN W4  IOSTANDARD LVCMOS33} [get_ports {Minisys_Switches[0]}]

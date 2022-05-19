@@ -9,7 +9,7 @@ set_property -dict {PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lig
 set_property -dict {PACKAGE_PIN M20 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_High[2]}]
 set_property -dict {PACKAGE_PIN N20 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_High[1]}]
 set_property -dict {PACKAGE_PIN N19 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_High[0]}]
-
+# 
 set_property -dict {PACKAGE_PIN M17 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Middle[7]}]
 set_property -dict {PACKAGE_PIN M16 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Middle[6]}]
 set_property -dict {PACKAGE_PIN M15 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Middle[5]}]
@@ -18,7 +18,7 @@ set_property -dict {PACKAGE_PIN L16 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lig
 set_property -dict {PACKAGE_PIN L15 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Middle[2]}]
 set_property -dict {PACKAGE_PIN L14 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Middle[1]}]
 set_property -dict {PACKAGE_PIN J17 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Middle[0]}]
-
+# 
 set_property -dict {PACKAGE_PIN F21 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Low[7]}]
 set_property -dict {PACKAGE_PIN G22 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Low[6]}]
 set_property -dict {PACKAGE_PIN G21 IOSTANDARD LVCMOS33} [get_ports {Minisys_Lights_Low[5]}]
