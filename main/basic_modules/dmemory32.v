@@ -28,7 +28,7 @@ module dmemory32(clock,memWrite,address,writeData,readData );
 
     input [31:0] writeData; //writeData ：向data-memory中写入的数据
 
-    output[31:0] readData;  //writeData ：从data-memory中读出的数据
+    output[31:0] readData;  
 wire clk;
 assign clk = !clock;
 
