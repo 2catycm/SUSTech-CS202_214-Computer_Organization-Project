@@ -108,7 +108,7 @@ Ifetc32 ifetch_instance(
             wire [31:0] addr_in;
             wire [15:0] ioread_data;//这个是经过处理的16bit数据
             wire ledctl,switchctl;
-            assign addr_in = Addr_Result; //这一段单纯保持名字相同
+            assign addr_in = ALU_Result; //这一段单纯保持名字相同
              MemOrIO memoryIO_instance(
                    .mRead(MemRead), 
                    .mWrite(MemWrite), 

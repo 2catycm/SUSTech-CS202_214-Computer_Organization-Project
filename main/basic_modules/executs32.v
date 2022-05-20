@@ -36,7 +36,7 @@ input I_format,
 input Jr,
 output Zero,//这个也是计算是否需要跳转
 output [31:0] ALU_Result,
-output [31:0]Addr_Result,//This means that upper right output
+output [31:0]Addr_Result,//This means that upper right output,这个是instruction的addr
 input[31:0] PC_plus_4//pc+4
 );
     wire[31:0]Ainput,Binput;

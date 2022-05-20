@@ -14,7 +14,7 @@ ini:
 	lui $19, 0x8FFF
 	ori $19, $19, 0xFFFF #the submask
 	
-master:	lw $2, 0x72($20) # read the sw23,22,21
+master:	lw $2, 0x72($20) # read the sw23,22,21，72是左边，70是右边
 	srl $2, $2, 5 # 移动到我的指令的位数
 	beq $2, $zero, case0
 	beq $2, $21, case1
