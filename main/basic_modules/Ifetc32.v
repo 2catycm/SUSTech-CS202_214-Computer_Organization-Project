@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2022/04/20 11:42:28
+// Create Date: 2022/05/18 01:21:06
 // Design Name: 
-// Module Name: IFetc32
+// Module Name: Ifetc32
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,46 +20,45 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Ifetc32(Instruction,branch_base_addr,Addr_result,Read_data_1,Branch,nBranch,Jmp,Jal,Jr,Zero,clock,reset,link_addr);
-    output[31:0] Instruction;			// ¸ù¾İPCµÄÖµ´Ó´æ·ÅÖ¸ÁîµÄprgromÖĞÈ¡³öµÄÖ¸Áî
-    output[31:0] branch_base_addr;      // ¶ÔÓÚÓĞÌõ¼şÌø×ªÀàµÄÖ¸Áî¶øÑÔ£¬¸ÃÖµÎª(pc+4)ËÍÍùALU
-    input[31:0]  Addr_result;            // À´×ÔALU,ÎªALU¼ÆËã³öµÄÌø×ªµØÖ·
-    input[31:0]  Read_data_1;           // À´×ÔDecoder£¬jrÖ¸ÁîÓÃµÄµØÖ·
-    input        Branch;                // À´×Ô¿ØÖÆµ¥Ôª
-    input        nBranch;               // À´×Ô¿ØÖÆµ¥Ôª
-    input        Jmp;                   // À´×Ô¿ØÖÆµ¥Ôª
-    input        Jal;                   // À´×Ô¿ØÖÆµ¥Ôª
-    input        Jr;                   // À´×Ô¿ØÖÆµ¥Ôª
-    input        Zero;                  //À´×ÔALU£¬ZeroÎª1±íÊ¾Á½¸öÖµÏàµÈ£¬·´Ö®±íÊ¾²»ÏàµÈ
-    input        clock,reset;           //Ê±ÖÓÓë¸´Î»,¸´Î»ĞÅºÅÓÃÓÚ¸øPC¸³³õÊ¼Öµ£¬¸´Î»ĞÅºÅ¸ßµçÆ½ÓĞĞ§
-    output[31:0] link_addr;             // JALÖ¸Áî×¨ÓÃµÄPC+4,ÕâĞ©³öÀ´µÄµØÖ·¶¼ÊÇ×¼±¸ºÃÁËµÄ
+module Ifetc32(Instruction_i,Instruction_o,branch_base_addr,Addr_result,Read_data_1,Branch,nBranch,Jmp,Jal,Jr,Zero,clock,reset,link_addr,rom_adr_o);
+    input[31:0] Instruction_i;
+    output[31:0] Instruction_o;			// æ ¹æ®PCçš„å€¼ä»å­˜æ”¾æŒ‡ä»¤çš„prgromä¸­å–å‡ºçš„æŒ‡ä»¤
+    output[31:0] branch_base_addr;      // å¯¹äºæœ‰æ¡ä»¶è·³è½¬ç±»çš„æŒ‡ä»¤è€Œè¨€ï¼Œè¯¥å€¼ä¸º(pc+4)é€å¾€ALU
+    input[31:0]  Addr_result;            // æ¥è‡ªALU,ä¸ºALUè®¡ç®—å‡ºçš„è·³è½¬åœ°å€
+    input[31:0]  Read_data_1;           // æ¥è‡ªDecoderï¼ŒjræŒ‡ä»¤ç”¨çš„åœ°å€
+    input        Branch;                // æ¥è‡ªæ§åˆ¶å•å…ƒ
+    input        nBranch;               // æ¥è‡ªæ§åˆ¶å•å…ƒ
+    input        Jmp;                   // æ¥è‡ªæ§åˆ¶å•å…ƒ
+    input        Jal;                   // æ¥è‡ªæ§åˆ¶å•å…ƒ
+    input        Jr;                   // æ¥è‡ªæ§åˆ¶å•å…ƒ
+    input        Zero;                  //æ¥è‡ªALUï¼ŒZeroä¸º1è¡¨ç¤ºä¸¤ä¸ªå€¼ç›¸ç­‰ï¼Œåä¹‹è¡¨ç¤ºä¸ç›¸ç­‰
+    input        clock,reset;           //æ—¶é’Ÿä¸å¤ä½,å¤ä½ä¿¡å·ç”¨äºç»™PCèµ‹åˆå§‹å€¼ï¼Œå¤ä½ä¿¡å·é«˜ç”µå¹³æœ‰æ•ˆ
+    output[31:0] link_addr;             // JALæŒ‡ä»¤ä¸“ç”¨çš„PC+4
+    output[13:0] rom_adr_o;
 reg[31:0] PC, Next_PC;
 reg [31:0] jalpc;
+assign rom_adr_o=PC[15:2];
 assign branch_base_addr = PC+4;
 assign link_addr = jalpc;
+assign Instruction_o=Instruction_i;
 always @* begin
-        if(((Branch == 1) && (Zero == 1 )) || ((nBranch == 1) && (Zero == 0))) // beq, bne
-             Next_PC = Addr_result; // the calculated new value for PC
-        else if(Jr == 1)
-             Next_PC = Read_data_1; // the value of $31 register
-        else Next_PC = PC+4; // PC+4
+if(((Branch == 1) && (Zero == 1 )) || ((nBranch == 1) && (Zero == 0))) // beq, bne
+Next_PC = Addr_result; // the calculated new value for PC
+else if(Jr == 1)
+Next_PC = Read_data_1; // the value of $31 register
+else Next_PC = PC+4; // PC+4
 end
 always @(negedge clock) begin
-        if(reset == 1)
-                PC <= 32'h0000_0000;
-        else begin
-            if(Jal==1)begin
-                     jalpc = PC+4;
-            end
-            if((Jmp == 1) || (Jal == 1)) begin
-                    PC <= {PC[31:28],Instruction[25:0],2'b00};
-            end
-            else PC <= Next_PC;
-        end
+if(reset == 1)
+PC <= 32'h0000_0000;
+else begin
+if(Jal==1)begin
+jalpc = PC+4;
 end
-prgrom pr (
-.clka(clock), // input wire clka
-.addra(PC[15:2]), // input wire [13 : 0] addra
-.douta(Instruction) // output wire [31 : 0] douta
-);
+if((Jmp == 1) || (Jal == 1)) begin
+PC <= {PC[31:28],Instruction_i[25:0],2'b00};
+end
+else PC <= Next_PC;
+end
+end
 endmodule
