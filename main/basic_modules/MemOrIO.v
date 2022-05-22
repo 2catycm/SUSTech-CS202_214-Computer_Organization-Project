@@ -37,7 +37,7 @@ output SwitchCtrl; // Switch Chip Select
 assign addr_out= addr_in;
 // The data wirte to register file may be from memory or io. 
 // While the data is from io, it should be the lower 16bit of r_wdata. 
-assign r_wdata = (mRead == 1)? m_rdata:{16'b0,io_rdata};
+assign r_wdata = (mRead == 1)? m_rdata:{{16{io_rdata[15]}},io_rdata};
 // Chip select signal of Led and Switch are all active high;
  assign LEDCtrl = (ioWrite == 1'b1) ? 1'b1 : 1'b0;
   assign SwitchCtrl = (ioRead == 1'b1) ? 1'b1 : 1'b0;

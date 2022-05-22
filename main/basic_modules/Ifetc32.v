@@ -22,18 +22,18 @@
 
 module Ifetc32(Instruction_i,Instruction_o,branch_base_addr,Addr_result,Read_data_1,Branch,nBranch,Jmp,Jal,Jr,Zero,clock,reset,link_addr,rom_adr_o);
     input[31:0] Instruction_i;
-    output[31:0] Instruction_o;			// æ ¹æ®PCçš„å€¼ä»å­˜æ”¾æŒ‡ä»¤çš„prgromä¸­å–å‡ºçš„æŒ‡ä»¤
-    output[31:0] branch_base_addr;      // å¯¹äºæœ‰æ¡ä»¶è·³è½¬ç±»çš„æŒ‡ä»¤è€Œè¨€ï¼Œè¯¥å€¼ä¸º(pc+4)é€å¾€ALU
-    input[31:0]  Addr_result;            // æ¥è‡ªALU,ä¸ºALUè®¡ç®—å‡ºçš„è·³è½¬åœ°å€
-    input[31:0]  Read_data_1;           // æ¥è‡ªDecoderï¼ŒjræŒ‡ä»¤ç”¨çš„åœ°å€
-    input        Branch;                // æ¥è‡ªæ§åˆ¶å•å…ƒ
-    input        nBranch;               // æ¥è‡ªæ§åˆ¶å•å…ƒ
-    input        Jmp;                   // æ¥è‡ªæ§åˆ¶å•å…ƒ
-    input        Jal;                   // æ¥è‡ªæ§åˆ¶å•å…ƒ
-    input        Jr;                   // æ¥è‡ªæ§åˆ¶å•å…ƒ
-    input        Zero;                  //æ¥è‡ªALUï¼ŒZeroä¸º1è¡¨ç¤ºä¸¤ä¸ªå€¼ç›¸ç­‰ï¼Œåä¹‹è¡¨ç¤ºä¸ç›¸ç­‰
-    input        clock,reset;           //æ—¶é’Ÿä¸å¤ä½,å¤ä½ä¿¡å·ç”¨äºç»™PCèµ‹åˆå§‹å€¼ï¼Œå¤ä½ä¿¡å·é«˜ç”µå¹³æœ‰æ•ˆ
-    output[31:0] link_addr;             // JALæŒ‡ä»¤ä¸“ç”¨çš„PC+4
+    output[31:0] Instruction_o;			// ¸ù¾İPCµÄÖµ´Ó´æ·ÅÖ¸ÁîµÄprgromÖĞÈ¡³öµÄÖ¸Áî
+    output[31:0] branch_base_addr;      // ¶ÔÓÚÓĞÌõ¼şÌø×ªÀàµÄÖ¸Áî¶øÑÔ£¬¸ÃÖµÎª(pc+4)ËÍÍùALU
+    input[31:0]  Addr_result;            // À´×ÔALU,ÎªALU¼ÆËã³öµÄÌø×ªµØÖ·
+    input[31:0]  Read_data_1;           // À´×ÔDecoder£¬jrÖ¸ÁîÓÃµÄµØÖ·
+    input        Branch;                // À´×Ô¿ØÖÆµ¥Ôª
+    input        nBranch;               // À´×Ô¿ØÖÆµ¥Ôª
+    input        Jmp;                   // À´×Ô¿ØÖÆµ¥Ôª
+    input        Jal;                   // À´×Ô¿ØÖÆµ¥Ôª
+    input        Jr;                   // À´×Ô¿ØÖÆµ¥Ôª
+    input        Zero;                  //À´×ÔALU£¬ZeroÎª1±íÊ¾Á½¸öÖµÏàµÈ£¬·´Ö®±íÊ¾²»ÏàµÈ
+    input        clock,reset;           //Ê±ÖÓÓë¸´Î»,¸´Î»ĞÅºÅÓÃÓÚ¸øPC¸³³õÊ¼Öµ£¬¸´Î»ĞÅºÅ¸ßµçÆ½ÓĞĞ§
+    output[31:0] link_addr;             // JALÖ¸Áî×¨ÓÃµÄPC+4
     output[13:0] rom_adr_o;
 reg[31:0] PC, Next_PC;
 reg [31:0] jalpc;

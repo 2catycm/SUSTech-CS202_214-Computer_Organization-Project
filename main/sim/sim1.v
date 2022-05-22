@@ -8,24 +8,18 @@ reg Minisys_Clock;
 reg[4:0] Minisys_Button;
     TOP_all  use_main(Minisys_Switches,Minisys_Lights,Minisys_Clock,Minisys_Button);
     initial begin
-    Minisys_Switches = 24'b0;
     Minisys_Clock = 1'b0;
-    Minisys_Button[4:0] = 5'b11111;
-    # 5 Minisys_Button[4:0] = 5'b00000;
-    
-    //# 20 Minisys_Switches[23] =1;
-    # 20 Minisys_Switches[15] =1;
-    # 100 Minisys_Switches[15] =0;
-    # 20 Minisys_Switches[23] =1;
-    
-    # 20 Minisys_Switches[22] =1;
-    
-     # 20 Minisys_Switches[21] =1;
-      # 20 Minisys_Switches[20] =1;
-       # 20 Minisys_Switches[19] =1;
-       
-        # 20 Minisys_Switches[13] =1;
-         # 20 Minisys_Switches[12] =1;
+     Minisys_Button = 5'b00000;
+     # 100 Minisys_Button = 5'b01000;
+  # 50   Minisys_Button = 5'b00000;
+Minisys_Switches[23:0] = 24'h000000;
+ #100 Minisys_Switches[21] =1; 
+# 10000 Minisys_Switches[1:0] = 2'b11;
+# 10000 Minisys_Switches[16] =1;
+# 10000 Minisys_Switches[18] =1;
+#10000 Minisys_Switches[2:0] = 3'b101;
+# 10000 Minisys_Switches[17] =1;
+#10000 Minisys_Switches[23:21] = 3'b010;
     end
     
     
@@ -57,7 +51,7 @@ reg[4:0] Minisys_Button;
 //   #100000 $finish;
 //    end
     always begin 
-#1 Minisys_Clock = ~Minisys_Clock;
+#5 Minisys_Clock = ~Minisys_Clock;//这个是外部的clock
     end
         
         

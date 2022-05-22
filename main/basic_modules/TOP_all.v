@@ -1,16 +1,17 @@
 `timescale 1ns / 1ps
 module TOP_all(
-input[23:0]Minisys_Switches, output[23:0]Minisys_Lights, input Minisys_Clock, input[4:0] Minisys_Button
+input[23:0]Minisys_Switches, output[23:0]Minisys_Lights, input Minisys_Clock, 
+input[4:0] Minisys_Button,
+input EGO1_Uart_fromPC, output EGO1_Uart_toPC
 );
-wire clk_temp;
+
 CPUTOP top_instance(
-.switch_topin(Minisys_Switches),
-.led_topout(Minisys_Lights),
-.cpu_clk(clk_temp),
-.reset(Minisys_Button[4])
-);
-clk_wiz_0 clk23(
-.clk_in1(Minisys_Clock),
-.clk_out1(clk_temp)
+.switch2N4(Minisys_Switches),
+.led2N4(Minisys_Lights),
+.fpga_clk(Minisys_Clock),
+.start_pg(Minisys_Button[4]),
+.fpga_rst(Minisys_Button[3]),
+.rx( EGO1_Uart_fromPC),
+.tx( EGO1_Uart_toPC)
 );
 endmodule
