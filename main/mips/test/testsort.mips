@@ -15,11 +15,25 @@
     move $v0 $s0
     addi $v1 $v0 20
     move $a0 $v1
-    jal copy
+    # jal copy
+    jal to_signed_array
     
     addi $v0 $s0 20
     addi $v1 $v0 20
     jal insertion_sort
 
+   addi $v0 $s0 20
+   addi $v1 $v0 20
+   jal max
+    li $v0 1
+   syscall
+   addi $v0 $s0 20
+   addi $v1 $v0 20
+   jal min
+    li $v0 1
+   syscall
+   
+   li $v0 10
+   syscall
     
-.include "stdsort.mips"
+.include "../commons/std_algorithm.mips"
