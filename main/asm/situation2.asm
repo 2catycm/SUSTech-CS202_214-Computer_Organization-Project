@@ -12,12 +12,16 @@ begin:
 	beq $a0 $s6 case6
 	beq $a0 $s7 case7
 case0:
+ 	li $a0 7
+	jal write_data
 	li $v0 0
 	jal write_control_negate
 	li $v0 1000
 	jal sleep
 	j begin
 case1:
+	li $a0 0
+	jal write_data
 	li $a0 2
 	jal write_control
 	
