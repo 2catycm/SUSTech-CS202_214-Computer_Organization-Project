@@ -80,8 +80,7 @@ read:
 	save_ra()
 	jal decode
 	li $v0 4
-	li $v1 1
-	jal write_control #提示用户等待enter信号
+	jal write_control_set #提示用户等待enter信号
 	bne $a1 $zero read # 如果enter不是0，就继续等待enter是0
 	li $v0 4
 	li $v1 0

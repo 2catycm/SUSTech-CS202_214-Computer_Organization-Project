@@ -12,12 +12,8 @@ begin:
 	beq $a0 $s6 case6
 	beq $a0 $s7 case7
 case0:
- 	li $a0 7
-	jal write_data
-	li $v0 0
-	jal write_control_negate
-	li $v0 1000
-	jal sleep
+ 	jal read
+ 	jal write_data
 	j begin
 case1:
 	li $a0 0
@@ -27,8 +23,8 @@ case1:
 	
 	j begin
 case2:
-	li $a0 4
-	jal write_control
+	li $v0 7
+	jal write_control_set
 	j begin
 case3:
 	li $a0 8
