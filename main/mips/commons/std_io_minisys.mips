@@ -14,6 +14,16 @@
 	lw $ra 0($sp)
 	addi $sp $sp +4
 .end_macro
+.macro write_control_set_true(%index)
+	li $v0 %index 
+	li $v1 1
+	jal write_control_set
+.end_macro
+.macro write_control_set_false(%index)
+	li $v0 %index 
+	li $v1 0
+	jal write_control_set
+.end_macro
 #测试状态：可信
 static_initialization:
 #MARS模式下这三个指针不要赋值（注释掉）
@@ -45,6 +55,8 @@ static_initialization:
 	jal write_control
 	li $a0 0
 	jal write_data
+	# 来个开机特效
+
 	load_ra()
 	jr $ra
 #测试状态：可信
@@ -80,33 +92,31 @@ decode:
 read:
 	save_ra()
 	write_control_set_true(4)
-	jal decode
+	jal decode # 会覆盖a0 a1的值。
+	li $v0 100
+	jal sleep 
 	bne $a1 $zero read # 如果enter不是0，就继续等待enter是0
 	write_control_set_false(4)
 read_wait_for_enter:
-	li $t0 0
+	li $v0 200
+	jal sleep 
+	#li $t0 0
 	jal decode
-	addi $t0 $t0 1
-	li $t1 0x15EF3C0 
-	blt $t0 $t1 end_if_wait_for_enter
-		sub $t0 $t0 $t1
+	#addi $t0 $t0 1
+	#la $t1 0x015EF3C0  #0x015EF3C0= 23,000,000
+	#blt $t0 $t1 end_if_wait_for_enter
+	#	sub $t0 $t0 $t1
 		li $v0 4
 		jal write_control_negate
-	end_if_wait_for_enter:
+	#end_if_wait_for_enter:
+	lw $a0 0x70($gp)
+	jal write_data
 	beq $a1 $zero read_wait_for_enter # 等到enter是1。 
 	lw $a0 0x70($gp)
+	jal write_data
 	load_ra()
 	jr $ra
-.macro write_control_set_true(%index)
-	li $v0 %index 
-	li $v1 1
-	jal write_control_set
-.end_macro
-.macro write_control_set_false(%index)
-	li $v0 %index 
-	li $v1 0
-	jal write_control_set
-.end_macro
+
 # 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；根据v1的值的最后一位是否是1来修改
 write_control_set:
 	lw $t1 4($k0) # t1为左灯的值。

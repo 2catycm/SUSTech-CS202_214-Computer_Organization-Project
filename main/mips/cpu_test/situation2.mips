@@ -2,7 +2,7 @@
 .text
 jal static_initialization
 begin:
-	jal decode
+	jal decode # 会覆盖a0 a1的值。
 	beq $a0 $zero case0
 	beq $a0 $s1 case1
 	beq $a0 $s2 case2
@@ -13,7 +13,15 @@ begin:
 	beq $a0 $s7 case7
 case0:
  	jal read
- 	jal write_data
+ 	# jal write_data
+ 	li $a0 0xFF
+ 	jal write_control
+ 	li $v0 1000
+ 	jal sleep
+ 	li $a0 0x00
+ 	jal write_control
+ 	li $v0 1000
+ 	jal sleep
 	j begin
 case1:
 	li $a0 0
