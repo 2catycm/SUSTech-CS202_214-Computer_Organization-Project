@@ -46,4 +46,5 @@ case7:
     li $v0 500
     jal sleep
     j while0
-.include "stdio_minisys.mips"
+.include "../commons/std_io_minisys.mips"
+

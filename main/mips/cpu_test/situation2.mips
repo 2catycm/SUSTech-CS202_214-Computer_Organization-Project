@@ -47,4 +47,4 @@ case7:
 	jal write_control
 	j begin
 j begin
-.include "stdio_minisys.mips"
+.include "../commons/std_io_minisys.mips"
