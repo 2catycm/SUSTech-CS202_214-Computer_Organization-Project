@@ -1,10 +1,18 @@
 #测试状态：可信
 # 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
 .macro flush_lights()
-	lw $t0 4($sp)
+	lw $t0 4($k0)
 	sw $t0 0x62($gp)
-	lw $t0 0($sp)
+	lw $t0 0($k0)
 	sw $t0 0x60($gp)
+.end_macro
+.macro save_ra()
+	addi $sp $sp -4
+	sw $ra 0($sp)
+.end_macro
+.macro load_ra()
+	lw $ra 0($sp)
+	addi $sp $sp +4
 .end_macro
 #测试状态：可信
 static_initialization:
@@ -24,20 +32,20 @@ static_initialization:
 	li $s7 7
 	#申请缓存灯的值到一块真实内存。
 	addi $sp $sp -16  # 支持0, 4, 8, 12 四个变量
-	li $t0 0xFF
-	sw $t0 4($sp) # 左灯
-	li $t0 0xFFFF
-	sw $t0 0($sp) # 右灯
-	flush_lights()
+	move $k0 $sp # k0是专门的灯指针
+	save_ra() # 要想jal其他方法，先要保存ra
+	li $a0 0xFF
+	jal write_control
+	li $a0 0xFFFF
+	jal write_data
 	# 1s之后完成操作系统的启动。
-	sw $ra -4($sp) # 要想jal其他方法，先要保存ra
 	li $v0 1000 
 	jal sleep
 	li $a0 0
 	jal write_control
 	li $a0 0
 	jal write_data
-	lw $ra -4($sp)
+	load_ra()
 	jr $ra
 #测试状态：可信
 # 睡眠 v0中的毫秒数。公式 T=TPC*CPI*I, 得到I = Tf (T为时间，单位ms, f为时钟频率)
@@ -69,6 +77,7 @@ decode:
 # 根据a1的enter信号控制，等待输入一个整数（通过右开关），结果保存到a0。
 # a1和a0都会改变。
 read:
+	save_ra()
 	jal decode
 	li $v0 4
 	li $v1 1
@@ -77,20 +86,21 @@ read:
 	li $v0 4
 	li $v1 0
 	jal write_control #取消
-wait_for_enter:
+read_wait_for_enter:
 	jal decode
 	li $v0 3
 	li $v1 1
 	jal write_control #提示用户等待enter信号
-	beq $a1 $zero wait_for_enter # 等到enter是1。 
+	beq $a1 $zero read_wait_for_enter # 等到enter是1。 
 	li $v0 3
 	li $v1 0
 	jal write_control #提示用户等待enter信号
 	lw $a0 0x70($gp)
+	load_ra()
 	jr $ra
 # 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；根据v1的值的最后一位是否是1来修改
-write_control_add:
-	lw $t1 4($sp) # t1为左灯的值。
+write_control_set:
+	lw $t1 4($k0) # t1为左灯的值。
 	# 操作v1
 	andi $v1 $v1 1 # 取最后一位
 	sllv $v1 $v1 $v0 # 左移 v0位
@@ -103,26 +113,26 @@ write_control_add:
 	if0:
 	    or $t1 $t1 $v1
 	endif0:
-	sw $t1 4($sp) # 把t1的计算结果送回灯上。
+	sw $t1 4($k0) # 把t1的计算结果送回灯上。
 	flush_lights()
 	jr $ra
 # 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；对该灯的值取反。
 write_control_negate:
-	lw $t1 4($sp) # t1为左灯的值。
+	lw $t1 4($k0) # t1为左灯的值。
 	li $t0 1 
 	sllv $v1 $t0 $v0 # 左移 v0位
 	xor $t1  $t1 $v1
-	sw $t1 4($sp) # 把t1的计算结果送回灯上。
+	sw $t1 4($k0) # 把t1的计算结果送回灯上。
 	flush_lights()
 	jr $ra
 #输出控制灯（左灯）; 直接输出a0的值。
 write_control:
-	sw $a0 4($sp)
+	sw $a0 4($k0)
 	flush_lights()
 	jr $ra
 #输出数据灯（右灯）; 直接输出a0的值。
 write_data:
-	sw $a0 0($sp)
+	sw $a0 0($k0)
 	flush_lights()
 	jr $ra
 
