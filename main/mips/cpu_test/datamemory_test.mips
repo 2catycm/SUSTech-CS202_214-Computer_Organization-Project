@@ -1,0 +1,10 @@
+.include "../commons/std_io_minisys.macro.mips"
+.data
+    buf: .word 0x0000FFFF
+.text
+begin:
+    la $t0 buf
+    lw $a0 0($t0)
+    jal write_data
+ j begin
+.include "../commons/std_io_minisys.impl.mips"
