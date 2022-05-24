@@ -1,10 +1,18 @@
 .include "../commons/std_io_minisys.macro.mips"
 .data
-    buf: .word 0x0000FFFF
+    buf: .word 0x00FF
+    ptr: .word 0x0009 
 .text
+jal static_initialization
 begin:
-    la $t0 buf
-    lw $a0 0($t0)
+    # la $t0 buf
+    # lw $a0 0($t0)
+    # jal write_data
+    
+    li $t4 0xFFFF
+    sw $t4 buf($zero)
+    lw $a0 buf($zero)
+    
     jal write_data
  j begin
 .include "../commons/std_io_minisys.impl.mips"

@@ -101,8 +101,7 @@ read_wait_for_enter:
 	write_control_negate(3)
 	write_control_negate(2)
 	
-	# move $a0 $s0
-	# jal write_data
+	move $a0 $s0
 	load_ra()
 	jr $ra
 
