@@ -1,8 +1,9 @@
+.include "../commons/std_io_minisys.macro.mips"
 .data
 
 .text
 jal static_initialization
-while0:
+begin:
 case0:
     li $a0 7
 	jal write_data
@@ -45,6 +46,6 @@ case7:
 	jal write_control
     li $v0 500
     jal sleep
-    j while0
-.include "../commons/std_io_minisys.mips"
+    j begin
+.include "../commons/std_io_minisys.impl.mips"
 
