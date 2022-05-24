@@ -1,24 +1,15 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Southern University of Science and Technology ??????
+// Engineer: ???
 // 
 // Create Date: 2022/05/07 12:58:45
-// Design Name: 
 // Module Name: CPU_TOP
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
+// Project Name: MIPS Single Cycle CPU
+// Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module CPUTOP(
 input fpga_rst, //Active High
@@ -168,7 +159,7 @@ Ifetc32 Ifetc32_instance(
         dmemory32   dmemory32_instance(
         .ram_clk_i(cpu_clk),
         .ram_wen_i(MemWrite),
-        .ram_adr_i(addr_out),
+        .ram_adr_i(addr_out[15:2]),
         .ram_dat_i(m_wdata),
         .ram_dat_o(ram_dat_o),
         .upg_rst_i(upg_rst),

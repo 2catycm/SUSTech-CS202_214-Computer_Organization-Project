@@ -1,24 +1,15 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Southern University of Science and Technology 南方科技大学
+// Engineer: 王睿
 // 
-// Create Date: 2022/05/02 23:30:37
-// Design Name: 
-// Module Name: control32
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
+// Create Date: 2022/05/07 12:58:45
+// Module Name: CPU_TOP
+// Project Name: MIPS Single Cycle CPU
+// Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module control32(Opcode,Function_opcode,Jr,Branch,nBranch,Jmp,Jal, Alu_resultHigh, RegDST, MemorIOtoReg, RegWrite, MemRead, MemWrite, IORead, IOWrite,
 ALUSrc,ALUOp,Sftmd,I_format);

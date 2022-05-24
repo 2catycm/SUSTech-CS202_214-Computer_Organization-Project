@@ -1,3 +1,15 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Southern University of Science and Technology 南方科技大学
+// Engineer: 叶璨铭
+// 
+// Create Date: 2022/05/07 12:58:45
+// Module Name: CPU_TOP
+// Project Name: MIPS Single Cycle CPU
+// Target Devices: Xilinx Board. Tested on MINISYS.
+// Description: 
+// 
+//////////////////////////////////////////////////////////////////////////////////
 module decode32(read_data_1,read_data_2,Instruction,mem_data,ALU_result,
                  Jal,RegWrite,MemtoReg,RegDst,Sign_extend,clock,reset,opcplus4);
     //////////////// 输入输出 ////////////////

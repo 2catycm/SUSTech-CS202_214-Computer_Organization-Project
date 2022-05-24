@@ -1,24 +1,15 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Southern University of Science and Technology 南方科技大学
+// Engineer: 王睿，张力宇
 // 
-// Create Date: 2022/05/18 01:22:24
-// Design Name: 
-// Module Name: dmemory32
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
+// Create Date: 2022/05/07 12:58:45
+// Module Name: CPU_TOP
+// Project Name: MIPS Single Cycle CPU
+// Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module dmemory32 (
 input ram_clk_i, // from CPU top

@@ -1,24 +1,15 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Southern University of Science and Technology 南方科技大学
+// Engineer: 王睿
 // 
-// Create Date: 2022/05/18 01:21:06
-// Design Name: 
-// Module Name: Ifetc32
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
+// Create Date: 2022/05/07 12:58:45
+// Module Name: CPU_TOP
+// Project Name: MIPS Single Cycle CPU
+// Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module Ifetc32(Instruction_i,Instruction_o,branch_base_addr,Addr_result,Read_data_1,Branch,nBranch,Jmp,Jal,Jr,Zero,clock,reset,link_addr,rom_adr_o);
     input[31:0] Instruction_i;

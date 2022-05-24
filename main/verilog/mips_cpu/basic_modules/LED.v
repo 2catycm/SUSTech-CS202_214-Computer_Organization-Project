@@ -1,26 +1,14 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Southern University of Science and Technology 南方科技大学
+// Engineer: 张力宇
 // 
-// Create Date: 2021/05/12 19:56:34
-// Design Name: 
-// Module Name: io_out
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
+// Create Date: 2022/05/07 12:58:45
+// Module Name: CPU_TOP
+// Project Name: MIPS Single Cycle CPU
+// Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
-`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 
 module LED(led_clk, ledrst, ledwrite, ledcs, ledaddr,ledwdata, ledout);
