@@ -1,0 +1,77 @@
+#测试状态：可信
+# 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
+.macro flush_lights()
+	lw $t0 4($k0)
+	sw $t0 0x62($gp)
+	lw $t0 0($k0)
+	sw $t0 0x60($gp)
+.end_macro
+.macro save_ra()
+	# addi $sp $sp -4
+	# sw $ra 0($sp)
+	move $k1 $ra
+.end_macro
+.macro load_ra()
+	# lw $ra 0($sp)
+	# addi $sp $sp 4
+	move $ra $k1 # 动用k1
+.end_macro
+.macro write_control_set_true(%index)
+	li $v0 %index 
+	li $v1 1
+	jal write_control_set
+.end_macro
+.macro write_control_set_false(%index)
+	li $v0 %index 
+	li $v1 0
+	jal write_control_set
+.end_macro
+.macro write_control_negate(%index)
+	li $v0 %index 
+	jal write_control_negate
+.end_macro
+.macro set_s_to_be_seven_numbers()
+# 常数七子
+	li $s1 1
+	li $s2 2
+	li $s3 3
+	li $s4 4
+	li $s5 5
+	li $s6 6
+	li $s7 7
+.end_macro
+
+.macro warn_data()
+	lw $t7 0($k0)
+	li $a0 0xFFFF
+	jal write_data
+	write_control_set_true(2)
+	write_control_set_true(3)
+	li $v0 1000
+	jal sleep
+	move $a0 $t7
+	jal write_data
+	write_control_set_false(2)
+	write_control_set_false(3)
+	li $v0 500
+	jal sleep
+.end_macro 
+
+.macro all_lights_on()
+	li $a0 0xFF
+	jal write_control
+	li $a0 0xFFFF
+	jal write_data
+.end_macro
+
+.macro all_lights_off()
+	li $a0 0
+	jal write_control
+	li $a0 0
+	jal write_data
+.end_macro
+
+.macro sleep(%msec)
+	la $v0 %msec
+	jal sleep
+.end_macro

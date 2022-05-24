@@ -1,29 +1,4 @@
-#测试状态：可信
-# 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
-.macro flush_lights()
-	lw $t0 4($k0)
-	sw $t0 0x62($gp)
-	lw $t0 0($k0)
-	sw $t0 0x60($gp)
-.end_macro
-.macro save_ra()
-	addi $sp $sp -4
-	sw $ra 0($sp)
-.end_macro
-.macro load_ra()
-	lw $ra 0($sp)
-	addi $sp $sp +4
-.end_macro
-.macro write_control_set_true(%index)
-	li $v0 %index 
-	li $v1 1
-	jal write_control_set
-.end_macro
-.macro write_control_set_false(%index)
-	li $v0 %index 
-	li $v1 0
-	jal write_control_set
-.end_macro
+.include "../commons/std_io_minisys.macro.mips"
 #测试状态：可信
 static_initialization:
 #MARS模式下这三个指针不要赋值（注释掉）
@@ -32,30 +7,38 @@ static_initialization:
 	la $fp 512 #base 数据的基础地址
 # 数据集间隔
 	li $s0 11 #space
-# 常数七子
-	li $s1 1
-	li $s2 2
-	li $s3 3
-	li $s4 4
-	li $s5 5
-	li $s6 6
-	li $s7 7
-	#申请缓存灯的值到一块真实内存。
+#申请缓存灯的值到一块真实内存。
 	addi $sp $sp -16  # 支持0, 4, 8, 12 四个变量
 	move $k0 $sp # k0是专门的灯指针
 	save_ra() # 要想jal其他方法，先要保存ra
-	li $a0 0xFF
-	jal write_control
-	li $a0 0xFFFF
-	jal write_data
-	# 1s之后完成操作系统的启动。
-	li $v0 1000 
-	jal sleep
-	li $a0 0
-	jal write_control
-	li $a0 0
-	jal write_data
-	# 来个开机特效
+# 开机特效 点亮
+	all_lights_off()
+	li $s0 0x80
+	for_initialization0:
+		beq $s0 $zero end_for_initialization0
+		lw $a0 4($k0)
+		add $a0 $a0 $s0
+		jal write_control
+		srl $s0 $s0 1
+		sleep(41)
+		j for_initialization0
+	end_for_initialization0:
+	li $s0 0x8000
+	for_initialization1:
+		beq $s0 $zero end_for_initialization1
+		lw $a0 0($k0)
+		add $a0 $a0 $s0
+		jal write_data
+		srl $s0 $s0 1
+		sleep(41)
+		j for_initialization1
+	end_for_initialization1:
+# 来个开机特效 闪一闪
+	all_lights_off()
+	sleep(100)
+	all_lights_on()
+	sleep(1000)
+	all_lights_off()
 
 	load_ra()
 	jr $ra
@@ -88,32 +71,38 @@ decode:
 #测试状态：危险
 # 根据a1的enter信号控制，等待输入一个整数（通过右开关），结果保存到a0。
 # a1和a0都会改变。
-# note: 状态锁定：阻塞读取状态下无法修改模式。
+# note: a2 为read之前系统的case状态，如果等待读取的过程发现变化，会返回到begin。
 read:
 	save_ra()
 	write_control_set_true(4)
 	jal decode # 会覆盖a0 a1的值。
-	li $v0 100
-	jal sleep 
+	sleep(100) 
+	bne $a0 $a2 begin 
 	bne $a1 $zero read # 如果enter不是0，就继续等待enter是0
+	# bne $a1 $zero begin # 允许回到begin重新选择功能。
 	write_control_set_false(4)
 read_wait_for_enter:
-	li $v0 200
-	jal sleep 
+	sleep(200) 
 	#li $t0 0
 	jal decode
-	#addi $t0 $t0 1
-	#la $t1 0x015EF3C0  #0x015EF3C0= 23,000,000
-	#blt $t0 $t1 end_if_wait_for_enter
-	#	sub $t0 $t0 $t1
-		li $v0 4
-		jal write_control_negate
-	#end_if_wait_for_enter:
+	bne $a0 $a2 begin 
+	write_control_negate(4)
 	lw $a0 0x70($gp)
+	move $s0 $a0
 	jal write_data
 	beq $a1 $zero read_wait_for_enter # 等到enter是1。 
-	lw $a0 0x70($gp)
-	jal write_data
+
+	li $a0 0
+	jal write_data # 清空输入
+	write_control_set_false(4)
+	write_control_negate(3)
+	write_control_negate(2)
+	sleep(400)
+	write_control_negate(3)
+	write_control_negate(2)
+	
+	# move $a0 $s0
+	# jal write_data
 	load_ra()
 	jr $ra
 
@@ -155,3 +144,10 @@ write_data:
 	flush_lights()
 	jr $ra
 
+
+exception_hint:
+	save_ra()
+	warn_data()
+	warn_data()
+	load_ra()
+	jr $ra

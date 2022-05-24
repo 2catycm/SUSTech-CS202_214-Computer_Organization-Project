@@ -19,4 +19,5 @@ bin-release/
 
 # ide specific
 vivado/
+vivado_impl/
 .vscode/
