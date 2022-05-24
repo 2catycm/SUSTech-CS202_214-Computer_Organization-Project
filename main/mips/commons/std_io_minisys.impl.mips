@@ -6,7 +6,7 @@ static_initialization:
 	la $sp 256 # 栈指针
 	la $fp 512 #base 数据的基础地址
 # 数据集间隔
-	li $s0 11 #space
+	li $s0 44 #space 11个数，每个数4个byte
 #申请缓存灯的值到一块真实内存。
 	addi $sp $sp -16  # 支持0, 4, 8, 12 四个变量
 	move $k0 $sp # k0是专门的灯指针

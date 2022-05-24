@@ -71,3 +71,27 @@ insertion_sort:
 		j for_insertion_sort0
 	end_for_insertion_sort0:
 	jr $ra
+
+
+# 求IEEE 754 单精度浮点数编码的符号位和指数位 （一共1+8=9位）。
+# 输入 a0， 返回a0
+getFloat:
+	# 符号位 （1位）
+    srl $t0 $a0 7 # 取第7位
+    andi $t0 $t0 1
+    xori $t0 $t0 1 # 取反。
+    sll $t0 $t0 8 # 放在第8位。7..0留给指数位
+    # 指数位 （8位）
+    # 取绝对值
+    xori $t1 $t2 0xFF
+    addi $t1 $t1 1
+    andi $t1 $t1 0xFF
+    # 右移多少次变成0 - 1
+    li $t3 0
+    do_while_case6:
+        srl $t1 $t1 1
+        addi $t3 $t3 1
+    bne $t1 $zero do_while_case6
+    addi $t3 $t3 0x7f # 加上bias
+    or $a0 $t3 $t0 # 合并两个数
+	jr $ra

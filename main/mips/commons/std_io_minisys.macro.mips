@@ -75,3 +75,17 @@
 	la $v0 %msec
 	jal sleep
 .end_macro
+
+# 从标准输入读取一个数，表示数据集编号
+# 将数据集的基地址放到s1
+.macro getBase()
+	jal read
+	andi $a0 $a0 3 # 只取最后两位。
+    lw $s1 0($fp) #base
+    for_case4:
+        beq $a0 $zero end_for_case4
+        add $s1 $s1 $s0 # s0 只读，永远是space
+        addi $a0 $a0 -1
+        j for_case4
+    end_for_case4:
+.end_macro
