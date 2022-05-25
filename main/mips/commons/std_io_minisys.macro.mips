@@ -99,9 +99,19 @@
 
 # 从a0 读取case编号，书写到控制灯最左边三位
 .macro hint_case_number()
-	sll $a0 $a0 5
-	lw $t1 4($k0) # t1为左灯的值。
-	or $t1  $t1 $a0 # 用or把a0添加上去
-	sw $t1 4($k0) # 把t1的计算结果送回灯上。
-	flush_lights()
+	andi $a0 $a0 0x7 # 只要最后三位
+	li $v0 5
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
+	srl $a0 $a0 1
+	li $v0 6
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
+	srl $a0 $a0 1
+	li $v0 7
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
 .end_macro
