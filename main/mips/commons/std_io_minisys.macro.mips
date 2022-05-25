@@ -1,3 +1,13 @@
+# 让CPU 睡眠msec毫秒。
+# 调用这个函数的场景是，switch操作时信号可能不稳定，会出现短时0,1交替，导致计算逻辑有问题。
+# note:vivado 仿真时，不启用sleep。因为vivado模拟时没有信号不稳定的问题。
+.macro sleep(%msec)
+#not vivado
+	#la $v0 %msec
+	#jal sleep
+#vivado
+.end_macro
+
 #测试状态：可信
 # 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
 .macro flush_lights()
@@ -7,14 +17,14 @@
 	sw $t0 0x60($gp)
 .end_macro
 .macro save_ra()
-	# addi $sp $sp -4
-	# sw $ra 0($sp)
-	move $k1 $ra
+	addi $sp $sp -4
+	sw $ra 0($sp)
+	#move $k1 $ra
 .end_macro
 .macro load_ra()
-	# lw $ra 0($sp)
-	# addi $sp $sp 4
-	move $ra $k1 # 动用k1
+	lw $ra 0($sp)
+	addi $sp $sp 4
+	#move $ra $k1 # 动用k1
 .end_macro
 .macro write_control_set_true(%index)
 	li $v0 %index 
@@ -71,10 +81,7 @@
 	jal write_data
 .end_macro
 
-.macro sleep(%msec)
-	la $v0 %msec
-	jal sleep
-.end_macro
+
 
 # 从标准输入读取一个数，表示数据集编号
 # 将数据集的基地址放到s1

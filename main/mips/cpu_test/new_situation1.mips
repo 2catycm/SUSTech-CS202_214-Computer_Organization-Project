@@ -1,5 +1,6 @@
 .include "../commons/std_io_minisys.macro.mips"
 .data
+ dataset0: .word 0
 .text
 .globl main
 main: # todo: 没什么用，coe文件不能位置无关。
@@ -14,7 +15,7 @@ begin:
     move $a2 $a0
     
     sll $a0 $a0 5
-    jal write_control # 指示当前是哪一个case
+    jal write_control # 指示当前是哪一个case. 可能会复写前面的灯。
     set_s_to_be_seven_numbers()
     beq $a2 $zero case0
     beq $a2 $s1 case1
@@ -37,8 +38,8 @@ case1:
     jal read
     sw $a0 0($fp)
     jal write_data
-    sw $a0 4($fp)
     jal read
+    sw $a0 4($fp)
     jal write_data
     j begin
 case2:
