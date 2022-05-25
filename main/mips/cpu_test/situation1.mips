@@ -1,5 +1,5 @@
-.data 0x0000
-.text 0x0000
+.data 
+.text 
 ini:
 	addi $v1, $zero, 1
 	addi $21, $zero, 1
