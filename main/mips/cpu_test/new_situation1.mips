@@ -14,8 +14,8 @@ begin:
     jal decode # 会覆盖a0 a1的值。
     move $a2 $a0
     
-    sll $a0 $a0 5
-    jal write_control # 指示当前是哪一个case. 可能会复写前面的灯。
+    hint_case_number() # 指示当前是哪一个case. 不会干扰前面已有的灯。
+    
     set_s_to_be_seven_numbers()
     beq $a2 $zero case0
     beq $a2 $s1 case1

@@ -74,21 +74,34 @@ decode:
 # note: a2 为read之前系统的case状态，如果等待读取的过程发现变化，会返回到begin。
 read:
 	save_ra()
-	write_control_set_true(4)
-	jal decode # 会覆盖a0 a1的值。
-	sleep(100) 
-	bne $a0 $a2 begin 
-	bne $a1 $zero read # 如果enter不是0，就继续等待直到enter是0
+	while_read:
+		sleep(100) 
+		write_control_set_true(4)
+
+		jal decode # 会覆盖a0 a1的值。
+
+		load_ra()
+		write_control_set_false(4)
+		bne $a0 $a2 begin  #如果case发生更改，带上ra提前跑路
+		write_control_set_true(4)
+		save_ra() # 如果没有改，就继续。
+
+	bne $a1 $zero while_read # 如果enter不是0，就继续等待直到enter是0
+
 	write_control_set_false(4)
-_read_wait_for_enter:
-	sleep(200) 
-	#li $t0 0
-	jal decode
-	bne $a0 $a2 begin 
-	write_control_negate(4)
-	lw $a0 0x70($gp)
-	move $s7 $a0
-	jal write_data
+
+	_read_wait_for_enter:
+		sleep(200) 
+		write_control_negate(4)
+		jal decode
+
+		load_ra()
+		bne $a0 $a2 begin 
+		save_ra()
+
+		lw $a0 0x70($gp)
+		move $s7 $a0
+		jal write_data
 	beq $a1 $zero _read_wait_for_enter # 等到enter是1。 
 
 	li $a0 0
@@ -104,19 +117,25 @@ _read_wait_for_enter:
 	load_ra()
 	jr $ra
 
-# 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；根据v1的值的最后一位是否是1来修改
+# 状态: 测试中
+# 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；根据v1的值的最后一位是否是1来修改。
 write_control_set:
 	lw $t1 4($k0) # t1为左灯的值。
-	# 操作v1
-	andi $v1 $v1 1 # 取最后一位
-	sllv $v1 $v1 $v0 # 左移 v0位
-	# 让a0的对应位写在t1上。
+	andi $v1 $v1 1 # 只取最后一位
+
+	# 根据 t1 的对应位来决定怎么操作。 
+
 	srlv $t0 $t1 $v0
 	andi $t0 $t0 1 # 取相应位。
-	beq $t0 $zero if0
+
+	beq $t0 $zero if0 # 如果t1对应位是0. 比如t1= 0000 0000 我们要修改第6位为1.
+		li $t2 0xFF
+		sllv $v1 $v1 $v0 
+		and $v1 $v1 $t2 
 		and $t1 $t1 $v1
 		j endif0
-	if0:
+	if0:  # 如果t1对应位是1. 比如t1= 0100 0000 我们要修改第6位为0.
+		sllv $v1 $v1 $v0 # 左移 v0位
 	    or $t1 $t1 $v1
 	endif0:
 	sw $t1 4($k0) # 把t1的计算结果送回灯上。
@@ -149,3 +168,4 @@ exception_hint:
 	warn_data()
 	load_ra()
 	jr $ra
+
