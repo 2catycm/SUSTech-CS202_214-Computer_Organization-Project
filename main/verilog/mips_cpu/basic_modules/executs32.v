@@ -82,7 +82,7 @@ end
     always @* begin 
     //set type operation (slt, slti, sltu, sltiu)
     if(((ALU_ctL==3'b111) && (Exe_code[3]==1)) || (I_format==1 && ALU_ctL[2:1]==2'b11))
-   reg_ALU_Result[31:0] = $signed(Ainput) < $signed(Binput);
+  reg_ALU_Result[31:0] = (Exe_code[2:0] == 3'b011) ? Ainput < Binput : $signed(Ainput) < $signed(Binput);
 //    if((ALU_ctL==3'b111) && (Exe_code[0]==1)) begin 
 //        reg_ALU_Result =  (Ainput< Binput) ? 32'd1 : 32'd0; 
 //    end
