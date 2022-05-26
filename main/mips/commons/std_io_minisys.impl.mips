@@ -70,30 +70,30 @@ decode:
 	 andi $a1 $a0 1
 	 srl $a0 $a0 1
 	 jr $ra
-#测试状态：危险
+#测试状态：测试中
 # 根据a1的enter信号控制，等待输入一个整数（通过右开关），结果保存到a0。
 # a1和a0都会改变。
 # note: a2 为read之前系统的case状态，如果等待读取的过程发现变化，会返回到begin。
 read:
 	save_ra()
+	write_control_set_true(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
 	while_read:
 		sleep(100) 
-		write_control_set_true(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
 
 		jal decode # 会覆盖a0 a1的值。
 
-		write_control_set_false(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
-		load_ra()
-		bne $a0 $a2 begin  #如果case发生更改，带上ra提前跑路
-		save_ra() # 如果没有改，就继续。
-		write_control_set_true(4)  # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
+		beq $a0 $a2 end_if_while_read  #如果case发生更改，带上ra提前跑路
+			load_ra() # 主要目的是恢复sp，ra的值这里不关心。
+			write_control_set_false(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
+			j begin
+		end_if_while_read:
 
 	bne $a1 $zero while_read # 如果enter不是0，就继续等待直到enter是0
 
 	write_control_set_false(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
 
 	_read_wait_for_enter:
-		sleep(200) 
+		sleep(300) 
 		write_control_negate(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
 		jal decode # a0 a1 都改了
 
@@ -123,22 +123,18 @@ read:
 # 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；根据v1的值的最后一位是否是1来修改。
 # 修改v1， t1, t0, t2. 
 write_control_set:
-	andi $v1 $v1 1 # 只取最后一位
 	lw $t1 4($k0) # t1为左灯的值。
+	andi $v1 $v1 1 # 只取最后一位
 
-	# 根据 t1 的对应位来决定怎么操作。 
-
-	srlv $t0 $t1 $v0
-	andi $t0 $t0 1 # 取相应位。
-
-	bne $t0 $zero if_write_control_set 
-		# 如果t1对应位是0. 比如t1= 0000 0000 我们要修改第6位为1.
-		li $t2 0xFF
+	# 根据 v1 的对应位来决定怎么操作。 
+	bne $v1 $zero if_write_control_set 
+		# 如果v1对应位是0. 比如t1= 0000 0000 我们要修改第6位为1.
+		li $t2 0xFFFFFFFF # and 掩码
 		sllv $v1 $v1 $v0 
 		and $v1 $v1 $t2 
 		and $t1 $t1 $v1
 	if_write_control_set:  
-		# 如果t1对应位是1. 比如t1= 0100 0000 我们要修改第6位为0.
+		# 如果v1对应位是1. 比如t1= 0100 0000 我们要修改第6位为0.
 		sllv $v1 $v1 $v0 # 左移 v0位
 	    or $t1 $t1 $v1
 		j end_if_write_control_set
@@ -146,6 +142,7 @@ write_control_set:
 	sw $t1 4($k0) # 把t1的计算结果送回灯上。
 	flush_lights()
 	jr $ra
+# 测试状态：可信
 # 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；对该灯的值取反。
 write_control_negate:
 	lw $t1 4($k0) # t1为左灯的值。
@@ -155,12 +152,14 @@ write_control_negate:
 	sw $t1 4($k0) # 把t1的计算结果送回灯上。
 	flush_lights()
 	jr $ra
+# 测试状态：可信
 #输出控制灯（左灯）; 直接输出a0的值。
 # 会修改t0的值(变成a0或者0)和4($k0)的值
 write_control:
 	sw $a0 4($k0)
 	flush_lights()
 	jr $ra
+# 测试状态：可信
 #输出数据灯（右灯）; 直接输出a0的值。
 # 会修改t0的值(变成a0或者0)和0($k0)的值
 write_data:
@@ -168,7 +167,7 @@ write_data:
 	flush_lights()
 	jr $ra
 
-
+# 提示输入数据存在异常情况。
 exception_hint:
 	save_ra()
 	warn_data()

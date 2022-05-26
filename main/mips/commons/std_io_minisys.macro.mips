@@ -54,18 +54,22 @@
 
 .macro warn_data()
 	lw $t7 0($k0)
+	lw $t8 4($k0)
+
 	li $a0 0xFFFF
 	jal write_data
+
 	write_control_set_true(2)
 	write_control_set_true(3)
-	li $v0 1000
-	jal sleep
+	sleep(1000) # 保持状态1s
+
+# 恢复原样
 	move $a0 $t7
 	jal write_data
-	write_control_set_false(2)
-	write_control_set_false(3)
-	li $v0 500
-	jal sleep
+
+	move $a0 $t8
+	jal write_control 
+
 .end_macro 
 
 .macro all_lights_on()
