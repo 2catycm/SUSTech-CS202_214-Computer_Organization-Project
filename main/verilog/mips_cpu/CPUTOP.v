@@ -18,9 +18,11 @@ input[23:0] switch2N4,
 output[23:0] led2N4, 
 // UART Programmer Pinouts
 // start Uart communicate at high level
-input start_pg, // Active High�� if
+input start_pg, // Active HighŁŹ if
 input rx,// receive data by UART
-output tx // send data by UART
+output tx, // send data by UART
+output[7:0] Dig, //which tubs to light
+output[7:0]Y  //light what
 );
 
 
@@ -108,10 +110,10 @@ Ifetc32 Ifetc32_instance(
     wire [31:0]ALU_Result;
     wire MemorIOtoReg;
     wire[31:0]Sign_extend;
-    wire [31:0] r_wdata;//写到register的数�?
+    wire [31:0] r_wdata;//ĺĺ°registerçć°ć?
     decode32 decoder_instance(
-    .read_data_1(read_data_1),//decoder的输�?
-    .read_data_2(read_data_2),//decoder的输�?,这个输出是给memory的输�?
+    .read_data_1(read_data_1),//decoderçčžĺ?
+    .read_data_2(read_data_2),//decoderçčžĺ?,čżä¸ŞčžĺşćŻçťmemoryçčžĺ?
     .Instruction(Instruction_o_Ifetc32),
     .mem_data(r_wdata),
     .ALU_result(ALU_Result),
@@ -152,8 +154,8 @@ Ifetc32 Ifetc32_instance(
         );
         
         wire[31:0]write_data_fromMemoryIO;
-        wire[31:0] m_wdata; // 写到memory的数�?
-        assign m_wdata = write_data_fromMemoryIO;//这个也是ior_data
+        wire[31:0] m_wdata; // ĺĺ°memoryçć°ć?
+        assign m_wdata = write_data_fromMemoryIO;//čżä¸ŞäšćŻior_data
         wire [31:0] ram_dat_o;
         wire [31:0] addr_out;
         dmemory32   dmemory32_instance(
@@ -174,10 +176,10 @@ Ifetc32 Ifetc32_instance(
         
         
         wire [31:0] addr_in;
-        wire [15:0] ioread_data;//这个是经过处理的16bit数据
+        wire [15:0] ioread_data;//čżä¸ŞćŻçťčżĺ¤çç16bitć°ćŽ
         wire LEDCtrl;
         wire SwitchCtrl;
-        assign addr_in = ALU_Result; //这一段单纯保持名字相�?
+        assign addr_in = ALU_Result; //čżä¸ćŽľĺçşŻäżćĺĺ­ç¸ĺ?
         MemOrIO  MemOrIO_instance(
         .mRead(MemRead), // read memory, from Controller
         .mWrite(MemWrite), // write memory, from Controller
@@ -189,7 +191,7 @@ Ifetc32 Ifetc32_instance(
         .io_rdata(ioread_data), // data read from IO,16 bits
         .r_wdata(r_wdata), // data to Decoder(register file)
         .r_rdata(read_data_2), // data read from Decoder(register file)
-        .write_data(write_data_fromMemoryIO), // data to memor y or I/O（m_wdata, io_wdata�?
+        .write_data(write_data_fromMemoryIO), // data to memor y or I/Oďźm_wdata, io_wdataďź?
         .LEDCtrl(LEDCtrl), // LED Chip Select
         .SwitchCtrl(SwitchCtrl) // Switch Chip Select
         );
@@ -210,7 +212,7 @@ Ifetc32 Ifetc32_instance(
         //means l-Type instruction except beq, bne, LW,sw
          .I_format(I_format),
          .Jr(Jr),
-         .Zero(Zero),//这个也是计算是否�?要跳�?
+         .Zero(Zero),//čżä¸ŞäšćŻčŽĄçŽćŻĺŚé?čŚčˇłč˝?
          .ALU_Result(ALU_Result),
          .Addr_Result(Addr_Result),//This means that upper right output
          .PC_plus_4(branch_base_addr)//pc+4
@@ -222,19 +224,26 @@ Ifetc32 Ifetc32_instance(
          .switchread(IORead), 
          .switchctl(SwitchCtrl),
          .switchaddr(addr_in[1:0]), 
-         .switchrdata(ioread_data), //这个�?15位的
+         .switchrdata(ioread_data), //čżä¸Şć?15ä˝ç
          .switch_input(switch2N4)
         );
                            
           LED led_instance(
           .led_clk(cpu_clk), 
           .ledrst(rst), 
-          .ledwrite(IOWrite),//从controller来的 
+          .ledwrite(IOWrite),//äťcontrollerćĽç 
           .ledcs(LEDCtrl), 
           .ledaddr(addr_in[1:0]),
           .ledwdata(write_data_fromMemoryIO[15:0]), 
           .ledout(led2N4)
          );
-        
+        Tubs tubs_instance(
+            .clock(fpga_clk),
+            .reset(fpga_rst),
+            .IOWrite(IOWrite),
+            .Dig(Dig),
+            .Y(Y),
+            .in_num(write_data_fromMemoryIO)
+        );
         
 endmodule

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Southern University of Science and Technology 南方科技大学
-// Engineer: 张力宇, 叶璨铭
+// Engineer: 张力�?, 叶璨�?
 // 
 // Create Date: 2022/05/07 12:58:45
 // Module Name: CPU_TOP
@@ -13,7 +13,8 @@
 module TOP_all(
 input[23:0]Minisys_Switches, output[23:0]Minisys_Lights, input Minisys_Clock, 
 input[4:0] Minisys_Button,
-input Minisys_Uart_fromPC, output Minisys_Uart_toPC
+input Minisys_Uart_fromPC, output Minisys_Uart_toPC,
+output[7:0] Minisys_DigitalTubes_NotEnable,output[7:0]Minisys_DigitalTube_Shape
 );
 
 CPUTOP top_instance(
@@ -23,6 +24,8 @@ CPUTOP top_instance(
 .start_pg(Minisys_Button[4]),
 .fpga_rst(Minisys_Button[3]),
 .rx( Minisys_Uart_fromPC),
-.tx( Minisys_Uart_toPC)
+.tx( Minisys_Uart_toPC),
+.Dig(Minisys_DigitalTubes_NotEnable),
+.Y(Minisys_DigitalTube_Shape)
 );
 endmodule
