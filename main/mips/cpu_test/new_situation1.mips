@@ -1,6 +1,5 @@
 .include "../commons/std_io_minisys.macro.mips"
 .data
- dataset0: .word 0
 .text
 .globl main
 main: # todo: 没什么用，coe文件不能位置无关。
@@ -15,7 +14,7 @@ begin:
     move $a2 $a0
     
     hint_case_number() # 指示当前是哪一个case. 不会干扰前面已有的灯。
-    
+
     set_s_to_be_seven_numbers()
     beq $a2 $zero case0
     beq $a2 $s1 case1
@@ -26,8 +25,10 @@ begin:
     beq $a2 $s6 case6
     beq $a2 $s7 case7
 case0:
+    sleep(200)
     jal read
     sw $a0 0($fp)
+    sleep(200)
     jal write_data
     jal is_binary_palindrome
     move $v1 $v0

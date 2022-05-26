@@ -10,6 +10,7 @@
 
 #测试状态：可信
 # 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
+# 会修改t0的值和灯的值。
 .macro flush_lights()
 	lw $t0 4($k0)
 	sw $t0 0x62($gp)
@@ -113,5 +114,5 @@
 	li $v0 7
 	andi $v1 $a0 1 # 最后一位
 	jal write_control_set
-
+	# sleep(200)
 .end_macro
