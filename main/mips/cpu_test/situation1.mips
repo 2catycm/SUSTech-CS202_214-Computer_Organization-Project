@@ -16,8 +16,8 @@ ini:
 	lui $19, 0x8FFF
 	ori $19, $19, 0xFFFF #the submask
 	
-begin:	lw $2, 0x72($20) # read the sw23,22,21��72����ߣ�70���ұ�
-	srl $2, $2, 5 # �ƶ����ҵ�ָ���λ��
+begin:	lw $2, 0x72($20) # read the sw23,22,21��72����ߣ�?70���ұ�
+	srl $2, $2, 5 # �ƶ����ҵ�ָ���λ��?
 	beq $2, $zero, case0
 	beq $2, $21, case1
 	beq $2, $22, case2
@@ -34,7 +34,7 @@ case0:
 	sll $4, $4, 16
 	addi $5, $zero, 0 # the control varible
 	addi $8, $zero, 1 # the signal 
-shiftl: # make the leftmost1 in the highest �Ȱѵ�һ��1�Ƶ������
+shiftl: # make the leftmost1 in the highest �Ȱѵ�һ��1�Ƶ������?
 	sll $4, $4, 1
 	slti $10, $4, 0  #  0 > $4 then jump 
 	bne $10, $zero, panduan 
@@ -46,12 +46,12 @@ shiftl: # make the leftmost1 in the highest �Ȱѵ�һ��1�Ƶ����
 panduan:
 	andi $6, $3, 0xfff8
 	srl $7, $4, 31
-	sll $4, $4, 1 # ����ǵò�������
+	sll $4, $4, 1 # ����ǵò�������?
 	srl $3, $3, 1
 	bne $6, $7, outcase0
 	addi $5, $5, 1
 	slti $10, $5, 16
-	beq $10, $zero, panduan #����ǻ�û��16�ͼ����ж�
+	beq $10, $zero, panduan #����ǻ�û��?16�ͼ����ж�
 led16light:
 	addi $10, $zero, 1 
 	sw $10, 0x62($20)
