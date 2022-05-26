@@ -36,4 +36,4 @@
    li $v0 10
    syscall
     
-.include "../commons/std_algorithm.mips"
+.include "../../main/mips/commons/std_algorithm.mips"
