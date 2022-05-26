@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
-module TOP_all_test(
-
+module TestSituation1(
     );
 reg[23:0]Minisys_Switches;
 wire [23:0]Minisys_Lights; 

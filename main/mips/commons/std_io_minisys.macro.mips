@@ -1,5 +1,16 @@
+# 让CPU 睡眠msec毫秒。
+# 调用这个函数的场景是，switch操作时信号可能不稳定，会出现短时0,1交替，导致计算逻辑有问题。
+# note:vivado 仿真时，不启用sleep。因为vivado模拟时没有信号不稳定的问题。
+.macro sleep(%msec)
+#not vivado
+	la $v0 %msec
+	jal sleep
+#vivado
+.end_macro
+
 #测试状态：可信
 # 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
+# 会修改t0的值和灯的值。
 .macro flush_lights()
 	lw $t0 4($k0)
 	sw $t0 0x62($gp)
@@ -7,14 +18,14 @@
 	sw $t0 0x60($gp)
 .end_macro
 .macro save_ra()
-	# addi $sp $sp -4
-	# sw $ra 0($sp)
-	move $k1 $ra
+	addi $sp $sp -4
+	sw $ra 0($sp)
+	#move $k1 $ra
 .end_macro
 .macro load_ra()
-	# lw $ra 0($sp)
-	# addi $sp $sp 4
-	move $ra $k1 # 动用k1
+	lw $ra 0($sp)
+	addi $sp $sp 4
+	#move $ra $k1 # 动用k1
 .end_macro
 .macro write_control_set_true(%index)
 	li $v0 %index 
@@ -43,18 +54,22 @@
 
 .macro warn_data()
 	lw $t7 0($k0)
+	lw $t8 4($k0)
+
 	li $a0 0xFFFF
 	jal write_data
+
 	write_control_set_true(2)
 	write_control_set_true(3)
-	li $v0 1000
-	jal sleep
+	sleep(1000) # 保持状态1s
+
+# 恢复原样
 	move $a0 $t7
 	jal write_data
-	write_control_set_false(2)
-	write_control_set_false(3)
-	li $v0 500
-	jal sleep
+
+	move $a0 $t8
+	jal write_control 
+
 .end_macro 
 
 .macro all_lights_on()
@@ -71,10 +86,7 @@
 	jal write_data
 .end_macro
 
-.macro sleep(%msec)
-	la $v0 %msec
-	jal sleep
-.end_macro
+
 
 # 从标准输入读取一个数，表示数据集编号
 # 将数据集的基地址放到s1
@@ -88,4 +100,23 @@
         addi $a0 $a0 -1
         j for_case4
     end_for_case4:
+.end_macro
+
+# 从a0 读取case编号，书写到控制灯最左边三位
+.macro hint_case_number()
+	andi $a0 $a0 0x7 # 只要最后三位
+	li $v0 5
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
+	srl $a0 $a0 1
+	li $v0 6
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
+	srl $a0 $a0 1
+	li $v0 7
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+	# sleep(200)
 .end_macro
