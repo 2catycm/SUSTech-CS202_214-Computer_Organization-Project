@@ -2,7 +2,7 @@
 .data 
 .text 
 jal static_initialization
-ini:
+begin:
 	addi $v1, $zero, 1
 	addi $21, $zero, 1
 	addi $22, $zero, 2
