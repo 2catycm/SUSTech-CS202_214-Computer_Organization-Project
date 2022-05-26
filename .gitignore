@@ -21,3 +21,4 @@ bin-release/
 vivado/
 vivado_impl/
 .vscode/
+.idea/
