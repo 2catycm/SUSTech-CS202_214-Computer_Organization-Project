@@ -1,6 +1,7 @@
-.data 
-	buf: .word 0x0000
-.text 
+.include "../commons/std_io_minisys.macro.mips"
+.data
+.text
+jal static_initialization
 ini:
 	sw $3, 0x62($20)
 	addi $21, $zero, 1
@@ -15,8 +16,8 @@ ini:
 	lui $19, 0x8FFF
 	ori $19, $19, 0xFFFF #the submask
 	
-master:	lw $2, 0x72($20) # read the sw23,22,21
-	srl $2, $2, 5 # ÒÆ¶¯µ½ÎÒµÄÖ¸ÁîµÄÎ»Êý
+begin:	lw $2, 0x72($20) # read the sw23,22,21
+	srl $2, $2, 5 # ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½Òµï¿½Ö¸ï¿½ï¿½ï¿½Î»ï¿½ï¿?
 	beq $2, $zero, case0
 	beq $2, $21, case1
 	beq $2, $22, case2
@@ -28,11 +29,11 @@ master:	lw $2, 0x72($20) # read the sw23,22,21
 
 case0:
 	lw $1, 0x70($20)
-	sw $1, 0x60($20) # ¾¯Ìè2¸öledµÆ¹Ü»¥ÏàË¢ÐÂ
-	add $4, $zero, $1 # ´æÒ»ÏÂÕâ¸öÄÚÈÝ
+	sw $1, 0x60($20) # ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ledï¿½Æ¹Ü»ï¿½ï¿½ï¿½Ë¢ï¿½ï¿½
+	add $4, $zero, $1 # ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
 	addi $6, $zero, 0
 loop:
-	beq $4,$zero,exit #È«±ä0ÍË³ö,4Õâ¸ö±äÁ¿Ã»ÓÃ
+	beq $4,$zero,exit #È«ï¿½ï¿½0ï¿½Ë³ï¿½,4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿?
 	andi $11,$4,1
 	sll $6,$6,1
 	add $6,$6,$11
@@ -41,56 +42,57 @@ loop:
 exit:
 	beq $1, $6,led16light
 	bne $1, $6,led16notlight
-	j master
+	j begin
 led16light:
 	addi $10, $zero, 1 
 	sw $10, 0x62($20)
-	j master# ´æ´¢¶ÁÈ¡µÄÊý×Ö´æ´¢ÔÚ£¤3ºÍ£¤5ÖÐ
+	j begin# ï¿½æ´¢ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö´æ´¢ï¿½Ú£ï¿½3ï¿½Í£ï¿½5ï¿½ï¿½
 led16notlight:
 	addi $10, $zero, 0
 	sw $10, 0x62($20)
-	j master
+	j begin
 case1:
 	lw $4, 0x72($20) 
-	srl $4, $4, 2 # SW18ÊÇ1´ú±íÎÒµÄÖµ±»Ëø¶¨ÁË,Ë³ÐòÊäÈëµÚÒ»¸öÊý£¬²¦sw16£¬²¦sw18.ÊäÈëµÚ¶þ¸öÊý ²¦sw17.#µ«·²ÏëÒªÈ¡Ïû£¬ÔÙSW18ÊÇ0¾Í¿ÉÒÔÈ¡Ïû
+	srl $4, $4, 2 # SW18ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sw16ï¿½ï¿½ï¿½ï¿½sw18.ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½sw17.#ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÈ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SW18ï¿½ï¿½0ï¿½Í¿ï¿½ï¿½ï¿½È¡ï¿½ï¿½
 	andi $4, $4, 0x0001  
-	bne $4, $zero,master
+	bne $4, $zero,begin
 	lw $3, 0x70($20)
 	sw $3, 0x60($20)
 	sw $zero, 0x62($20)
 	lw $4, 0x72($20) 
-	andi $4, $4, 0x0001  #SW16´ú±íµÚÒ»¸ö¶ÁÈ¡Íê±Ï
-	beq $4, $zero, case1 # ÄãÐèÒª·´¸´¶ÁÈ¡
+	andi $4, $4, 0x0001  #SW16ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½
+	beq $4, $zero, case1 # ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
 case1read2:
 	lw $5, 0x70($20)
 	sw $5, 0x60($20)
 	lw $4, 0x72($20) 
-	srl $4, $4, 1 # SW17´ú±íµÚ¶þ¸öÊý¶ÁÈ¡Íê±Ï
+	srl $4, $4, 1 # SW17ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½
 	andi $4, $4, 0x0001
 	beq $4, $zero, case1read2
-	j master
+	j begin
 	
 case2:                                                                                                                                                   
 	and $6, $3, $5
 	sw $6, 0x60($20)
-	j master
+	j begin
 case3:
 	or $6, $3, $5
 	sw $6, 0x60($20)
-	j master
+	j begin
 case4:
 	xor $6, $3, $5
 	sw $6, 0x60($20)
-	j master
+	j begin
 case5:
 	sllv $6, $3, $5
 	sw $6, 0x60($20)
-	j master
+	j begin
 case6:
 	srlv $6, $3, $5
 	sw $6, 0x60($20)
-	j master
+	j begin
 case7:
 	srav $6, $3, $5
 	sw $6, 0x60($20)
-	j master
+	j begin
+.include "../commons/std_io_minisys.impl.mips"
