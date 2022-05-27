@@ -27,6 +27,7 @@ copy:
 	end_for_copy:
 	jr $ra
 # v0 数组首元素地址, v1 数组尾元素地址；求数组的最大值放到a0。默认有符号比较，对8位无符号的比较也是有效的。
+# 修改的寄存器：v0，a0，t0
 max:
 	lw $a0 0($v0)
 	for_max:
@@ -39,6 +40,7 @@ max:
 	end_for_max:
 	jr $ra
 # v0 数组首元素地址, v1 数组尾元素地址；求数组的最小值放到a0。默认有符号比较，对8位无符号的比较也是有效的。
+# 修改的寄存器：v0，a0，t0
 min:
 	lw $a0 0($v0)
 	for_min:
@@ -75,29 +77,4 @@ insertion_sort:
 	jr $ra
 
 
-# 求IEEE 754 单精度浮点数编码的符号位和指数位 （一共1+8=9位）。
-# 输入 a0， 返回a0
-getFloat:
-	andi $a0 $a0 0xFF # 只关心最后8位。
-	# 符号位 （1位）
-    srl $t0 $a0 7 # 取第7位
-    andi $t0 $t0 1
-    sll $t1 $t0 8 # 放在第8位。7..0留给指数位
-    # 指数位 （8位）
-    # 取绝对值
-	bne $t0 $zero else_getFloat
 
-	else_getFloat:
-
-	end_if_getFloat:
-
-
-    # 右移多少次变成0 - 1
-    li $t3 0
-    do_while_case6:
-        srl $t1 $t1 1
-        addi $t3 $t3 1
-    bne $t1 $zero do_while_case6
-    addi $t3 $t3 0x7f # 加上bias
-    or $a0 $t3 $t0 # 合并两个数
-	jr $ra

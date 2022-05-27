@@ -76,6 +76,7 @@ case1:
     jal insertion_sort
     
     warn_data() # 表示排序结束。
+    sleep(1000)
     j begin
 case2:
     move $v0 $fp # 数据集0头
@@ -87,16 +88,19 @@ case2:
     add $a0 $a0 $s0 # 数据集2头
     jal to_signed_array 
     warn_data() 
+    sleep(1000)
     j begin
 case3:
     move $v0 $fp # 数据集0头
     add $v0 $v0 $s0 # 数据集1头
     add $v0 $v0 $s0 # 数据集2头
+
     lw $s1 44($fp) 
     sll $s1 $s1 2 # 数组长度左移两位乘4
     add $v1 $v0 $s1 # 数据集2尾
+
     add $a0 $v0 $s0 # 数据集3头
-    move $s2 $a0
+    move $s2 $a0 # 数据集3头
     jal copy
 
     move $v0 $s2 # 数据集3头
@@ -104,9 +108,10 @@ case3:
     jal insertion_sort
 
     warn_data()  # 表示排序结束。
+    sleep(1000)
     j begin
 case4:
-    getBase()
+    getBase($s1)
     # s1 现在是 数据集头
     move $v0 $s1
     lw $s2 44($fp) # n
@@ -115,49 +120,59 @@ case4:
     move $v1 $s2
     jal max
     move $s3 $a0 # s3 是最大值
-    move $v0 $s1
-    move $v1 $s2
+    move $v0 $s1 # 数据集头
+    move $v1 $s2 # 数据集尾
     jal min
     move $s4 $a0 # s4 是最小值
     sub $a0 $s3 $s4 
-    jal write_data
+    write_data_8($a0)
+    sleep(1000)
     j begin
 case5:
-    getBase()
+    getBase($s1)
     # s1 现在是 数据集头
-    jal read
+    read_8_as_unsigned($a0)
+    # todo: 如果超出范围，发出警告。
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
     lw $a0 0($s1) # 目标数
-    jal write_data
+    write_data_8($a0)
+    sleep(1000)
     j begin
 case6:
-    getBase()
+    getBase($s1)
     # s1 现在是 数据集头
-    jal read
+    read_8_as_unsigned($a0)
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
     lw $t2 0($s1) # 目标数
 
     andi $a0 $t2 0xFF # 只考虑8位
-    jal getFloat
-    jal write_data
+    convert_signed8_to_float($a0)
+    jal write_data # 注意，不止8位, 用原生的jal write_data。 
+    sleep(1000)
     j begin
 case7:
     move $s1 $fp # 数据集0 头
-    jal read
+    read_8_as_unsigned($a0)
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
-    lw $t2 0($s1) # 目标数
+    lw $s2 0($s1) # 目标数. 不要用t系列，下面调用方法会改t系列寄存器。
 
-    move $a0 $t2
-    jal write_data
-    sleep(5000)
-    
-    move $a0 $t2
-    jal getFloat
-    jal write_data
-    sleep(5000)
+    while_case7: # 循环交替显示
+        move $a0 $s2
+        jal write_data
+        sleep(5000)
+        
+        move $a0 $s2
+        convert_signed8_to_float($a0)
+        jal write_data
+        sleep(5000)
+
+        jal decode
+        bne $a0 $a2 begin  # 如果case编号变化，回到begin
+        j while_case7
+    end_while_case7:
     j begin
 j begin
 
