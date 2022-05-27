@@ -120,3 +120,26 @@
 	jal write_control_set
 	# sleep(200)
 .end_macro
+
+.macro read_8_as_unsigned(%register)
+	jal read
+	andi $a0 $a0 0xFF
+	move %register $a0
+.end_macro
+
+.macro read_16_as_unsigned(%register)
+	jal read
+	andi $a0 $a0 0xFFFF  # 防止信号波动导致左边16位不是0
+	move %register $a0
+.end_macro
+
+# 输入register寄存器， 计算register寄存器作为8位有符号数的等价32位有符号数并存回该寄存器。
+.macro convert_8_as_signed(%register)
+	sll %register %register 24
+	sra %register %register 24
+.end_macro
+# 输入register寄存器，  计算register寄存器作为16位有符号数的等价32位有符号数并存回该寄存器。
+.macro convert_16_as_signed(%register)
+	sll %register %register 16
+	sra %register %register 16
+.end_macro

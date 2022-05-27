@@ -25,7 +25,7 @@ begin:
     beq $a2 $s6 case6
     beq $a2 $s7 case7
 case0:
-    jal read
+    read_16_as_unsigned($a0)
     sw $a0 0($fp)
     sleep(200)
     jal write_data
@@ -37,10 +37,10 @@ case0:
     sleep(1000)
     j begin
 case1:
-    jal read
+    read_16_as_unsigned($a0)
     sw $a0 0($fp)
     jal write_data
-    jal read
+    read_16_as_unsigned($a0)
     sw $a0 4($fp)
     jal write_data
 
@@ -79,8 +79,7 @@ case6:
 case7:
     lw $s0 0($fp)
     lw $s1 4($fp)
-    sll $s0 $s0 16
-    sra $s0 $s0 16 # 有符号化
+    convert_16_as_signed($s0)
     srav $a0 $s0 $s1
     jal write_data
     j begin
