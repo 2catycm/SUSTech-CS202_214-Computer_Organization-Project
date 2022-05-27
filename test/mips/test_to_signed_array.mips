@@ -28,6 +28,17 @@
     addi $v0 $v0 20
     addi $v1 $v0 20
     print_array_mars()
+    
+    move $v0 $s0
+    addi $v0 $v0 20
+    addi $v1 $v0 20
+    jal insertion_sort
+    
+    move $v0 $s0
+    addi $v0 $v0 20
+    addi $v1 $v0 20
+    print_array_mars()
+    
     exit()
 .include "../../main/mips/commons/std_algorithm.impl.mips"
     
