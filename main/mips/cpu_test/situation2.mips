@@ -21,43 +21,42 @@ begin:
     beq $a2 $s5 case5
     beq $a2 $s6 case6
     beq $a2 $s7 case7
+
+# case0 测试状态：读入逻辑可信。 
+# 结果保存位置
+# n = 44($fp)，  array = $fp, $fp+4, $fp+8, ...
 case0:
-    jal read
-    move $s1 $a0 # s1=n，表示数组长度
+    read_8_as_unsigned($s1) # s1=n，表示数组长度
     sw $s1 44($fp) # 44($fp) 为数组长度
 
     bne $s1 $zero end_if_case0_0
         jal exception_hint  # 如果是0，只是警告，不重新输入。
-    end_if_case0_0:
-	li $t0 10
+end_if_case0_0:
+    li $t0 10
     ble $s1  $t0 end_if_case0_1
-        jal exception_hint  # 如果比10大，只是警告，不重新输入。
-    end_if_case0_1:
+         jal exception_hint  # 如果比10大，只是警告，不重新输入。
+end_if_case0_1:
+
     addi $s2 $fp 0 # 0倍的s0， s2现在是数据集0的基地址。
     
     for_case0:
-    	ble $s1 $zero end_for_case0
+    	beq $s1 $zero end_for_case0
 		# 用control的右边四个灯提示正在读第几个数
-		li $v0 0
-		srl $v1 $s1 0
-		jal write_control_set
-		li $v0 1
-		srl $v1 $s1 1 
-		jal write_control_set
-		li $v0 2
-		srl $v1 $s1 2
-		jal write_control_set
-		li $v0 3
-		srl $v1 $s1 3 
-		jal write_control_set
+		lw $t1 4($k0) # t1为左灯的值。
+		andi $t1 $t1 0xFFFFFFF0 # 将最后4位强行清除为0
+		andi $t9 $s1 0xFF  # 万一输入的n是异常数字，也只显示最后几位
+		or $t1 $t1 $t9
+		sw $t1 4($k0)
+		flush_lights()
 		sleep(100)
-		# 读取新的数。
-        jal read
+	# 读取新的数。
+        read_8_as_unsigned($a0)
         sw $a0 0($s2) # 存入s2对应的内存
         addi $s1 $s1 -1
         addi $s2 $s2 4 # 指针右移
         j for_case0
     end_for_case0:
+    
     warn_data() # 表示输入结束。
     j begin
 case1:
@@ -65,12 +64,16 @@ case1:
     lw $s1 44($fp) # 数组实际长度n
     sll $s1 $s1 2 # 数组长度左移两位乘4
     add $v1 $v0 $s1 # 数据集0尾
-    add $a0 $v0 $s0 # 数据集1头
-    move $s2 $a0 # 数据集1头
+    
+    add $a0 $v0 $s0 # 数据集1头 .  记得吗？s0 不能被随意改，s0是44. 
+    move $s2 $a0 # 数据集1头. a0 是给copy传参数而设置，s2是记住数据集1的头方便后续操作。
+    
     jal copy 
+    
     move $v0 $s2 # 数据集1头
-    add $v1 $v0 $s1 # 数据集1尾
+    add $v1 $v0 $s1 # 数据集1尾。 记得吗？s1是数组长度的四倍，也就是sizeof数组。
     jal insertion_sort
+    
     warn_data() # 表示排序结束。
     j begin
 case2:
