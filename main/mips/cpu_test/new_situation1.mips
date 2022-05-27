@@ -1,4 +1,5 @@
 .include "../commons/std_io_minisys.macro.mips"
+.include "../commons/std_algorithm.macro.mips"
 .data
 .text
 .globl main
@@ -79,7 +80,7 @@ case6:
 case7:
     lw $s0 0($fp)
     lw $s1 4($fp)
-    convert_16_as_signed($s0)
+    convert_16_to_signed($s0)
     srav $a0 $s0 $s1
     jal write_data
     j begin

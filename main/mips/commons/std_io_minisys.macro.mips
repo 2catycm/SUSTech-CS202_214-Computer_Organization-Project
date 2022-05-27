@@ -1,3 +1,5 @@
+######################## 根基 宏。 此部分宏非常重要，在多处都会使用。######################## 
+
 # 让CPU 睡眠msec毫秒。
 # 调用这个函数的场景是，switch操作时信号可能不稳定，会出现短时0,1交替，导致计算逻辑有问题。
 # note:vivado 仿真时，不启用sleep。因为vivado模拟时没有信号不稳定的问题。
@@ -10,7 +12,7 @@
 
 #测试状态：可信
 # 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
-# 会修改t0的值和灯的值。
+# 修改的寄存器：会修改t0的值和灯的值。
 .macro flush_lights()
 	lw $t0 4($k0)
 	sw $t0 0x62($gp)
@@ -27,16 +29,25 @@
 	addi $sp $sp 4
 	#move $ra $k1 # 动用k1
 .end_macro
+
+######################## 快速IO宏。 此部分宏是为了让灯、开关的IO更加便捷。######################## 
+
+# 将 index 位置的左灯设置为1
+# 修改的寄存器：v1, t1, t0, t2. 
 .macro write_control_set_true(%index)
 	li $v0 %index 
 	li $v1 1
 	jal write_control_set
 .end_macro
+# 将 index 位置的左灯设置为0
+# 修改的寄存器：v1, t1, t0, t2. 
 .macro write_control_set_false(%index)
 	li $v0 %index 
 	li $v1 0
 	jal write_control_set
 .end_macro
+# 将 index 位置的左灯状态反转。 
+# 修改的寄存器: t1, t0, v1
 .macro write_control_negate(%index)
 	li $v0 %index 
 	jal write_control_negate
@@ -52,6 +63,9 @@
 	li $s7 7
 .end_macro
 
+# 闪一闪左灯的2、3位和右灯。闪完之后恢复原来的灯样。
+# 修改t7, t8, a0, v1, t1, t0, t2
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
 .macro warn_data()
 	lw $t7 0($k0)
 	lw $t8 4($k0)
@@ -72,6 +86,7 @@
 
 .end_macro 
 
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
 .macro all_lights_on()
 	li $a0 0xFF
 	jal write_control
@@ -79,6 +94,7 @@
 	jal write_data
 .end_macro
 
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
 .macro all_lights_off()
 	li $a0 0
 	jal write_control
@@ -90,6 +106,7 @@
 
 # 从标准输入读取一个数，表示数据集编号
 # 将数据集的基地址放到s1
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
 .macro getBase()
 	jal read
 	andi $a0 $a0 3 # 只取最后两位。
@@ -103,6 +120,7 @@
 .end_macro
 
 # 从a0 读取case编号，书写到控制灯最左边三位
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
 .macro hint_case_number()
 	andi $a0 $a0 0x7 # 只要最后三位
 	li $v0 5
@@ -120,7 +138,7 @@
 	jal write_control_set
 	# sleep(200)
 .end_macro
-
+######################## 有符号/无符号 有关处理宏 ######################## 
 .macro read_8_as_unsigned(%register)
 	jal read
 	andi $a0 $a0 0xFF
@@ -133,13 +151,3 @@
 	move %register $a0
 .end_macro
 
-# 输入register寄存器， 计算register寄存器作为8位有符号数的等价32位有符号数并存回该寄存器。
-.macro convert_8_as_signed(%register)
-	sll %register %register 24
-	sra %register %register 24
-.end_macro
-# 输入register寄存器，  计算register寄存器作为16位有符号数的等价32位有符号数并存回该寄存器。
-.macro convert_16_as_signed(%register)
-	sll %register %register 16
-	sra %register %register 16
-.end_macro

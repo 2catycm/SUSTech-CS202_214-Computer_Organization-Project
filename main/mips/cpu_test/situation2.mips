@@ -1,4 +1,5 @@
 .include "../commons/std_io_minisys.macro.mips"
+.include "../commons/std_algorithm.macro.mips"
 .data
 .text
 .globl main
@@ -39,20 +40,20 @@ end_if_case0_1:
 
     addi $s2 $fp 0 # 0倍的s0， s2现在是数据集0的基地址。
     
+    li $s7 0 # i 变量. 用s系列，防止调用函数后失效。
     for_case0:
-    	beq $s1 $zero end_for_case0
+    	beq $t7 $s1 end_for_case0
 		# 用control的右边四个灯提示正在读第几个数
 		lw $t1 4($k0) # t1为左灯的值。
 		andi $t1 $t1 0xFFFFFFF0 # 将最后4位强行清除为0
-		andi $t9 $s1 0xFF  # 万一输入的n是异常数字，也只显示最后几位
-		or $t1 $t1 $t9
+		or $t1 $t1 $s7
 		sw $t1 4($k0)
 		flush_lights()
 		sleep(100)
 	# 读取新的数。
         read_8_as_unsigned($a0)
         sw $a0 0($s2) # 存入s2对应的内存
-        addi $s1 $s1 -1
+        addi $s7 $s7 1
         addi $s2 $s2 4 # 指针右移
         j for_case0
     end_for_case0:
@@ -80,6 +81,7 @@ case2:
     move $v0 $fp # 数据集0头
     lw $s1 44($fp) 
     sll $s1 $s1 2 # 数组长度左移两位乘4
+    
     add $v1 $v0 $s1 # 数据集0尾
     add $a0 $v0 $s0 # 数据集1头
     add $a0 $a0 $s0 # 数据集2头
@@ -160,4 +162,4 @@ case7:
 j begin
 
 .include "../commons/std_io_minisys.impl.mips"
-.include "../commons/std_algorithm.mips"
+.include "../commons/std_algorithm.impl.mips"

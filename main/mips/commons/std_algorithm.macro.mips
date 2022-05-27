@@ -1,0 +1,18 @@
+######################## 有符号/无符号 有关处理宏 ######################## 
+# 输入register寄存器， 计算register寄存器作为8位有符号数的等价32位有符号数并存回该寄存器。
+.macro convert_8_to_signed(%register)
+	sll %register %register 24
+	sra %register %register 24
+.end_macro
+# 输入register寄存器，  计算register寄存器作为16位有符号数的等价32位有符号数并存回该寄存器。
+.macro convert_16_to_signed(%register)
+	sll %register %register 16
+	sra %register %register 16
+.end_macro
+# 输入register寄存器，  计算
+# register寄存器作为8位   7, 6....0 = 符号, 绝对值
+# 的等价32位有符号数并存回该寄存器。
+.macro convert_signedAbs8_to_signed()
+
+.end_macro
+	
