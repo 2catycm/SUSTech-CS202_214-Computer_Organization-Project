@@ -3,15 +3,17 @@
 to_signed_array:
 	for_to_signed_array:
 		bge $v0 $v1 end_for_to_signed_array# 碰到尾元素，循环结束
-		lw $t0 0($v0)
-		sll $t0 $t0 24
-		sra $t0 $t0 24
+
+		lw $t0 0($v0) # t0是当前处理的数
+		convert_signedAbs8_to_signed($t0)
 		sw $t0 0($a0)
+
 		addi $a0 $a0 4
 		addi $v0 $v0 4
 		j for_to_signed_array
 	end_for_to_signed_array:
 	jr $ra
+
 # 将数组拷贝到新的位置
 # v0 数组首元素地址, v1 数组尾元素地址； a0 目标数组首元素地址;
 copy:

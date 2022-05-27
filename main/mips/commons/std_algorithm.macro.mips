@@ -11,8 +11,17 @@
 .end_macro
 # 输入register寄存器，  计算
 # register寄存器作为8位   7, 6....0 = 符号, 绝对值
-# 的等价32位有符号数并存回该寄存器。
-.macro convert_signedAbs8_to_signed()
-
+# 的等价32位有符号数并存回该寄存器
+# 会修改t0:2 寄存器
+.macro convert_signedAbs8_to_signed(%register)
+   move $t2 %register  # 为了防止原本的寄存器就是t0或者t1，我们先用t2备份原本寄存器的值。
+    andi $t0 $t2 0x7F # 取出绝对值放在t0
+    andi $t1 $t2 0x80 # 取出符号位放在t1
+    srl  $t1 $t1 7  # 得到 0或者1. 0说明是正数，1说明是负数。
+    beq $t1 $zero end_if_convert_signedAbs8 # 如果是正数，那么不需要处理，直接返回t0
+        # 如果是负数, 做一下处理
+        sub $t0 $zero $t0
+    end_if_convert_signedAbs8:
+    move %register $t0
 .end_macro
 	

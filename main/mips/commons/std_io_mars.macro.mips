@@ -1,0 +1,33 @@
+.macro echo (%str) 
+	.data 
+	pstr: .asciiz   %str       #pstr: .asciiz "\n"  vs  pstr: .asciiz \n (not ok)
+	.text
+	la $a0,pstr
+	li $v0,4
+	syscall
+.end_macro
+.macro puts %str #也可以没有括号
+	echo %str
+.end_macro
+
+.macro exit
+	li $v0,10
+	syscall
+.end_macro
+
+# 仅限mars使用. 打印的是32位有符号数 数组。
+# v0 数组首元素地址, v1 数组尾元素地址
+.macro print_array_mars
+	move $t0 $v0
+	move $t1 $v1
+	for_print_array_mars:
+		bge $t0 $t1 end_for_print_array_mars
+		lw $a0 0($t0)
+		li $v0 1
+		syscall
+		echo " "
+		addi $t0 $t0 4
+		j for_print_array_mars
+	end_for_print_array_mars:
+    echo "\n"
+.end_macro
