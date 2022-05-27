@@ -116,6 +116,7 @@ read:
 	write_control_negate(2)
 	
 	move $a0 $s7
+	andi $a0 $a0 0xFFFF # 防止信号波动导致左边16位不是0
 	load_ra()
 	jr $ra
 

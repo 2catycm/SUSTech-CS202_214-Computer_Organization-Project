@@ -79,8 +79,8 @@ case6:
 case7:
     lw $s0 0($fp)
     lw $s1 4($fp)
-    sll $s0 $s0 8
-    sra $s0 $s0 8 # 有符号化
+    sll $s0 $s0 16
+    sra $s0 $s0 16 # 有符号化
     srav $a0 $s0 $s1
     jal write_data
     j begin
