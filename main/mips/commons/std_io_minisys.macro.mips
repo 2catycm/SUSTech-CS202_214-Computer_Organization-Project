@@ -19,15 +19,25 @@
 	lw $t0 0($k0)
 	sw $t0 0x60($gp)
 .end_macro
-.macro save_ra()
+
+#警告：请勿把这个放到循环当中。
+.macro save_before_call(%register)
 	addi $sp $sp -4
-	sw $ra 0($sp)
+	sw %register 0($sp)
 	#move $k1 $ra
 .end_macro
-.macro load_ra()
-	lw $ra 0($sp)
+#警告：请勿把这个放到循环当中。
+.macro load_before_return(%register)
+	lw %register 0($sp)
 	addi $sp $sp 4
 	#move $ra $k1 # 动用k1
+.end_macro
+
+.macro save_ra()
+	save_before_call($ra)
+.end_macro
+.macro load_ra()
+	load_before_return($ra)
 .end_macro
 
 ######################## 快速IO宏。 此部分宏是为了让灯、开关的IO更加便捷。######################## 
@@ -123,6 +133,7 @@
 
 # 从a0 读取case编号，书写到控制灯最左边三位
 # ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+# 修改的寄存器：a0 v0 v1 v1， t1, t0, t2. 
 .macro hint_case_number()
 	andi $a0 $a0 0x7 # 只要最后三位
 	li $v0 5

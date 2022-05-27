@@ -102,10 +102,10 @@ read:
 		save_ra()
 
 		lw $a0 0x70($gp)
-		move $s7 $a0
 		jal write_data
 	beq $a1 $zero _read_wait_for_enter # 等到enter是1。 
-
+	
+	save_before_call($a0)
 	li $a0 0
 	jal write_data # 清空输入
 	write_control_set_false(4)
@@ -115,7 +115,7 @@ read:
 	write_control_negate(3)
 	write_control_negate(2)
 	
-	move $a0 $s7
+	load_before_return($a0)
 	load_ra()
 	jr $ra
 
