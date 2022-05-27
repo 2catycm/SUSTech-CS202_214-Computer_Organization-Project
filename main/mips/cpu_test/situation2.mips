@@ -32,17 +32,17 @@ case0:
 
     bne $s1 $zero end_if_case0_0
         jal exception_hint  # 如果是0，只是警告，不重新输入。
-end_if_case0_0:
+    end_if_case0_0:
     li $t0 10
     ble $s1  $t0 end_if_case0_1
          jal exception_hint  # 如果比10大，只是警告，不重新输入。
-end_if_case0_1:
+    end_if_case0_1:
 
     addi $s2 $fp 0 # 0倍的s0， s2现在是数据集0的基地址。
     
     li $s7 0 # i 变量. 用s系列，防止调用函数后失效。
     for_case0:
-    	beq $t7 $s1 end_for_case0
+    	beq $s7 $s1 end_for_case0
 		# 用control的右边四个灯提示正在读第几个数
 		lw $t1 4($k0) # t1为左灯的值。
 		andi $t1 $t1 0xFFFFFFF0 # 将最后4位强行清除为0
@@ -110,6 +110,8 @@ case3:
     warn_data()  # 表示排序结束。
     sleep(1000)
     j begin
+    
+# 测试状态：危险
 case4:
     getBase($s1)
     # s1 现在是 数据集头
@@ -120,14 +122,18 @@ case4:
     move $v1 $s2
     jal max
     move $s3 $a0 # s3 是最大值
+    
     move $v0 $s1 # 数据集头
     move $v1 $s2 # 数据集尾
     jal min
     move $s4 $a0 # s4 是最小值
+    
     sub $a0 $s3 $s4 
     write_data_8($a0)
     sleep(1000)
     j begin
+
+# 测试状态： 对数据集0的数也不可以正确读取。
 case5:
     getBase($s1)
     # s1 现在是 数据集头
@@ -135,23 +141,28 @@ case5:
     # todo: 如果超出范围，发出警告。
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
-    lw $a0 0($s1) # 目标数
-    write_data_8($a0)
+    lw $s2 0($s1) # 目标数. 不要用t系列，下面调用方法会改t系列寄存器。
+    
+    write_data_8($s2)
     sleep(1000)
     j begin
+
+# 测试状态： 对数据集0的数可以正确读取，可以写出浮点数.
 case6:
     getBase($s1)
     # s1 现在是 数据集头
     read_8_as_unsigned($a0)
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
-    lw $t2 0($s1) # 目标数
+    lw $s2 0($s1) # 目标数
 
-    andi $a0 $t2 0xFF # 只考虑8位
+    andi $a0 $s2 0xFF # 只考虑8位
     convert_signed8_to_float($a0)
     jal write_data # 注意，不止8位, 用原生的jal write_data。 
     sleep(1000)
     j begin
+
+# 测试状态： 对数据集0的数可以正确读取，可以写出浮点数和原数。
 case7:
     move $s1 $fp # 数据集0 头
     read_8_as_unsigned($a0)
@@ -162,12 +173,15 @@ case7:
     while_case7: # 循环交替显示
         move $a0 $s2
         jal write_data
-        sleep(5000)
+        sleep(1250)
+        
+        jal decode
+        bne $a0 $a2 begin  # 如果case编号变化，回到begin
         
         move $a0 $s2
         convert_signed8_to_float($a0)
         jal write_data
-        sleep(5000)
+        sleep(1250)
 
         jal decode
         bne $a0 $a2 begin  # 如果case编号变化，回到begin
