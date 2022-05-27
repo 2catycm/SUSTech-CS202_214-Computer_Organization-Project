@@ -171,6 +171,7 @@ write_data:
 exception_hint:
 	save_ra()
 	warn_data()
+	sleep(500)
 	warn_data()
 	load_ra()
 	jr $ra
