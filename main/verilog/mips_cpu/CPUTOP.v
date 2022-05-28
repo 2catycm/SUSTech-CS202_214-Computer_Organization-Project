@@ -1,10 +1,9 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
-// Engineer: ÕÅÁ¦Óî, Ò¶è²Ãú
+// Company: Southern University of Science and Technology ï¿½Ï·ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½Ñ§
+// Engineer: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ò¶ï¿½ï¿½ï¿½
 // 
 // Create Date: 2022/05/07 12:58:45
-// Module Name: CPU_TOP
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
@@ -20,10 +19,11 @@ module CpuTop(
     // start Uart communicate at high level
     input iStartReceiveCoe, // Active HighÅÅ¹ if
     input iFpgaUartFromPc,// receive data by UART
-    output oFpgaUartToPc, // send data by UART // Êµ¼ÊÉÏÃ»ÓĞÓÃµ½¡£
+    output oFpgaUartToPc, // send data by UART // Êµï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½
     output[7:0] oDigitalTubeNotEnable, //which tubs to light
     output[7:0] oDigitalTubeShape  //light what
 );
+
 ///////////// UART Programmer Pinouts ///////////// 
     wire upg_clk, upg_clk_o;
     wire upg_wen_o; //Uart write out enable
@@ -61,7 +61,7 @@ module CpuTop(
             .clk_out1(cpu_clk),
             .clk_out2(upg_clk)
         );
-///////////// Ifetc32 ºÍ progrom ///////////// 
+///////////// Ifetc32 ï¿½ï¿½ progrom ///////////// 
     // Control signals
     wire Branch, nBranch, Jmp, Jal, Jr, Zero, RegWrite, RegDst;
     wire [31:0] branch_base_addr;
@@ -91,7 +91,7 @@ module CpuTop(
         .oProgromFetchAddr(rom_adr_o)
     );
     
-    // ÕâÀïÀûÓÃµ½µ½ÁËuart IP ºËµÄĞÅºÅ£¬ÓÃÀ´½ÓÊÜÊı¾İ¡£
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½uart IP ï¿½Ëµï¿½ï¿½ÅºÅ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¡ï¿½
     InstructionMemory dInstructionMemory(
         .iRomClock(cpu_clk),
         .iAddressRequested(rom_adr_o),
@@ -156,8 +156,8 @@ module CpuTop(
     assign m_wdata = write_data_fromMemoryIO;//ÄÅ¼Â™Ã¤Â¸ÅÃ¤Å¡ÂŸÄ‡Â˜Å»ior_data
     wire [31:0] ram_dat_o;
     wire [31:0] addr_out;
-    // ÕâÀïÀûÓÃµ½µ½ÁËuart IP ºËµÄĞÅºÅ£¬ÓÃÀ´½ÓÊÜÊı¾İ¡£
-    DataMemory   dDataMemory(
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½uart IP ï¿½Ëµï¿½ï¿½ÅºÅ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¡ï¿½
+    DataMemory  dDataMemory(
         .ram_clk_i(cpu_clk),
         .ram_wen_i(MemWrite),
         .ram_adr_i(addr_out[15:2]),
@@ -178,17 +178,17 @@ module CpuTop(
     wire SwitchCtrl;
     assign addr_in = ALU_Result; //ÄÅ¼Â™Ã¤Â¸Â€Ä‡Å½Ä¾ÄºÂÂ•Ã§ÅŸÅ»Ã¤Å¼ÂÄ‡ÂŒÂÄºÂÂÄºÂ­Â—Ã§Â›Â¸ÄºÂ?
     MemOrIO  MemOrIO_instance(
-        .mRead(MemRead), // read memory, from Controller
-        .mWrite(MemWrite), // write memory, from Controller
-        .ioRead(IORead), // read IO, from Controller
-        .ioWrite(IOWrite), // write IO, from Controller
-        .addr_in(addr_in), // from alu_result in ALU
-        .addr_out(addr_out), // address to Data-Memory
-        .m_rdata(ram_dat_o), // data read from Data-Memory
-        .io_rdata(ioread_data), // data read from IO,16 bits
-        .r_wdata(r_wdata), // data to Decoder(register file)
-        .r_rdata(read_data_2), // data read from Decoder(register file)
-        .write_data(write_data_fromMemoryIO), // data to memor y or I/OÄÅºÂˆm_wdata, io_wdataÄÅº?
+        .iDoMemoryRead(MemRead), // read memory, from Controller
+        .iDoMemoryWrite(MemWrite), // write memory, from Controller
+        .iDoIoRead(IORead), // read IO, from Controller
+        .iDoIoWrite(IOWrite), // write IO, from Controller
+        .iAluResultAsAddress(addr_in), // from alu_result in ALU
+        .oDataMemoryAddress(addr_out), // address to Data-Memory
+        .iDataFromMemory(ram_dat_o), // data read from Data-Memory
+        .iDataFromIo(ioread_data), // data read from IO,16 bits
+        .oMemOrIODataRead(r_wdata), // data to Decoder(register file)
+        .iDataFromRegister(read_data_2), // data read from Decoder(register file)
+        .iDataToStore(write_data_fromMemoryIO), // data to memor y or I/OÄÅºÂˆm_wdata, io_wdataÄÅº?
         .LEDCtrl(LEDCtrl), // LED Chip Select
         .SwitchCtrl(SwitchCtrl) // Switch Chip Select
     );
@@ -213,32 +213,6 @@ module CpuTop(
             .PC_plus_4(branch_base_addr)//pc+4
     );
         
-    SwitchDriver dSwitchDriver(
-        .switclk(cpu_clk),
-        .switchrst(rst), 
-        .switchread(IORead), 
-        .switchctl(SwitchCtrl),
-        .switchaddr(addr_in[1:0]), 
-        .switchrdata(ioread_data), //ÄÅ¼Â™Ã¤Â¸ÅÄ‡Â˜?15Ã¤ËÂÃ§ÂšÂ„
-        .switch_input(iSwitches)
-    );
-                           
-    LightDriver dLightDriver(
-        .led_clk(cpu_clk), 
-        .ledrst(rst), 
-        .ledwrite(IOWrite),//Ã¤Å¥ÂcontrollerÄ‡ÂÄ½Ã§ÂšÂ„ 
-        .ledcs(LEDCtrl),    
-        .ledaddr(addr_in[1:0]),
-        .ledwdata(write_data_fromMemoryIO[15:0]), 
-        .ledout(oLights)
-    );
-    TubeDriver dTubeDriver(
-        .clock(iFpgaClk),
-        .reset(iFpgaRst),
-        .IOWrite(IOWrite),
-        .oDigitalTubeNotEnable(oDigitalTubeNotEnable),
-        .oDigitalTubeShape(oDigitalTubeShape),
-        .in_num(write_data_fromMemoryIO)
-    );
+    
         
 endmodule
