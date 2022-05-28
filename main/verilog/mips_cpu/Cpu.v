@@ -96,7 +96,7 @@ module Cpu (
     );
 //////////// CpuExecutor //////////// 
     //输入
-    wire isShift, isAluSource2FromImm, isArthIType, isJr;// 来自controller
+    wire isShift, isAluSource2FromImm, isArthIType;// 来自controller
     wire[1:0] aluOp;// 来自controller
     //输出：前面已定义 isAluZero，aluResult，aluAddrResult
     CpuExecutor dCpuExecutor(
@@ -120,8 +120,8 @@ module Cpu (
     );
 //////////// DataManager ////////////
     //输入
-    wire doWriteReg, doMemoryRead, doMemoryWrite;
-    wire doLedWrite, doSwitchRead, doSwitchRead, doTubeWrite;
+    wire  doMemoryRead, doMemoryWrite;
+    wire doLedWrite, doSwitchRead, doTubeWrite;
     //处理
     wire doIoRead = doSwitchRead|| doSwitchRead;
     wire doIoWrite = doLedWrite || doTubeWrite;
@@ -134,17 +134,17 @@ module Cpu (
     assign oLightDataToWrite = dataToStore[15:0];
     assign oTubeDataToWrite  = dataToStore[15:0];
     DataManager dDataManager(
-        .iDoMemoryRead(doMemoryRead), // read memory, from Controller
-        .iDoMemoryWrite(doMemoryWrite), // write memory, from Controller
-        .iDoIoRead(doIoRead), // read IO, from Controller
-        .iDoIoWrite(doIoWrite), // write IO, from Controller
-        .iAluResultAsAddress(aluResult), // from alu_result in ALU
-        .oDataMemoryAddress(oDmAddressRequested), // address to Data-Memory
-        .iDataFromMemory(iMemoryFetched), // data read from Data-Memory
-        .iDataFromIo(dataFromIo), // data read from IO,16 bits
-        .oMemOrIODataRead(memoryOrIoData), // data to Decoder(register file)
-        .iDataFromRegister(registerReadData2), // data read from Decoder(register file)
-        .oDataToStore(dataToStore), //其实就是 registerReadData2
+        .iDoMemoryRead(doMemoryRead) // read memory, from Controller
+        ,.iDoMemoryWrite(doMemoryWrite) // write memory, from Controller
+        ,.iDoIoRead(doIoRead) // read IO, from Controller
+        ,.iDoIoWrite(doIoWrite) // write IO, from Controller
+        ,.iAluResultAsAddress(aluResult) // from alu_result in ALU
+        ,.oDataMemoryAddress(oDmAddressRequested) // address to Data-Memory
+        ,.iDataFromMemory(iMemoryFetched) // data read from Data-Memory
+        ,.iDataFromIo(dataFromIo) // data read from IO,16 bits
+        ,.oMemOrIODataRead(memoryOrIoData) // data to Decoder(register file)
+        ,.iDataFromRegister(registerReadData2) // data read from Decoder(register file)
+        ,.oDataToStore(dataToStore) //其实就是 registerReadData2
     );
 
 //////////// CpuController 压轴出场，把前面需求的输入信号都成功计算满足。////////////

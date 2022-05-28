@@ -11,21 +11,23 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module InstructionFetcher(iInstruction,oInstruction,oBranchBaseAddress,iAluAddrResult,iRegisterAddressResult,iIsBeq,iIsBne,iIsJ,iIsJal,iIsJr,iIsAluZero,iCpuClock,iCpuReset,oLinkAddress,oProgromFetchAddr);
-    input[31:0] iInstruction;
-    output[31:0] oInstruction;			// 根据PC的值从存放指令的prgrom中取出的指令
-    output[31:0] oBranchBaseAddress;      // 对于有条件跳转类的指令而言，该值为(pc+4)送往ALU
-    input[31:0]  iAluAddrResult;            // 来自ALU,为ALU计算出的跳转地址
-    input[31:0]  iRegisterAddressResult;           // 来自Decoder，jr指令用的地址
-    input        iIsBeq;                // 来自控制单元
-    input        iIsBne;               // 来自控制单元
-    input        iIsJ;                   // 来自控制单元
-    input        iIsJal;                   // 来自控制单元
-    input        iIsJr;                   // 来自控制单元
-    input        iIsAluZero;                  //来自ALU，Zero为1表示两个值相等，反之表示不相等
-    input        iCpuClock,iCpuReset;           //时钟与复位,复位信号用于给PC赋初始值，复位信号高电平有效
-    output[31:0] oLinkAddress;             // JAL指令专用的PC+4
-    output[13:0] oProgromFetchAddr;        // 向Progrom请求的地址
+module InstructionFetcher(
+     input[31:0] iInstruction
+    ,output[31:0] oInstruction			// 根据PC的值从存放指令的prgrom中取出的指令
+    ,output[31:0] oBranchBaseAddress      // 对于有条件跳转类的指令而言，该值为(pc+4)送往ALU
+    ,input[31:0]  iAluAddrResult            // 来自ALU为ALU计算出的跳转地址
+    ,input[31:0]  iRegisterAddressResult           // 来自Decoder，jr指令用的地址
+    ,input        iIsBeq                // 来自控制单元
+    ,input        iIsBne               // 来自控制单元
+    ,input        iIsJ                   // 来自控制单元
+    ,input        iIsJal                   // 来自控制单元
+    ,input        iIsJr                   // 来自控制单元
+    ,input        iIsAluZero                  //来自ALU，Zero为1表示两个值相等，反之表示不相等
+    ,input        iCpuClock, iCpuReset           //时钟与复位复位信号用于给PC赋初始值，复位信号高电平有效
+    ,output[31:0] oLinkAddress             // JAL指令专用的PC+4
+    ,output[13:0] oProgromFetchAddr        // 向Progrom请求的地址
+);
+    
 
 
     reg[31:0] dProgramCounter, dNextProgramCounter;

@@ -63,8 +63,8 @@ module CoeMemory (
     InstructionMemory dInstructionMemory(
         //InstructionMemory get函数的接口
         .iRomClock(iCpuClock),
-        .iImAddressRequested(rom_adr_o),
-        .oInstructionFetched(Instruction_i),
+        .iAddressRequested(iImAddressRequested),
+        .oInstructionFetched(oInstructionFetched),
 
         //Coe串口修改 Instruction Memory的函数接口
         .iUpgReset(upg_rst),
