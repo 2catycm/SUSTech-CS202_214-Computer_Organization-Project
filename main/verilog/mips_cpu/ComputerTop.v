@@ -82,7 +82,7 @@ module ComputerTop (
         ,.Minisys_Lights(Minisys_Lights)
         ,.iDoSwitchRead(doSwitchRead)
         ,.iSwirchAddress(swirchAddress)
-        ,.iSwitchDataRead(switchDataRead)
+        ,.oSwitchDataRead(switchDataRead)
         ,.Minisys_Switches(Minisys_Switches)
         ,.iDoTubeWrite(doTubeWrite)
         ,.iTubeAddress(tubeAddress)
