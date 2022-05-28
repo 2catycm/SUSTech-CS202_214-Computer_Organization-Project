@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Ò¶è²Ãú
 // Create Date: 2022/05/28 
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
@@ -9,24 +9,24 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 module CoeMemory (
-    input iFpgaReset //æŒ‰é’®ï¼ŒæŒ‰ä¸‹åé‡ç½®cpu çŠ¶æ€ã€‚
-    ,input iFpgaClock // upgéœ€è¦ä¸€ä¸ªç³»ç»Ÿé’Ÿæ¥é‡ç½®ã€‚ 100MHz
-    ,input iUpgClock // upgæœ¬èº«å’Œä¸²å£é€šä¿¡çš„æ—¶é’Ÿã€‚
-    ,input iStartReceiveCoe // æŒ‰é’®ã€‚æŒ‰ä¸‹åå¼€å§‹æ¥å—ä¸²å£æ•°æ®ã€‚
+    input iFpgaReset //°´Å¥£¬°´ÏÂºóÖØÖÃcpu ×´Ì¬¡£
+    ,input iFpgaClock // upgĞèÒªÒ»¸öÏµÍ³ÖÓÀ´ÖØÖÃ¡£ 100MHz
+    ,input iUpgClock // upg±¾ÉíºÍ´®¿ÚÍ¨ĞÅµÄÊ±ÖÓ¡£
+    ,input iStartReceiveCoe // °´Å¥¡£°´ÏÂºó¿ªÊ¼½ÓÊÜ´®¿ÚÊı¾İ¡£
     ,input iFpgaUartFromPc// receive data by UART
-    ,output oCpuReset //å¦‚æœæ­£åœ¨æ¥å—æ•°æ®ï¼ŒCpuéœ€è¦åœæ­¢è¿è½¬ã€‚å› æ­¤æœ¬æ¨¡å—æä¾›ç»™å¤–ç•Œåœè½¬çš„ä¾æ®ã€‚
+    ,output oCpuReset //Èç¹ûÕıÔÚ½ÓÊÜÊı¾İ£¬CpuĞèÒªÍ£Ö¹ÔË×ª¡£Òò´Ë±¾Ä£¿éÌá¹©¸øÍâ½çÍ£×ªµÄÒÀ¾İ¡£
 
-    ,input iCpuClock // ç”¨åœ¨ä¸¤ä¸ªMemoryä¸Šï¼Œ 23MHz
-    //InstructionMemory çš„å‡½æ•°æ¥å£
-    ,input [13:0] iImAddressRequested //æ¥è‡ª Fetcher
-    ,output [31:0] oInstructionFetched //ç»™åˆ°å…¶ä»–æ¨¡å—ï¼Œå½“å‰çš„æŒ‡ä»¤ã€‚
-    //DataMemory çš„å‡½æ•°æ¥å£
-    ,input iDoMemWrite //æ¥è‡ªcontroller, è¡¨ç¤ºæ˜¯setå‡½æ•°è¿˜æ˜¯getå‡½æ•°
+    ,input iCpuClock // ÓÃÔÚÁ½¸öMemoryÉÏ£¬ 23MHz
+    //InstructionMemory µÄº¯Êı½Ó¿Ú
+    ,input [13:0] iImAddressRequested //À´×Ô Fetcher
+    ,output [31:0] oInstructionFetched //¸øµ½ÆäËûÄ£¿é£¬µ±Ç°µÄÖ¸Áî¡£
+    //DataMemory µÄº¯Êı½Ó¿Ú
+    ,input iDoMemWrite //À´×Ôcontroller, ±íÊ¾ÊÇsetº¯Êı»¹ÊÇgetº¯Êı
     // get
-    ,input [31:0]iDmAddressRequested // è¯·æ±‚çš„åœ°å€ï¼ˆæ˜¯ä»€ä¹ˆåœ°å€å°±ä¼ ä»€ä¹ˆï¼‰
-    ,output[31:0] oMemoryFetched //å°†ç”¨åˆ° MemOrIo é‡Œé¢ï¼Œä½œä¸ºå‚è€ƒ 
+    ,input [31:0]iDmAddressRequested // ÇëÇóµÄµØÖ·£¨ÊÇÊ²Ã´µØÖ·¾Í´«Ê²Ã´£©
+    ,output[31:0] oMemoryFetched //½«ÓÃµ½ MemOrIo ÀïÃæ£¬×÷Îª²Î¿¼ 
     //set
-    ,input [31:0]iDataToStore //æ¥è‡ª TODO
+    ,input [31:0]iDataToStore //À´×Ô TODO
 );
     ///////////// UART Programmer Pinouts ///////////// 
     wire upg_clk = iUpgClock;
@@ -59,14 +59,14 @@ module CoeMemory (
         .upg_done_o(upg_done_o)
     );
 
-    // è¿™é‡Œåˆ©ç”¨åˆ°åˆ°äº†uart IP æ ¸çš„ä¿¡å·ï¼Œç”¨æ¥æ¥å—æ•°æ®ã€‚
+    // ÕâÀïÀûÓÃµ½µ½ÁËuart IP ºËµÄĞÅºÅ£¬ÓÃÀ´½ÓÊÜÊı¾İ¡£
     InstructionMemory dInstructionMemory(
-        //InstructionMemory getå‡½æ•°çš„æ¥å£
+        //InstructionMemory getº¯ÊıµÄ½Ó¿Ú
         .iRomClock(iCpuClock),
         .iImAddressRequested(rom_adr_o),
         .oInstructionFetched(Instruction_i),
 
-        //Coeä¸²å£ä¿®æ”¹ Instruction Memoryçš„å‡½æ•°æ¥å£
+        //Coe´®¿ÚĞŞ¸Ä Instruction MemoryµÄº¯Êı½Ó¿Ú
         .iUpgReset(upg_rst),
         .iUpgClock(upg_clk_o),
         .iDoUpgWrites(upg_wen_o & (!upg_adr_o[14])),
@@ -75,16 +75,16 @@ module CoeMemory (
         .iIsUpgDone(upg_done_o)
     );
 
-    // è¿™é‡Œåˆ©ç”¨åˆ°åˆ°äº†uart IP æ ¸çš„ä¿¡å·ï¼Œç”¨æ¥æ¥å—æ•°æ®ã€‚
+    // ÕâÀïÀûÓÃµ½µ½ÁËuart IP ºËµÄĞÅºÅ£¬ÓÃÀ´½ÓÊÜÊı¾İ¡£
     DataMemory  dDataMemory(
-        //Data Memory Cpu get/setå‡½æ•°æ¥å£
+        //Data Memory Cpu get/setº¯Êı½Ó¿Ú
         .ram_clk_i(iCpuClock),
         .ram_wen_i(iDoMemWrite),
-        .ram_adr_i(iDmAddressRequested[15:2]), //åé¢ä¸¤ä½åœ°å€ä¸ç”¨ï¼Œå› ä¸ºåªæ”¯æŒload word/store wordã€‚
+        .ram_adr_i(iDmAddressRequested[15:2]), //ºóÃæÁ½Î»µØÖ·²»ÓÃ£¬ÒòÎªÖ»Ö§³Öload word/store word¡£
         .ram_dat_i(iDataToStore),
         .ram_dat_o(oMemoryFetched),
 
-        //Coeä¸²å£ä¿®æ”¹ Data Memoryçš„å‡½æ•°æ¥å£
+        //Coe´®¿ÚĞŞ¸Ä Data MemoryµÄº¯Êı½Ó¿Ú
         .upg_rst_i(upg_rst),
         .upg_clk_i(upg_clk_o),
         .upg_wen_i(upg_wen_o & upg_adr_o[14]),

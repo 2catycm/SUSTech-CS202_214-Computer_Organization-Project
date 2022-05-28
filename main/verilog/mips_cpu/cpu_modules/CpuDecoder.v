@@ -10,7 +10,7 @@
 // Description: 
 // 
 //////////////////////////////////////////////////////////////////////////////////
-module InstructionDecoder(oDataRead1,oDataRead2,iInstruction,iMemoryData,iAluResult,
+module CpuDecoder(oDataRead1,oDataRead2,iInstruction,iMemoryData,iAluResult,
                  iIsJal,iDoWriteReg,iIsRegFromMem,iIsRdOrRtWritten,oSignExtentedImmediate,iCpuClock,iCpuReset,iJalLinkAddress);
     //////////////// 输入输出 ////////////////
     output[31:0] oDataRead1;              // 输出的第一操作数

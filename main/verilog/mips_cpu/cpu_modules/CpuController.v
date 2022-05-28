@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: ç‹ç¿, å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Íõî£, Ò¶è²Ãú
 // 
 // Create Date: 2022/05/07 12:58:45
 // Module Name: CPU_TOP
@@ -21,7 +21,7 @@ oIsAluSource2FromImm,oAluOp,oIsShift,oIsArthIType);
     output oIsJ;
     output oIsJal;
     input[21:0] iAluResultHigh; // From the execution unit Alu_Result[31..10]
-    input[3:0]  iAluResult7to4; //æœ€å¤šæ”¯æŒ16ç§IOè®¾å¤‡ï¼Œæ ¹æ®åœ°å€çš„7:4æ¥ç¡®å®š.
+    input[3:0]  iAluResult7to4; //×î¶àÖ§³Ö16ÖÖIOÉè±¸£¬¸ù¾İµØÖ·µÄ7:4À´È·¶¨.
     output oIsRdOrRtWritten; // 1 indicate destination register is "rd"(R),otherwise it's "rt"(I)
     output oIsRegFromMemOrIo; // 1 indicates that data needs to be read from memory or I/O to the register
     output oDoWriteReg; // 1 indicates that the instruction needs to write to the register
@@ -63,7 +63,7 @@ oIsAluSource2FromImm,oAluOp,oIsShift,oIsArthIType);
     assign iDoMemoryRead = ((isLw) && isIo) ? 1'b1:1'b0; // Read memory
 
 
-    wire[15:0] ioDevices; //åªæœ‰é‚£ä¸€ä½æ˜¯1ï¼Œå…¶ä»–éƒ½æ˜¯0
+    wire[15:0] ioDevices; //Ö»ÓĞÄÇÒ»Î»ÊÇ1£¬ÆäËû¶¼ÊÇ0
     assign oDoLedWrite = ioDevices[0];
     assign oDoSwitchRead = ioDevices[1];
     assign oDoTubeWrite = ioDevices[2];
