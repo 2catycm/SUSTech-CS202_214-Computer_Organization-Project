@@ -25,7 +25,7 @@ module IoManager (
     //开关读取函数
     ,input iDoSwitchRead  //是否要读取开关
     ,input[1:0] iSwirchAddress //读取哪个地址
-    ,output [15:0] iSwitchDataRead //读取到的数
+    ,output [15:0] oSwitchDataRead //读取到的数
     ,input [23:0] Minisys_Switches //开发板的开关
 
     //数码管写入函数
@@ -46,11 +46,11 @@ module IoManager (
     );
 
     SwitchDriver dSwitchDriver(
-        .switclk(iCpuClock)
-        ,.switchrst(iCpuReset)
+        .iCpuClock(iCpuClock)
+        ,.iCpuReset(iCpuReset)
         ,.iDoSwitchRead(iDoSwitchRead)
         ,.iSwirchAddress(iSwirchAddress)
-        ,.switchrdata(iSwitchDataRead) 
+        ,.oSwitchDataRead(oSwitchDataRead) 
         ,.iFpgaSwitches(Minisys_Switches)
     );
                            
