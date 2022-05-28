@@ -56,6 +56,40 @@ module ComputerTop (
         ,.oMemoryFetched(memoryFetched)
         ,.iDataToStore(dataToStore)
     );
-    
+//////////////////////IoManager////////////////////// 
+    //灯写入函数
+    wire doLedWrite;
+    wire[1:0] lightAddress;
+    wire[15:0] lightDataToWrite;
+    //开关读取函数
+    wire doSwitchRead;
+    wire[1:0] swirchAddress;
+    wire[15:0] switchDataRead;
+    //数码管写入函数
+    wire doTubeWrite;
+    wire[1:0] tubeAddress;
+    wire[15:0] tubeDataToWrite;
+    IoManager dIoManager(
+        .Minisys_Clock(Minisys_Clock)
+        ,.iCpuClock(cpuClock)
+        ,.iCpuReset(cpuReset)
+        ,.Minisys_Uart_FromPc(Minisys_Uart_FromPc)
+        ,.Minisys_Uart_ToPc(Minisys_Uart_ToPc)
+        ,.Minisys_Audio_Pwm(Minisys_Audio_Pwm)
+        ,.iDoLedWrite(doLedWrite)
+        ,.iLightAddress(lightAddress)
+        ,.Minisys_Lights(Minisys_Lights)
+        ,.iDoSwitchRead(doSwitchRead)
+        ,.iSwirchAddress(swirchAddress)
+        ,.iSwitchDataRead(switchDataRead)
+        ,.Minisys_Switches(Minisys_Switches)
+        ,.iDoTubeWrite(doTubeWrite)
+        ,.iTubeAddress(tubeAddress)
+        ,.iTubeDataToWrite(tubeDataToWrite)
+        ,.Minisys_DigitalTubes_NotEnable(Minisys_DigitalTubes_NotEnable)
+        ,.Minisys_DigitalTube_Shape(Minisys_DigitalTube_Shape)
+    );
+//////////////////////Cpu////////////////////// 
+
 
 endmodule //ComputerTop
