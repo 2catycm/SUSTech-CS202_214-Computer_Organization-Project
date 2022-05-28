@@ -1,43 +1,177 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Ò¶è²Ãú
 // Create Date: 2022/05/28 
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
-//  Cpuæ˜¯è®¡ç®—æœºçš„ä¸­å¤®å¤„ç†å™¨ï¼Œèµ·åˆ°æ ¸å¿ƒçš„ä½œç”¨ã€‚
-//  æˆ‘ä»¬çš„Cpuè®¾è®¡ä¸­ï¼ŒCpuç‰¹æŒ‡è®¡ç®—æœºä¸­ä¸æ˜¯IOå¤–è®¾ã€ä¸æ˜¯å†…å­˜çš„é‚£ä¸€éƒ¨åˆ†ã€‚
-//  ä¸»è¦åŒ…æ‹¬äº†5å¤§æ¨¡å—ï¼šIF(InstructionFetcher), 
+//  CpuÊÇ¼ÆËã»úµÄÖĞÑë´¦ÀíÆ÷£¬Æğµ½ºËĞÄµÄ×÷ÓÃ¡£
+//  ÎÒÃÇµÄCpuÉè¼ÆÖĞ£¬CpuÌØÖ¸¼ÆËã»úÖĞ²»ÊÇIOÍâÉè¡¢²»ÊÇÄÚ´æµÄÄÇÒ»²¿·Ö¡£
+//  Ö÷Òª°üÀ¨ÁË5´óÄ£¿é£ºIF(InstructionFetcher), 
 //  CC(CpuController), CD(CpuDecoder), CE(CpuExecutor), 
-//  DM(DataManager, æ—§ç§°MemoryOrIo)
+//  DM(DataManager, ¾É³ÆMemoryOrIo)
 //////////////////////////////////////////////////////////////////////////////////
 
 module Cpu (
      input iCpuClock, iCpuReset
+    //Instruction Fetcher 
     ,input[31:0] iInstructionFetched
-    ,
+    ,output[13:0] oProgromFetchAddr
+    // DataMemory
+    ,output oDoMemWrite
+    ,output[31:0] oDmAddressRequested
+    ,input[31:0]  iMemoryFetched
+    ,output[31:0] oDataToStore
+    // IoManager
+    //µÆĞ´Èëº¯Êı
+    ,output oDoLedWrite
+    ,output[1:0]  oLightAddress
+    ,output[15:0] oLightDataToWrite
+    //¿ª¹Ø¶ÁÈ¡º¯Êı
+    ,output oDoSwitchRead
+    ,output[1:0] oSwirchAddress
+    ,input[15:0] iSwitchDataRead
+    //ÊıÂë¹ÜĞ´Èëº¯Êı
+    ,output oDoTubeWrite
+    ,output[1:0] oTubeAddress
+    ,output[15:0]oTubeDataToWrite
 );
-    wire isRdOrRtWritten;
-     CpuController dCpuController(
-        .Opcode(iInstructionFetched[31:26])
-        ,.Function_opcode(iInstructionFetched[5:0])
-        ,.Jr(Jr)
-        ,.Branch(Branch)
-        ,.nBranch(nBranch)
-        ,.Jmp(Jmp)
-        ,.Jal(Jal)
-        ,.Alu_resultHigh(ALU_Result[31:10])
-        ,.RegDST(RegDst)
-        ,.MemorIOtoReg(MemorIOtoReg)
-        ,.RegWrite(RegWrite)
-        ,.MemRead(MemRead)
-        ,.MemWrite(MemWrite)
-        ,.IORead(IORead)
-        ,.IOWrite(IOWrite)
-        ,.ALUSrc(ALUSrc)
-        ,.Sftmd(Sftmd)
-        ,.I_format(I_format)
-        ,.ALUOp(ALUOp)
+//////////// InstructionFetcher ////////////
+    //ÊäÈë
+    wire isJr, isBeq, isBne, isJ, isJal;  //À´×Ô controller
+    wire[31:0] aluAddrResult; //À´×Ô CpuExecutor
+    wire isAluZero; //À´×Ô CpuExecutor
+    wire[31:0] registerAddressResult; //À´×Ô Decoder, ÓÃÓÚjrÖ¸ÁîµÄÌø×ª¡£
+    //Êä³ö£ºÇ°ÃæÒÑ¶¨Òå: oProgromFetchAddr ÓÃÓÚÏòÍâÉèÇëÇó¡£
+    //Êµ¼ÊµÃµ½µÄÖ¸Áî¡£
+    //Ä¿Ç°µÄÊµÏÖÊÇºÍiInstructionFetchedÍêÈ«Ò»Ñù¡£
+    //Î´À´ÓĞ¿ÉÄÜÓĞÀ©Õ¹¹¦ÄÜ,InstructionFetcher½Ø¶Ï£¬ÖØĞÂ¼ÆËã¡£
+    wire[31:0] cpuCurrentInstruction; 
+    wire[31:0] branchBaseAddr; // branch µÄ»ù´¡µØÖ·£¬È»ºó»¹Òª¼ÓÉÏÁ¢¼´ÊıµÄ¡£
+    wire[31:0] linkAddress; //jalÒªĞ´Èë¼Ä´æÆ÷£¬ÕâÊÇÒªĞ´ÈëµÄÖµ¡£
+
+    InstructionFetcher dInstructionFetcher(
+        .iInstruction(iInstructionFetched), 
+        .oInstruction(cpuCurrentInstruction),
+        .oBranchBaseAddress(branchBaseAddr),
+        .iAluAddrResult(aluAddrResult),
+        .iRegisterAddressResult(registerAddressResult),
+        .iIsBeq(isBeq),
+        .iIsBne(isBne),
+        .iIsJ(isJ),
+        .iIsJal(isJal),
+        .iIsJr(isJr),
+        .iIsAluZero(isAluZero),
+        .iCpuClock(iCpuClock),
+        .iCpuReset(iCpuReset),
+        .oLinkAddress(linkAddress),
+        .oProgromFetchAddr(oProgromFetchAddr)
+    );
+//////////// CpuDecoder //////////// 
+    //ÊäÈë
+    wire[31:0] memoryOrIoData; //Ô­À´µÄr_wdata. À´×Ô DataMangaer
+    wire[31:0] aluResult;  //À´×Ô CpuExecutor. ÓëÉÏÃæµÄaluAddrResultÊÇ²»Í¬µÄresult¡£
+    wire doWriteReg, isRegFromMem, isRdOrRtWritten; //À´×Ô controller
+    //Êä³ö£º
+    wire[31:0] registerReadData1;
+    wire[31:0] registerReadData2;
+    wire[31:0] signExtentedImmediate;
+    // ÓëÇ°ÃæÄ£¿é/ĞÅºÅµÄ¹ØÏµ
+    assign registerAddressResult = registerReadData1;
+    CpuDecoder dCpuDecoder(
+        .oDataRead1(registerReadData1),
+        .oDataRead2(registerReadData2),
+        .iInstruction(cpuCurrentInstruction),
+        .iMemoryData(memoryOrIoData),
+        .iAluResult(aluResult),
+        .iIsJal(isJal),
+        .iDoWriteReg(doWriteReg),
+        .iIsRegFromMem(isRegFromMem),
+        .iIsRdOrRtWritten(isRdOrRtWritten),
+        .oSignExtentedImmediate(signExtentedImmediate),
+        .iCpuClock(iCpuClock),
+        .iCpuReset(iCpuReset),
+        .iJalLinkAddress(linkAddress)
+    );
+//////////// CpuExecutor //////////// 
+    //ÊäÈë
+    wire isShift, isAluSource2FromImm, isArthIType, isJr;// À´×Ôcontroller
+    wire[1:0] aluOp;// À´×Ôcontroller
+    //Êä³ö£ºÇ°ÃæÒÑ¶¨Òå isAluZero£¬aluResult£¬aluAddrResult
+    CpuExecutor dCpuExecutor(
+        .Read_data_1(registerReadData1),//the source of Ainput
+        .Read_data_2(registerReadData2),//one of the sources of Binput
+        .Sign_extend(signExtentedImmediate),//one of the sources of Binput llinstruction[31:26]
+        // from lFetch
+        .Function_opcode(cpuCurrentInstruction[5:0]),//instructions[5:0]
+        .Exe_opcode(cpuCurrentInstruction[31:26]),
+        .ALUOp(aluOp),//{(R_format || l_format), (Branch|| nBranch)}
+        .Shamt(cpuCurrentInstruction[10:6]),//instruction[10:6], the amount of shift bits
+        .Sftmd(isShift),    // means this is a shift instruction
+        .ALUSrc(isAluSource2FromImm),//means the 2nd operand is an immediate (except beq,bne)
+        //means l-Type instruction except beq, bne, LW,sw
+        .I_format(isArthIType),
+        .Jr(isJr),
+        .Zero(isAluZero), //InstructionFetcherÓÃµ½
+        .ALU_Result(aluResult),
+        .Addr_Result(aluAddrResult),//This means that upper right output
+        .PC_plus_4(branchBaseAddr)
+    );
+//////////// DataManager ////////////
+    //ÊäÈë
+    wire doWriteReg, doMemoryRead, doMemoryWrite;
+    wire doLedWrite, doSwitchRead, doSwitchRead, doTubeWrite;
+    //´¦Àí
+    wire doIoRead = doSwitchRead|| doSwitchRead;
+    wire doIoWrite = doLedWrite || doTubeWrite;
+
+    //¶Ôio ÊäÈëµÄ´¦Àí
+    wire[15:0] dataFromIo = iSwitchDataRead;
+    //¶Ôio Êä³öµÄ´¦Àí
+    wire[31:0] dataToStore;
+    assign oDataToStore = dataToStore;
+    assign oLightDataToWrite = dataToStore[15:0];
+    assign oTubeDataToWrite  = dataToStore[15:0];
+    DataManager dDataManager(
+        .iDoMemoryRead(doMemoryRead), // read memory, from Controller
+        .iDoMemoryWrite(doMemoryWrite), // write memory, from Controller
+        .iDoIoRead(doIoRead), // read IO, from Controller
+        .iDoIoWrite(doIoWrite), // write IO, from Controller
+        .iAluResultAsAddress(aluResult), // from alu_result in ALU
+        .oDataMemoryAddress(oDmAddressRequested), // address to Data-Memory
+        .iDataFromMemory(iMemoryFetched), // data read from Data-Memory
+        .iDataFromIo(dataFromIo), // data read from IO,16 bits
+        .oMemOrIODataRead(memoryOrIoData), // data to Decoder(register file)
+        .iDataFromRegister(registerReadData2), // data read from Decoder(register file)
+        .oDataToStore(dataToStore), //ÆäÊµ¾ÍÊÇ registerReadData2
+    );
+
+//////////// CpuController Ñ¹Öá³ö³¡£¬°ÑÇ°ÃæĞèÇóµÄÊäÈëĞÅºÅ¶¼³É¹¦¼ÆËãÂú×ã¡£////////////
+    
+    CpuController dCpuController(
+        .iOperationCode(cpuCurrentInstruction[31:26])
+        ,.iFunctionCode(cpuCurrentInstruction[5:0])
+        ,.oIsJr(isJr)
+        ,.oIsBeq(isBeq)
+        ,.oIsBne(isBne)
+        ,.oIsJ(isJ)
+        ,.oIsJal(isJal)
+        ,.iAluResultHigh(aluResult[31:10])
+        ,.iAluResult7to4(aluResult[7:4])
+        ,.oIsRdOrRtWritten(isRdOrRtWritten)
+        ,.oIsRegFromMemOrIo(isRegFromMem)
+        ,.oDoWriteReg(doWriteReg)
+
+        ,.oDoMemoryRead(doMemoryRead)
+        ,.oDoMemoryWrite(doMemoryWrite)
+        ,.oDoLedWrite(doLedWrite)
+        ,.oDoSwitchRead(doSwitchRead)
+        ,.oDoTubeWrite(doTubeWrite)
+
+        ,.oIsAluSource2FromImm(isAluSource2FromImm)
+        ,.oIsShift(isShift)
+        ,.oIsArthIType(isArthIType)
+        ,.oAluOp(aluOp)
     );
 endmodule //Cpu
