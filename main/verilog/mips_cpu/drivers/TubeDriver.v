@@ -30,7 +30,7 @@ module TubeDriver (
             left <= 15'b0;
             right <= 15'b0;
         end
-		else if(iDoLedWrite) begin
+		else if(iDoTubeWrite) begin
 			if(iTubeAddress == 2'b00)
 				right <= iTubeDataToWrite[15:0];
 			else if(iTubeAddress == 2'b10 )
@@ -40,12 +40,12 @@ module TubeDriver (
 
 endmodule //TubeDriver
 
-module DigitalTube(iFpgaClock, iCpuReset, iDoTubeWrite, oDigitalTubeNotEnable, oDigitalTubeShape, iTubeDataToWrite);
-    input iFpgaClock, iCpuReset, iDoTubeWrite;
-    output wire [7:0] oDigitalTubeNotEnable;
-    output wire [7:0] oDigitalTubeShape;
-    input [31:0] iTubeDataToWrite; // The input from the top module. Just like the led.
-
+module DigitalTube(
+    input iFpgaClock, iCpuReset, iDoTubeWrite
+    ,output wire [7:0] oDigitalTubeNotEnable
+    ,output wire [7:0] oDigitalTubeShape
+    ,input [31:0] iTubeDataToWrite // The input from the top module. Just like the led.
+); 
     reg [7:0] Dig_r; // The rnverse of Digital selection.
     reg [6:0] Y_r; // The reverse of Digital.
     wire rst;

@@ -24,7 +24,7 @@ module ComputerTop (
     // 计算提供 cpu_clk和 upgClock
     wire cpuClock, upgClock;
     cpuclk cpuclk_instance(
-        .clk_in1(iFpgaClk)
+        .clk_in1(Minisys_Clock)
         ,.clk_out1(cpuClock)
         ,.clk_out2(upgClock)
     );

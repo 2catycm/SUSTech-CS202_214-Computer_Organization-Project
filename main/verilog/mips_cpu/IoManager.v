@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Ò¶è²Ãú
 // Create Date: 2022/05/28 
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
@@ -17,23 +17,23 @@ module IoManager (
     ,output Minisys_Uart_ToPc
     ,output Minisys_Audio_Pwm
 
-    //ç¯å†™å…¥å‡½æ•°
-    ,input iDoLedWrite  //æ˜¯å¦è¦å†™å…¥ç¯
-    ,input[1:0] iLightAddress //è¦å†™å…¥ç¯çš„åœ°å€
-    ,input[15:0] iLightDataToWrite  //è¦å†™å…¥ç¯çš„æ•°æ®
-    ,output[23:0]Minisys_Lights //ç›´æ¥æ§åˆ¶å¼€å‘æ¿çš„ç¯ä½œä¸ºå‡½æ•°æ•ˆæœã€‚
-    //å¼€å…³è¯»å–å‡½æ•°
-    ,input iDoSwitchRead  //æ˜¯å¦è¦è¯»å–å¼€å…³
-    ,input[1:0] iSwirchAddress //è¯»å–å“ªä¸ªåœ°å€
-    ,output [15:0] iSwitchDataRead //è¯»å–åˆ°çš„æ•°
-    ,input [23:0] Minisys_Switches //å¼€å‘æ¿çš„å¼€å…³
+    //µÆĞ´Èëº¯Êı
+    ,input iDoLedWrite  //ÊÇ·ñÒªĞ´ÈëµÆ
+    ,input[1:0] iLightAddress //ÒªĞ´ÈëµÆµÄµØÖ·
+    ,input[15:0] iLightDataToWrite  //ÒªĞ´ÈëµÆµÄÊı¾İ
+    ,output[23:0]Minisys_Lights //Ö±½Ó¿ØÖÆ¿ª·¢°åµÄµÆ×÷Îªº¯ÊıĞ§¹û¡£
+    //¿ª¹Ø¶ÁÈ¡º¯Êı
+    ,input iDoSwitchRead  //ÊÇ·ñÒª¶ÁÈ¡¿ª¹Ø
+    ,input[1:0] iSwirchAddress //¶ÁÈ¡ÄÄ¸öµØÖ·
+    ,output [15:0] iSwitchDataRead //¶ÁÈ¡µ½µÄÊı
+    ,input [23:0] Minisys_Switches //¿ª·¢°åµÄ¿ª¹Ø
 
-    //æ•°ç ç®¡å†™å…¥å‡½æ•°
-    ,input iDoTubeWrite //æ˜¯å¦è¦å†™å…¥æ•°ç ç®¡
-    ,input[1:0] iTubeAddress //è¦å†™å…¥ç¯çš„åœ°å€
-    ,input[15:0] iTubeDataToWrite //è¦å†™å…¥æ•°ç ç®¡çš„æ•°æ®
-    ,output [7:0] Minisys_DigitalTubes_NotEnable //å¼€å‘æ¿çš„æ•°ç ç®¡
-    ,output [7:0] Minisys_DigitalTube_Shape //å¼€å‘æ¿çš„æ•°ç ç®¡
+    //ÊıÂë¹ÜĞ´Èëº¯Êı
+    ,input iDoTubeWrite //ÊÇ·ñÒªĞ´ÈëÊıÂë¹Ü
+    ,input[1:0] iTubeAddress //ÒªĞ´ÈëµÆµÄµØÖ·
+    ,input[15:0] iTubeDataToWrite //ÒªĞ´ÈëÊıÂë¹ÜµÄÊı¾İ
+    ,output [7:0] Minisys_DigitalTubes_NotEnable //¿ª·¢°åµÄÊıÂë¹Ü
+    ,output [7:0] Minisys_DigitalTube_Shape //¿ª·¢°åµÄÊıÂë¹Ü
 
 );
     LightDriver dLightDriver(
@@ -42,7 +42,7 @@ module IoManager (
         ,.iDoLedWrite(iDoLedWrite)  
         ,.iLightAddress(iLightAddress)
         ,.iLightDataToWrite(iLightDataToWrite) 
-        ,.oFpgaLights(oLights)
+        ,.oFpgaLights(Minisys_Lights)
     );
 
     SwitchDriver dSwitchDriver(
