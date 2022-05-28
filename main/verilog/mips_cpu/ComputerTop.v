@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Ò¶è²Ãú
 // Create Date: 2022/05/28 
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
@@ -21,7 +21,7 @@ module ComputerTop (
     ,output Minisys_Audio_Pwm
 );
 //////////////////////cpuclk//////////////////////
-    // è®¡ç®—æä¾› cpu_clkå’Œ upgClock
+    // ¼ÆËãÌá¹© cpu_clkºÍ upgClock
     wire cpuClock, upgClock;
     cpuclk cpuclk_instance(
         .clk_in1(iFpgaClk)
@@ -29,23 +29,23 @@ module ComputerTop (
         ,.clk_out2(upgClock)
     );
 //////////////////////CoeMemory//////////////////////
-    //å‡½æ•°1ï¼šæä¾›cpuReset
+    //º¯Êı1£ºÌá¹©cpuReset
     wire cpuReset;
-    //å‡½æ•°2: InstructionMemory
-    wire[13:0] imAddressRequested; //æ¥è‡ª Fetcher //è™½ç„¶æ˜¯å‡½æ•°è¾“å…¥ï¼Œä½†æ˜¯ä¹Ÿæ˜¯wireç±»å‹ã€‚
-    wire[31:0] instructionFetched; //ç»™åˆ°å…¶ä»–æ¨¡å—
-    //å‡½æ•°3: DataMemory
-    wire doMemWrite; //æ¥è‡ªcontroller
+    //º¯Êı2: InstructionMemory
+    wire[13:0] imAddressRequested; //À´×Ô Fetcher //ËäÈ»ÊÇº¯ÊıÊäÈë£¬µ«ÊÇÒ²ÊÇwireÀàĞÍ¡£
+    wire[31:0] instructionFetched; //¸øµ½ÆäËûÄ£¿é
+    //º¯Êı3: DataMemory
+    wire doMemWrite; //À´×Ôcontroller
     //get
     wire[31:0] dmAddressRequested;
     wire[31:0] memoryFetched;
     //set
     wire[31:0] dataToStore;
     CoeMemory dCoeMemory(
-        .iFpgaReset(Minisys_Button[3]) //è¥¿æŒ‰é’®
+        .iFpgaReset(Minisys_Button[3]) //Î÷°´Å¥
         ,.iFpgaClock(Minisys_Clock)
         ,.iUpgClock(upgClock)
-        ,.iStartReceiveCoe(Minisys_Button[4]) //ä¸œæŒ‰é’®
+        ,.iStartReceiveCoe(Minisys_Button[4]) //¶«°´Å¥
         ,.iFpgaUartFromPc(Minisys_Uart_FromPc)
         ,.oCpuReset(cpuReset)
         ,.iCpuClock(cpuClock)
@@ -57,16 +57,16 @@ module ComputerTop (
         ,.iDataToStore(dataToStore)
     );
 //////////////////////IoManager////////////////////// 
-    //ç¯å†™å…¥å‡½æ•°
+    //µÆĞ´Èëº¯Êı
     wire doLedWrite;
     wire[1:0] lightAddress;
     wire[15:0] lightDataToWrite;
-    //å¼€å…³è¯»å–å‡½æ•°
+    //¿ª¹Ø¶ÁÈ¡º¯Êı
     wire doSwitchRead;
     wire[1:0] swirchAddress;
-    //è¾“å‡º
+    //Êä³ö
     wire[15:0] switchDataRead;
-    //æ•°ç ç®¡å†™å…¥å‡½æ•°
+    //ÊıÂë¹ÜĞ´Èëº¯Êı
     wire doTubeWrite;
     wire[1:0] tubeAddress;
     wire[15:0] tubeDataToWrite;
@@ -90,21 +90,21 @@ module ComputerTop (
         ,.Minisys_DigitalTubes_NotEnable(Minisys_DigitalTubes_NotEnable)
         ,.Minisys_DigitalTube_Shape(Minisys_DigitalTube_Shape)
     );
-//////////////////////Cpuå‹è½´ç™»åœºï¼Œå¤„ç†å‰é¢çš„è®¾å¤‡////////////////////// 
+//////////////////////CpuÑ¹ÖáµÇ³¡£¬´¦ÀíÇ°ÃæµÄÉè±¸////////////////////// 
 
     Cpu dCpu(
         .iCpuClock(cpuClock)
         ,.iCpuReset(cpuReset)
-        //CPUè¯·æ±‚æŒ‡ä»¤
+        //CPUÇëÇóÖ¸Áî
         ,.iInstructionFetched(instructionFetched)
         ,.oProgromFetchAddr(imAddressRequested)
-        //CPUè¯·æ±‚è¯»å†™å†…å­˜
+        //CPUÇëÇó¶ÁĞ´ÄÚ´æ
         ,.oDoMemWrite(doMemWrite)
         ,.oDmAddressRequested(dmAddressRequested)
         ,.iMemoryFetched(memoryFetched)
-        ,.oDataToStore(dataToStore)  //ä»cpuå¾—çŸ¥è¦å­˜ä»€ä¹ˆæ•°æ®åˆ°IO/å†…å­˜
-        //CPUè¯·æ±‚è¯»å†™IOè®¾å¤‡
-        ,.oDoLedWrite(doLedWrite) //ä»cpuå¾—çŸ¥
+        ,.oDataToStore(dataToStore)  //´ÓcpuµÃÖªÒª´æÊ²Ã´Êı¾İµ½IO/ÄÚ´æ
+        //CPUÇëÇó¶ÁĞ´IOÉè±¸
+        ,.oDoLedWrite(doLedWrite) //´ÓcpuµÃÖª
         ,.oLightAddress(lightAddress)
         ,.oLightDataToWrite(lightDataToWrite)
         ,.oDoSwitchRead(doSwitchRead)

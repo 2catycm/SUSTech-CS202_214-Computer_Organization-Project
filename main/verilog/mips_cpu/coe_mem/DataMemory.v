@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology 鍗楁柟绉戞妧澶у
-// Engineer: 鐜嬬澘锛屽紶鍔涘畤
+// Company: Southern University of Science and Technology 南方科技大学
+// Engineer: 王睿，张力宇
 // 
 // Create Date: 2022/05/07 12:58:45
 // Module Name: CPU_TOP

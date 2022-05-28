@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: ç‹ç¿ï¼Œ å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Íõî££¬ Ò¶è²Ãú
 // 
 // Create Date: 2022/05/07 12:58:45
 // Module Name: InstructionMemory

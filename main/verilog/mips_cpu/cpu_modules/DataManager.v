@@ -11,20 +11,20 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module DataManager(
-    input iDoMemoryRead, // read memory, from Controller
-    input iDoMemoryWrite, // write memory, from Controller
-    input iDoIoRead, // read IO, from Controller
-    input iDoIoWrite, // write IO, from Controller
+    input iDoMemoryRead // read memory, from Controller
+    ,input iDoMemoryWrite // write memory, from Controller
+    ,input iDoIoRead // read IO, from Controller
+    ,input iDoIoWrite // write IO, from Controller
     // address
-    input[31:0] iAluResultAsAddress, // from alu_result in ALU
-    output[31:0] oDataMemoryAddress, // address to Data-Memory
+    ,input[31:0] iAluResultAsAddress // from alu_result in ALU
+    ,output[31:0] oDataMemoryAddress // address to Data-Memory
     // load word
-    input[31:0] iDataFromMemory, // data read from Data-Memory
-    input[15:0] iDataFromIo, // data read from IO,16 bits
-    output[31:0] oMemOrIODataRead, // data to Decoder(register file)
+    ,input[31:0] iDataFromMemory // data read from Data-Memory
+    ,input[15:0] iDataFromIo // data read from IO,16 bits
+    ,output[31:0] oMemOrIODataRead // data to Decoder(register file)
     // store word
-    input[31:0] iDataFromRegister, // data read from Decoder(register file)
-    output reg[31:0] oDataToStore, // data to memory or I/O£¨m_wdata, io_wdata£©
+    ,input[31:0] iDataFromRegister // data read from Decoder(register file)
+    ,output reg[31:0] oDataToStore // data to memory or I/O£¨m_wdata, io_wdata£©
 );
     assign oDataMemoryAddress= iAluResultAsAddress;
     // The data wirte to register file may be from memory or io. 
