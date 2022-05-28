@@ -64,6 +64,7 @@ module ComputerTop (
     //开关读取函数
     wire doSwitchRead;
     wire[1:0] swirchAddress;
+    //输出
     wire[15:0] switchDataRead;
     //数码管写入函数
     wire doTubeWrite;
@@ -89,7 +90,29 @@ module ComputerTop (
         ,.Minisys_DigitalTubes_NotEnable(Minisys_DigitalTubes_NotEnable)
         ,.Minisys_DigitalTube_Shape(Minisys_DigitalTube_Shape)
     );
-//////////////////////Cpu////////////////////// 
+//////////////////////Cpu压轴登场，处理前面的设备////////////////////// 
 
+    Cpu dCpu(
+        .iCpuClock(cpuClock)
+        ,.iCpuReset(cpuReset)
+        //CPU请求指令
+        ,.iInstructionFetched(instructionFetched)
+        ,.oProgromFetchAddr(imAddressRequested)
+        //CPU请求读写内存
+        ,.oDoMemWrite(doMemWrite)
+        ,.oDmAddressRequested(dmAddressRequested)
+        ,.iMemoryFetched(memoryFetched)
+        ,.oDataToStore(dataToStore)  //从cpu得知要存什么数据到IO/内存
+        //CPU请求读写IO设备
+        ,.oDoLedWrite(doLedWrite) //从cpu得知
+        ,.oLightAddress(lightAddress)
+        ,.oLightDataToWrite(lightDataToWrite)
+        ,.oDoSwitchRead(doSwitchRead)
+        ,.oSwirchAddress(swirchAddress)
+        ,.iSwitchDataRead(switchDataRead)
+        ,.oDoTubeWrite(doTubeWrite)
+        ,.oTubeAddress(tubeAddress)
+        ,.oTubeDataToWrite(tubeDataToWrite)
+    );
 
 endmodule //ComputerTop
