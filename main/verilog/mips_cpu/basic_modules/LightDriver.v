@@ -4,38 +4,37 @@
 // Engineer: 张力宇
 // 
 // Create Date: 2022/05/07 12:58:45
-// Module Name: CPU_TOP
+// Module Name: LightDriver
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module LightDriver(led_clk, ledrst, ledwrite, ledcs, ledaddr,ledwdata, ledout);
-    input led_clk;    		    // 时钟信号
-    input ledrst; 		        // 复位信号
-    input ledwrite;		       	// 写信号
-    input ledcs;		      	// 从memorio来的LED片选信号   !!!!!!!!!!!!!!
-    input[1:0] ledaddr;	        // 到LED模块的地址低端  !!!!!!!!!!!!!!!!!!!!
-    input[15:0] ledwdata;	  	// 写到LED模块的数据，注意数据线只有16根
-    output[23:0] ledout;		// 向板子上输出的24位LED信号
+module LightDriver(iCpuClock, iCpuReset, iDoIOWrite, iDoLedWrite, iLightAddress,iLightDataToWrite, oFpgaLights);
+    input iCpuClock;    		    // 时钟信号
+    input iCpuReset; 		        // 复位信号
+    input iDoIOWrite;		       	// 写信号
+    input iDoLedWrite;		      	// 从memorio来的LED片选信号   !!!!!!!!!!!!!!
+    input[1:0] iLightAddress;	        // 到LED模块的地址低端  !!!!!!!!!!!!!!!!!!!!
+    input[15:0] iLightDataToWrite;	  	// 写到LED模块的数据，注意数据线只有16根
+    output reg [23:0] oFpgaLights;		// 向板子上输出的24位LED信号
   
-    reg [23:0] ledout;
     
-    always@(posedge led_clk or posedge ledrst) begin
-        if(ledrst) begin
-            ledout <= 24'h000000;
+    always@(posedge iCpuClock or posedge iCpuReset) begin
+        if(iCpuReset) begin
+            oFpgaLights <= 24'h000000;
         end
-		else if(ledcs && ledwrite) begin
-			if(ledaddr == 2'b00)
-				ledout[23:0] <= { ledout[23:16], ledwdata[15:0] };
-			else if(ledaddr == 2'b10 )
-				ledout[23:0] <= { ledwdata[7:0], ledout[15:0] };
+		else if(iDoLedWrite && iDoIOWrite) begin
+			if(iLightAddress == 2'b00)
+				oFpgaLights[15:0] <=  iLightDataToWrite[15:0];
+			else if(iLightAddress == 2'b10 )
+				oFpgaLights[23:16] <= iLightDataToWrite[7:0];
 			else
-				ledout <= ledout;
+				oFpgaLights <= oFpgaLights;
         end
 		else begin
-            ledout <= ledout;
+            oFpgaLights <= oFpgaLights;
         end
     end
 endmodule
