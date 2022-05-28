@@ -1,15 +1,15 @@
 `timescale 1ns / 1ps
-module Tubs(clock, reset, IOWrite, Dig, Y, in_num);
+module TubeDriver(clock, reset, IOWrite, oDigitalTubeNotEnable, oDigitalTubeShape, in_num);
     input clock, reset, IOWrite;
-    output wire [7:0] Dig;
-    output wire [7:0] Y;
+    output wire [7:0] oDigitalTubeNotEnable;
+    output wire [7:0] oDigitalTubeShape;
     input [31:0] in_num; // The input from the top module. Just like the led.
 
     reg [7:0] Dig_r; // The rnverse of Digital selection.
     reg [6:0] Y_r; // The reverse of Digital.
     wire rst;
-    assign Dig = ~Dig_r;
-    assign Y = {{1'b1},{~Y_r}}; //this is notenable,
+    assign oDigitalTubeNotEnable = ~Dig_r;
+    assign oDigitalTubeShape = {{1'b1},{~Y_r}}; //this is notenable,
     assign rst =~reset;//ÓÐÐ§ÊÇ1
     reg clk;
     reg [31:0] clk_cnt;

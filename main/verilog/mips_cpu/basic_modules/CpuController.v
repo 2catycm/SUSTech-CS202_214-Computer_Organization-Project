@@ -11,7 +11,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module control32(Opcode,Function_opcode,Jr,Branch,nBranch,Jmp,Jal, Alu_resultHigh, RegDST, MemorIOtoReg, RegWrite, MemRead, MemWrite, IORead, IOWrite,
+module CpuController(Opcode,Function_opcode,Jr,Branch,nBranch,Jmp,Jal, Alu_resultHigh, RegDST, MemorIOtoReg, RegWrite, MemRead, MemWrite, IORead, IOWrite,
 ALUSrc,ALUOp,Sftmd,I_format);
     input[5:0] Opcode; // instruction[31:26], opcode
     input[5:0] Function_opcode; // instructions[5:0], funct

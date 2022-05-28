@@ -11,7 +11,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module Switch(switclk, switchrst, switchread, switchctl,switchaddr, switchrdata, switch_input);
+module SwitchDriver(switclk, switchrst, switchread, switchctl,switchaddr, switchrdata, switch_input);
     input switclk;			        //  时钟信号
     input switchrst;			        //  复位信号
     input switchctl;			        //  从memorio来的switch片  !!!!!!!!!!

@@ -11,7 +11,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module LED(led_clk, ledrst, ledwrite, ledcs, ledaddr,ledwdata, ledout);
+module LightDriver(led_clk, ledrst, ledwrite, ledcs, ledaddr,ledwdata, ledout);
     input led_clk;    		    // 时钟信号
     input ledrst; 		        // 复位信号
     input ledwrite;		       	// 写信号
