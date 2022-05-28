@@ -25,6 +25,7 @@ oIsAluSource2FromImm,oAluOp,oIsShift,oIsArthIType);
     output oIsRdOrRtWritten; // 1 indicate destination register is "rd"(R),otherwise it's "rt"(I)
     output oIsRegFromMemOrIo; // 1 indicates that data needs to be read from memory or I/O to the register
     output oDoWriteReg; // 1 indicates that the instruction needs to write to the register
+    
     output oDoMemoryRead; // 1 indicates that the instruction needs to read from the memory
     output oDoMemoryWrite; // 1 indicates that the instruction needs to write to the memory
     output oDoLedWrite; // 1 indicates I/O write

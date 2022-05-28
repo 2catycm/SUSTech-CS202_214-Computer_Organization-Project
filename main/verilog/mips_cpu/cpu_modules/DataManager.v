@@ -4,14 +4,13 @@
 // Engineer: ’≈¡¶”Ó£¨“∂Ë≤√˙
 // 
 // Create Date: 2022/05/07 12:58:45
-// Module Name: MemOrIO
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module MemOrIO(
+module DataManager(
     input iDoMemoryRead, // read memory, from Controller
     input iDoMemoryWrite, // write memory, from Controller
     input iDoIoRead, // read IO, from Controller
@@ -25,24 +24,19 @@ module MemOrIO(
     output[31:0] oMemOrIODataRead, // data to Decoder(register file)
     // store word
     input[31:0] iDataFromRegister, // data read from Decoder(register file)
-    output reg[31:0] iDataToStore, // data to memory or I/O£®m_wdata, io_wdata£©
-    // what to do with led and switch
-    output LEDCtrl, // LED Chip Select
-    output SwitchCtrl // Switch Chip Select
+    output reg[31:0] oDataToStore, // data to memory or I/O£®m_wdata, io_wdata£©
 );
     assign oDataMemoryAddress= iAluResultAsAddress;
     // The data wirte to register file may be from memory or io. 
     // While the data is from io, it should be the lower 16bit of oMemOrIODataRead. 
-    assign oMemOrIODataRead = (iDoMemoryRead == 1)? iDataFromMemory:{{16{iDataFromIo[15]}},iDataFromIo};
-    // Chip select signal of Led and Switch are all active high;
-    assign LEDCtrl = (iDoIoWrite == 1'b1) ? 1'b1 : 1'b0;
-    assign SwitchCtrl = (iDoIoRead == 1'b1) ? 1'b1 : 1'b0;
+    assign oMemOrIODataRead = (iDoMemoryRead == 1)? iDataFromMemory:{{16'b0},iDataFromIo};
+    
 
     always @* begin
         if((iDoMemoryWrite==1)||(iDoIoWrite==1))
             //wirte_data could go to either memory or IO. where is it from?
-            iDataToStore = iDataFromRegister;
+            oDataToStore = iDataFromRegister;
         else
-            iDataToStore = 32'hZZZZZZZZ;
+            oDataToStore = 32'hZZZZZZZZ;
     end
 endmodule
