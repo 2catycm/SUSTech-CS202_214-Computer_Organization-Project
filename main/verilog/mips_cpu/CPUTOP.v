@@ -4,7 +4,6 @@
 // Engineer: 张力宇, 叶璨铭
 // 
 // Create Date: 2022/05/07 12:58:45
-// Module Name: CPU_TOP
 // Project Name: MIPS Single Cycle CPU
 // Target Devices: Xilinx Board. Tested on MINISYS.
 // Description: 
@@ -24,13 +23,6 @@ module CpuTop(
     output[7:0] oDigitalTubeNotEnable, //which tubs to light
     output[7:0] oDigitalTubeShape  //light what
 );
-///////////// Cpu Clock ///////////// 
-    wire cpu_clk;
-    cpuclk cpuclk_instance(
-        .clk_in1(iFpgaClk),
-        .clk_out1(cpu_clk),
-        .clk_out2(upg_clk)
-    );
 
 ///////////// UART Programmer Pinouts ///////////// 
     wire upg_clk, upg_clk_o;
@@ -62,7 +54,13 @@ module CpuTop(
         .upg_dat_o(upg_dat_o),
         .upg_done_o(upg_done_o)
     );
-
+///////////// Cpu Clock ///////////// 
+        wire cpu_clk;
+        cpuclk cpuclk_instance(
+            .clk_in1(iFpgaClk),
+            .clk_out1(cpu_clk),
+            .clk_out2(upg_clk)
+        );
 ///////////// Ifetc32 和 progrom ///////////// 
     // Control signals
     wire Branch, nBranch, Jmp, Jal, Jr, Zero, RegWrite, RegDst;
@@ -159,7 +157,7 @@ module CpuTop(
     wire [31:0] ram_dat_o;
     wire [31:0] addr_out;
     // 这里利用到到了uart IP 核的信号，用来接受数据。
-    DataMemory   dDataMemory(
+    DataMemory  dDataMemory(
         .ram_clk_i(cpu_clk),
         .ram_wen_i(MemWrite),
         .ram_adr_i(addr_out[15:2]),
@@ -180,17 +178,17 @@ module CpuTop(
     wire SwitchCtrl;
     assign addr_in = ALU_Result; //膷偶聶盲赂聙膰沤木暮聧聲莽艧呕盲偶聺膰聦聛暮聬聧暮颅聴莽聸赂暮聬?
     MemOrIO  MemOrIO_instance(
-        .mRead(MemRead), // read memory, from Controller
-        .mWrite(MemWrite), // write memory, from Controller
-        .ioRead(IORead), // read IO, from Controller
-        .ioWrite(IOWrite), // write IO, from Controller
-        .addr_in(addr_in), // from alu_result in ALU
-        .addr_out(addr_out), // address to Data-Memory
-        .m_rdata(ram_dat_o), // data read from Data-Memory
-        .io_rdata(ioread_data), // data read from IO,16 bits
-        .r_wdata(r_wdata), // data to Decoder(register file)
-        .r_rdata(read_data_2), // data read from Decoder(register file)
-        .write_data(write_data_fromMemoryIO), // data to memor y or I/O膹藕聢m_wdata, io_wdata膹藕?
+        .iDoMemoryRead(MemRead), // read memory, from Controller
+        .iDoMemoryWrite(MemWrite), // write memory, from Controller
+        .iDoIoRead(IORead), // read IO, from Controller
+        .iDoIoWrite(IOWrite), // write IO, from Controller
+        .iAluResultAsAddress(addr_in), // from alu_result in ALU
+        .oDataMemoryAddress(addr_out), // address to Data-Memory
+        .iDataFromMemory(ram_dat_o), // data read from Data-Memory
+        .iDataFromIo(ioread_data), // data read from IO,16 bits
+        .oMemOrIODataRead(r_wdata), // data to Decoder(register file)
+        .iDataFromRegister(read_data_2), // data read from Decoder(register file)
+        .iDataToStore(write_data_fromMemoryIO), // data to memor y or I/O膹藕聢m_wdata, io_wdata膹藕?
         .LEDCtrl(LEDCtrl), // LED Chip Select
         .SwitchCtrl(SwitchCtrl) // Switch Chip Select
     );
@@ -215,32 +213,6 @@ module CpuTop(
             .PC_plus_4(branch_base_addr)//pc+4
     );
         
-    SwitchDriver dSwitchDriver(
-        .switclk(cpu_clk),
-        .switchrst(rst), 
-        .switchread(IORead), 
-        .switchctl(SwitchCtrl),
-        .switchaddr(addr_in[1:0]), 
-        .switchrdata(ioread_data), //膷偶聶盲赂艦膰聵?15盲藵聧莽職聞
-        .switch_input(iSwitches)
-    );
-                           
-    LightDriver dLightDriver(
-        .led_clk(cpu_clk), 
-        .ledrst(rst), 
-        .ledwrite(IOWrite),//盲钮聨controller膰聺慕莽職聞 
-        .ledcs(LEDCtrl),    
-        .ledaddr(addr_in[1:0]),
-        .ledwdata(write_data_fromMemoryIO[15:0]), 
-        .ledout(oLights)
-    );
-    TubeDriver dTubeDriver(
-        .clock(iFpgaClk),
-        .reset(iFpgaRst),
-        .IOWrite(IOWrite),
-        .oDigitalTubeNotEnable(oDigitalTubeNotEnable),
-        .oDigitalTubeShape(oDigitalTubeShape),
-        .in_num(write_data_fromMemoryIO)
-    );
+    
         
 endmodule

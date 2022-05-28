@@ -14,7 +14,6 @@
 module LightDriver(iCpuClock, iCpuReset, iDoIOWrite, iDoLedWrite, iLightAddress,iLightDataToWrite, oFpgaLights);
     input iCpuClock;    		    // 时钟信号
     input iCpuReset; 		        // 复位信号
-    input iDoIOWrite;		       	// 写信号
     input iDoLedWrite;		      	// 从memorio来的LED片选信号   !!!!!!!!!!!!!!
     input[1:0] iLightAddress;	        // 到LED模块的地址低端  !!!!!!!!!!!!!!!!!!!!
     input[15:0] iLightDataToWrite;	  	// 写到LED模块的数据，注意数据线只有16根
@@ -25,7 +24,7 @@ module LightDriver(iCpuClock, iCpuReset, iDoIOWrite, iDoLedWrite, iLightAddress,
         if(iCpuReset) begin
             oFpgaLights <= 24'h000000;
         end
-		else if(iDoLedWrite && iDoIOWrite) begin
+		else if(iDoLedWrite) begin
 			if(iLightAddress == 2'b00)
 				oFpgaLights[15:0] <=  iLightDataToWrite[15:0];
 			else if(iLightAddress == 2'b10 )
