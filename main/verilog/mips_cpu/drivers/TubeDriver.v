@@ -27,8 +27,8 @@ module TubeDriver (
     {left, right});
     always@(posedge iCpuClock or posedge iCpuReset) begin
         if(iCpuReset) begin
-            left <= 15'b0;
-            right <= 15'b0;
+            left <= 16'b0;
+            right <= 16'b0;
         end
 		else if(iDoTubeWrite) begin
 			if(iTubeAddress == 2'b00)
