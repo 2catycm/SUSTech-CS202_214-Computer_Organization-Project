@@ -1,0 +1,9 @@
+.data
+.text
+    li $a0 25
+    jal getFloat
+    li $v0 1
+    syscall
+    li $v0 10
+    syscall
+.include "../../main/mips/commons/std_algorithm.mips"

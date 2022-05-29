@@ -1,0 +1,59 @@
+######################## 有符号/无符号 有关处理宏 ######################## 
+# 输入register寄存器， 计算register寄存器作为8位有符号数的等价32位有符号数并存回该寄存器。
+.macro convert_8_to_signed(%register)
+	sll %register %register 24
+	sra %register %register 24
+.end_macro
+# 输入register寄存器，  计算register寄存器作为16位有符号数的等价32位有符号数并存回该寄存器。
+.macro convert_16_to_signed(%register)
+	sll %register %register 16
+	sra %register %register 16
+.end_macro
+# 输入register寄存器，  计算
+# register寄存器作为8位   7, 6....0 = 符号, 绝对值
+# 的等价32位有符号数并存回该寄存器
+# 会修改t0:2 寄存器
+.macro convert_signedAbs8_to_signed(%register)
+   move $t2 %register  # 为了防止原本的寄存器就是t0或者t1，我们先用t2备份原本寄存器的值。
+    andi $t0 $t2 0x7F # 取出绝对值放在t0
+    andi $t1 $t2 0x80 # 取出符号位放在t1
+    srl  $t1 $t1 7  # 得到 0或者1. 0说明是正数，1说明是负数。
+    beq $t1 $zero end_if_convert_signedAbs8 # 如果是正数，那么不需要处理，直接返回t0
+        # 如果是负数, 做一下处理
+        sub $t0 $zero $t0
+    end_if_convert_signedAbs8:
+    move %register $t0
+.end_macro
+	
+# 求IEEE 754 单精度浮点数编码的符号位和指数位 （一共1+8=9位）。
+# 输入 register(32位有符号整数)， 返回register
+# 建议的register是$a0
+.macro convert_signed32_to_float(%register)
+	# 我们对32位有符号数做浮点数转换，而不是8位。这样数据集1和数据集3的处理才是统一的。
+
+	# 符号位 （1位）
+	srl $t0 %register 31 # 取第31位。 
+	andi $t0 $t0 1  # 现在t0为1表示是负数，否则是正数。
+	sll $t1 $t0 8 # 放在第8位，现在t1是结果的一部分。7..0留给指数位
+
+	# 指数位 （8位）
+	# 取绝对值 到a0.
+	beq $t0 $zero end_if_getFloat # 如果是正数就不用管了。 a0就是答案。
+		# 如果是负数。
+		xori %register %register 0xFFFFFFFF  # 不是0x7FFFFFFF. 我们现在是32位有符号数，求相反数。
+		addi %register %register 1
+	end_if_getFloat:
+
+
+	# 绝对值右移多少次变成0 就是 指数位的大小。
+	li $t3 0
+	do_while_case6:
+		srl %register %register 1 # a0是8位有符号正数。
+		addi $t3 $t3 1
+	bne %register  $zero do_while_case6
+	addi $t3 $t3 -1
+	addi $t3 $t3 0x7f # 加上bias
+	andi $t3 $t3 0xFF #现在是浮点数的指数位, 只有8位，万一溢出了。
+
+	or %register $t3 $t1 # 合并两个数
+.end_macro

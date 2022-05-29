@@ -1,0 +1,51 @@
+.include "../commons/std_io_minisys.macro.mips"
+.data
+
+.text
+jal static_initialization
+begin:
+case0:
+    li $a0 7
+	jal write_data
+	li $a0 1
+	jal write_control
+    li $v0 500
+    jal sleep
+case1:
+	li $a0 2
+	jal write_control
+	li $v0 500
+    jal sleep
+case2:
+	li $a0 4
+	jal write_control
+    li $v0 500
+    jal sleep
+case3:
+	li $a0 8
+	jal write_control
+    li $v0 500
+    jal sleep
+case4:
+	li $a0 16
+	jal write_control
+    li $v0 500
+    jal sleep
+case5:
+	li $a0 32
+	jal write_control
+    li $v0 500
+    jal sleep
+case6:
+	li $a0 64
+	jal write_control
+    li $v0 500
+    jal sleep
+case7:
+	li $a0 128
+	jal write_control
+    li $v0 500
+    jal sleep
+    j begin
+.include "../commons/std_io_minisys.impl.mips"
+

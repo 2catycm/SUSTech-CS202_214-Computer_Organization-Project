@@ -1,0 +1,226 @@
+.include "../commons/std_io_minisys.macro.mips"
+.include "../commons/std_algorithm.macro.mips"
+.data
+.text
+.globl main
+main: # todo: 没什么用，coe文件不能位置无关。
+jal static_initialization
+begin:
+    sleep(50)
+    
+    jal decode # 会覆盖a0 a1的值。
+    move $a2 $a0
+    
+    hint_case_number() # 指示当前是哪一个case. 不会干扰前面已有的灯。
+    
+    set_s_to_be_seven_numbers()
+    beq $a2 $zero case0
+    beq $a2 $s1 case1
+    beq $a2 $s2 case2
+    beq $a2 $s3 case3
+    beq $a2 $s4 case4
+    beq $a2 $s5 case5
+    beq $a2 $s6 case6
+    beq $a2 $s7 case7
+
+# case0 测试状态：读入逻辑可信。 
+# 结果保存位置
+# n = 176($fp)，  array = $fp, $fp+4, $fp+8, ...
+case0:
+    read_8_as_unsigned($s1) # s1=n，表示数组长度
+    sw $s1 176($fp) # 176($fp) 为数组长度
+
+    bne $s1 $zero end_if_case0_0
+        jal exception_hint  # 如果是0，只是警告，不重新输入。
+    end_if_case0_0:
+    li $t0 10
+    ble $s1  $t0 end_if_case0_1
+         jal exception_hint  # 如果比10大，只是警告，不重新输入。
+    end_if_case0_1:
+
+    addi $s2 $fp 0 # 0倍的s0， s2现在是数据集0的基地址。
+    
+    li $s7 0 # i 变量. 用s系列，防止调用函数后失效。
+    for_case0:
+    	beq $s7 $s1 end_for_case0
+		# 用control的右边四个灯提示正在读第几个数
+		lw $t1 4($k0) # t1为左灯的值。
+		andi $t1 $t1 0xFFFFFFF0 # 将最后4位强行清除为0
+		or $t1 $t1 $s7
+		sw $t1 4($k0)
+		flush_lights()
+		sleep(100)
+	# 读取新的数。
+        read_8_as_unsigned($a0)
+        sw $a0 0($s2) # 存入s2对应的内存
+        addi $s7 $s7 1
+        addi $s2 $s2 4 # 指针右移
+        j for_case0
+    end_for_case0:
+    
+    warn_data() # 表示输入结束。
+    j begin
+case1:
+    move $v0 $fp # 数据集0头
+    lw $s1 176($fp) # 数组实际长度n
+    sll $s1 $s1 2 # 数组长度左移两位乘4
+    add $v1 $v0 $s1 # 数据集0尾
+    
+    add $a0 $v0 $s0 # 数据集1头 .  记得吗？s0 不能被随意改，s0是44. 
+    move $s2 $a0 # 数据集1头. a0 是给copy传参数而设置，s2是记住数据集1的头方便后续操作。
+    
+    jal copy 
+    
+    move $v0 $s2 # 数据集1头
+    add $v1 $v0 $s1 # 数据集1尾。 记得吗？s1是数组长度的四倍，也就是sizeof数组。
+    jal insertion_sort
+    
+    warn_data() # 表示排序结束。
+    sleep(1000)
+    j begin
+case2:
+    move $v0 $fp # 数据集0头
+    lw $s1 176($fp) 
+    sll $s1 $s1 2 # 数组长度左移两位乘4
+    
+    add $v1 $v0 $s1 # 数据集0尾
+    add $a0 $v0 $s0 # 数据集1头
+    add $a0 $a0 $s0 # 数据集2头
+    jal to_signed_array 
+    warn_data() 
+    sleep(1000)
+    j begin
+case3:
+    move $v0 $fp # 数据集0头
+    add $v0 $v0 $s0 # 数据集1头
+    add $v0 $v0 $s0 # 数据集2头
+
+    lw $s1 176($fp) 
+    sll $s1 $s1 2 # 数组长度左移两位乘4
+    add $v1 $v0 $s1 # 数据集2尾
+
+    add $a0 $v0 $s0 # 数据集3头
+    move $s2 $a0 # 数据集3头
+    jal copy
+
+    move $v0 $s2 # 数据集3头
+    add $v1 $v0 $s1 # 数据集3尾
+    jal insertion_sort
+
+    warn_data()  # 表示排序结束。
+    sleep(1000)
+    j begin
+    
+# 测试状态：危险
+case4:
+#debug
+    # lw $a0 44($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 48($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 52($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+
+    getBase($s1)
+    # s1 现在是 数据集头
+    move $v0 $s1
+    lw $s2 176($fp) # n
+    sll $s2 $s2 2 # 数组长度左移两位乘4
+    add $s2 $v0 $s2 # 数据集尾
+    move $v1 $s2
+    jal max
+    move $s3 $a0 # s3 是最大值
+    
+    move $v0 $s1 # 数据集头
+    move $v1 $s2 # 数据集尾
+    jal min
+    move $s4 $a0 # s4 是最小值
+    
+    sub $a0 $s3 $s4 
+    write_data_8($a0)
+    sleep(1000)
+    j begin
+
+# 测试状态： 对数据集0的数也不可以正确读取。
+case5:
+#debug
+    # lw $a0 88($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 92($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 96($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    
+    getBase($s1)
+    # s1 现在是 数据集头
+    read_8_as_unsigned($a0)
+    # todo: 如果超出范围，发出警告。
+    sll $a0 $a0 2 # 下标*4
+    add $s1 $s1 $a0 # 目标地址
+    lw $s2 0($s1) # 目标数. 不要用t系列，下面调用方法会改t系列寄存器。
+    
+    write_data_8($s2)
+    sleep(1000)
+    j begin
+
+# 测试状态： 对数据集0的数可以正确读取，可以写出浮点数.
+case6:
+#debug
+    # lw $a0 132($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 136($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 140($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    
+    getBase($s1)
+    # s1 现在是 数据集头
+    read_8_as_unsigned($a0)
+    sll $a0 $a0 2 # 下标*4
+    add $s1 $s1 $a0 # 目标地址
+    lw $a0 0($s1) # 目标数
+	
+    convert_signed32_to_float($a0)
+    jal write_data # 注意，不止8位, 用原生的jal write_data。 
+    sleep(1000)
+    j begin
+
+# 测试状态： 对数据集0的数可以正确读取，可以写出浮点数和原数。
+case7:
+    move $s1 $fp # 数据集0 头
+    read_8_as_unsigned($a0)
+    sll $a0 $a0 2 # 下标*4
+    add $s1 $s1 $a0 # 目标地址
+    lw $s2 0($s1) # 目标数. 不要用t系列，下面调用方法会改t系列寄存器。
+
+    while_case7: # 循环交替显示
+        move $a0 $s2
+        jal write_data
+        sleep(1250)
+        
+        jal decode
+        bne $a0 $a2 begin  # 如果case编号变化，回到begin
+        
+        move $a0 $s2
+        convert_signed32_to_float($a0)
+        jal write_data
+        sleep(1250)
+
+        jal decode
+        bne $a0 $a2 begin  # 如果case编号变化，回到begin
+        j while_case7
+    end_while_case7:
+    j begin
+j begin
+
+.include "../commons/std_io_minisys.impl.mips"
+.include "../commons/std_algorithm.impl.mips"

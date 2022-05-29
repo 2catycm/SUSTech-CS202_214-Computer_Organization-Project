@@ -1,0 +1,80 @@
+# 把有符号数组转换为无符号数组，放到新的数组位置。
+# v0 数组首元素地址, v1 数组尾元素地址； a0 目标数组首元素地址;
+to_signed_array:
+	for_to_signed_array:
+		bge $v0 $v1 end_for_to_signed_array# 碰到尾元素，循环结束
+
+		lw $t0 0($v0) # t0是当前处理的数
+		convert_signedAbs8_to_signed($t0)
+		sw $t0 0($a0)
+
+		addi $a0 $a0 4
+		addi $v0 $v0 4
+		j for_to_signed_array
+	end_for_to_signed_array:
+	jr $ra
+
+# 将数组拷贝到新的位置
+# v0 数组首元素地址, v1 数组尾元素地址； a0 目标数组首元素地址;
+copy:
+	for_copy:
+		bge $v0 $v1 end_for_copy
+		lw $t0 0($v0)
+		sw $t0 0($a0)
+		addi $a0 $a0 4
+		addi $v0 $v0 4
+		j for_copy
+	end_for_copy:
+	jr $ra
+# v0 数组首元素地址, v1 数组尾元素地址；求数组的最大值放到a0。默认有符号比较，对8位无符号的比较也是有效的。
+# 修改的寄存器：v0，a0，t0
+max:
+	lw $a0 0($v0)
+	for_max:
+		addi $v0 $v0 4
+		bge $v0 $v1 end_for_max
+		lw $t0 0($v0)
+		ble $t0 $a0 for_max
+		move $a0 $t0  
+		j for_max
+	end_for_max:
+	jr $ra
+# v0 数组首元素地址, v1 数组尾元素地址；求数组的最小值放到a0。默认有符号比较，对8位无符号的比较也是有效的。
+# 修改的寄存器：v0，a0，t0
+min:
+	lw $a0 0($v0)
+	for_min:
+		addi $v0 $v0 4
+		bge $v0 $v1 end_for_min
+		lw $t0 0($v0)
+		bge $t0 $a0 for_min
+		move $a0 $t0  
+		j for_min
+	end_for_min:
+	jr $ra
+
+# 对数组做插入排序
+# v0 数组首元素地址, v1 数组尾元素地址；默认是有符号比较，对8位无符号的比较也是有效的。
+insertion_sort:
+	addi $t2 $v0 4 # t2 指针 表示当前v0-t2都排好序了（不含t2）
+	for_insertion_sort0:
+		bge $t2 $v1 end_for_insertion_sort0 # 碰到尾元素，循环结束
+		addi $t1 $t2 -4 # t1 指针，用来遍历前面的元素。
+		lw $t0 0($t2) # t0 为当前新元素
+		for_insertion_sort1:
+			blt $t1 $v0 end_for_insertion_sort1 #严格小于v0的时候结束。
+			lw $t3 0($t1) # t3 为当前新元素
+			ble $t3 $t0 end_for_insertion_sort1 # 如果欲交换元素已经小于等于本元素，内循环结束
+			# 否则交换
+			sw $t3 4($t1)
+			sw $t0 0($t1)
+			addi $t1 $t1 -4
+			j for_insertion_sort1
+		end_for_insertion_sort1:
+		addi $t2 $t2 4
+		j for_insertion_sort0
+	end_for_insertion_sort0:
+	jr $ra
+
+
+

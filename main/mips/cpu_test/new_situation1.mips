@@ -1,0 +1,89 @@
+.include "../commons/std_io_minisys.macro.mips"
+.include "../commons/std_algorithm.macro.mips"
+.data
+.text
+.globl main
+main: # todo: 没什么用，coe文件不能位置无关。
+jal static_initialization
+# a = 0($fp) b = a = 4($fp)
+sw $zero 0($fp)
+sw $zero 4($fp)
+begin:
+    sleep(50)
+    
+    jal decode # 会覆盖a0 a1的值。
+    move $a2 $a0
+    
+    # hint_case_number() # 指示当前是哪一个case. 不会干扰前面已有的灯。
+
+    set_s_to_be_seven_numbers()
+    beq $a2 $zero case0
+    beq $a2 $s1 case1
+    beq $a2 $s2 case2
+    beq $a2 $s3 case3
+    beq $a2 $s4 case4
+    beq $a2 $s5 case5
+    beq $a2 $s6 case6
+    beq $a2 $s7 case7
+case0:
+    read_16_as_unsigned($a0)
+    sw $a0 0($fp)
+    sleep(200)
+    jal write_data
+    jal is_binary_palindrome
+    move $v1 $v0
+    li $v0 0
+    jal write_control_set
+
+    sleep(1000)
+    j begin
+case1:
+    read_16_as_unsigned($a0)
+    sw $a0 0($fp)
+    jal write_data
+    read_16_as_unsigned($a0)
+    sw $a0 4($fp)
+    jal write_data
+
+    sleep(1000)
+    j begin
+case2:
+    lw $s0 0($fp)
+    lw $s1 4($fp)
+    and $a0 $s0 $s1
+    jal write_data
+    j begin
+case3:
+    lw $s0 0($fp)
+    lw $s1 4($fp)
+    or $a0 $s0 $s1
+    jal write_data
+    j begin
+case4:
+    lw $s0 0($fp)
+    lw $s1 4($fp)
+    xor $a0 $s0 $s1
+    jal write_data
+    j begin
+case5:
+    lw $s0 0($fp)
+    lw $s1 4($fp)
+    sllv $a0 $s0 $s1
+    jal write_data
+    j begin
+case6:
+    lw $s0 0($fp)
+    lw $s1 4($fp)
+    srlv $a0 $s0 $s1
+    jal write_data
+    j begin
+case7:
+    lw $s0 0($fp)
+    lw $s1 4($fp)
+    convert_16_to_signed($s0)
+    srav $a0 $s0 $s1
+    jal write_data
+    j begin
+j begin
+.include "../commons/std_io_minisys.impl.mips"
+.include "../commons/std_palindrome.impl.mips"

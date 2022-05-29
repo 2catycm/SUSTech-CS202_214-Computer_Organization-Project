@@ -1,0 +1,179 @@
+.include "../commons/std_io_minisys.macro.mips"
+#测试状态：可信
+static_initialization:
+#MARS模式下这三个指针不要赋值（注释掉）
+	la $gp 0xFFFFFC00 # io relative address
+	la $sp 256 # 栈指针
+	la $fp 512 #base 数据的基础地址
+# 数据集间隔
+	li $s0 44 #space 11个数，每个数4个byte
+#申请缓存灯的值到一块真实内存。
+	addi $sp $sp -16  # 支持0, 4, 8, 12 四个变量
+	move $k0 $sp # k0是专门的灯指针
+	save_ra() # 要想jal其他方法，先要保存ra
+# 开机特效 点亮
+	all_lights_off()
+	li $s2 0x80
+	for_initialization0:
+		beq $s2 $zero end_for_initialization0
+		lw $a0 4($k0)
+		add $a0 $a0 $s2
+		jal write_control
+		srl $s2 $s2 1
+		sleep(41)
+		j for_initialization0
+	end_for_initialization0:
+	li $s2 0x8000
+	for_initialization1:
+		beq $s2 $zero end_for_initialization1
+		lw $a0 0($k0)
+		add $a0 $a0 $s2
+		jal write_data
+		srl $s2 $s2 1
+		sleep(41)
+		j for_initialization1
+	end_for_initialization1:
+# 来个开机特效 闪一闪
+	all_lights_off()
+	sleep(100)
+	all_lights_on()
+	sleep(1000)
+	all_lights_off()
+
+	load_ra()
+	jr $ra
+#测试状态：可信
+# 睡眠 v0中的毫秒数。公式 T=TPC*CPI*I, 得到I = Tf (T为时间，单位ms, f为时钟频率)
+# t2, t1, t0, v0 发生变化。其中v0变为0. t2, t1, t0 都变成比较大的整数。
+sleep:
+	sll $t1 $v0 4  # 23=16+8-1
+	sll $t0 $v0 3
+	add $t0 $t0 $t1 
+	sub $v0 $t0 $v0 
+	sll $t1 $v0 10 # 1000=1024-16-8
+	sll $t2 $v0 4  
+	sll $t0 $v0 3
+	sub $v0  $t1 $t2
+	sub $v0  $v0 $t0
+	_sleep:
+	addi $v0 $v0 -1
+	bne $v0 $zero _sleep
+	jr $ra
+#测试状态：可信
+# 本asm的控制输入（左开关）定义：左开关前三位为case，第四位为enter。enter为1状态时等待变为0，为0时等待输入的确定。
+# decode: 输入a0(左)。解析为a0=case， a1=enter
+# 仅仅修改了a0和a1寄存器
+decode:
+	lw $a0 0x72($gp)
+	 # 7,6,...,0.  
+	 srl $a0 $a0 4
+	 andi $a1 $a0 1
+	 srl $a0 $a0 1
+	 jr $ra
+#测试状态：测试中
+# 根据a1的enter信号控制，等待输入一个整数（通过右开关），结果保存到a0。
+# 修改的寄存器: a1和a0都会改变。
+# note: a2 为read之前系统的case状态，如果等待读取的过程发现变化，会返回到begin。
+read:
+	save_ra()
+	write_control_set_true(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
+	while_read:
+		sleep(100) 
+
+		jal decode # 会覆盖a0 a1的值。
+
+		beq $a0 $a2 end_if_while_read  #如果case发生更改，带上ra提前跑路
+			load_ra() # 主要目的是恢复sp，ra的值这里不关心。
+			write_control_set_false(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
+			j begin
+		end_if_while_read:
+
+	bne $a1 $zero while_read # 如果enter不是0，就继续等待直到enter是0
+
+	write_control_set_false(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
+
+	_read_wait_for_enter:
+		sleep(300) 
+		write_control_negate(4) # 注意这是有jal在里面的， v0, v1, t0 t1都修改了
+		jal decode # a0 a1 都改了
+
+		load_ra()
+		bne $a0 $a2 begin 
+		save_ra()
+
+		lw $a0 0x70($gp)
+		jal write_data
+	beq $a1 $zero _read_wait_for_enter # 等到enter是1。 
+	
+	save_before_call($a0)
+	li $a0 0
+	jal write_data # 清空输入
+	write_control_set_false(4)
+	write_control_negate(3)
+	write_control_negate(2)
+	sleep(400)
+	write_control_negate(3)
+	write_control_negate(2)
+	
+	load_before_return($a0)
+	load_ra()
+	jr $ra
+
+# 状态: 测试中
+# 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；根据v1的值的最后一位是否是1来修改。
+# 修改v1， t1, t0, t2. 
+write_control_set:
+	lw $t1 4($k0) # t1为左灯的值。
+	andi $v1 $v1 1 # 只取最后一位
+
+	# 根据 v1 的对应位来决定怎么操作。 
+	bne $v1 $zero if_write_control_set 
+		# 如果v1对应位是0. 比如t1= 0000 0000 我们要修改第6位为1.
+		li $t2 0xFFFFFFFF # and 掩码
+		sllv $v1 $v1 $v0 
+		and $v1 $v1 $t2 
+		and $t1 $t1 $v1
+	if_write_control_set:  
+		# 如果v1对应位是1. 比如t1= 0100 0000 我们要修改第6位为0.
+		sllv $v1 $v1 $v0 # 左移 v0位
+	    or $t1 $t1 $v1
+		j end_if_write_control_set
+	end_if_write_control_set:
+	sw $t1 4($k0) # 把t1的计算结果送回灯上。
+	flush_lights()
+	jr $ra
+# 测试状态：可信
+# 输出控制灯（左灯），根据v0的值(7,6,5,4,3,2,1,0)决定输出修改左边的哪个灯；对该灯的值取反。
+# 修改的寄存器: t1, t0, v1
+write_control_negate:
+	lw $t1 4($k0) # t1为左灯的值。
+	li $t0 1 
+	sllv $v1 $t0 $v0 # 左移 v0位
+	xor $t1  $t1 $v1
+	sw $t1 4($k0) # 把t1的计算结果送回灯上。
+	flush_lights()
+	jr $ra
+# 测试状态：可信
+#输出控制灯（左灯）; 直接输出a0的值。
+# 会修改t0的值(变成a0或者0)和4($k0)的值
+write_control:
+	sw $a0 4($k0)
+	flush_lights()
+	jr $ra
+# 测试状态：可信
+#输出数据灯（右灯）; 直接输出a0的值。
+# 会修改t0的值(变成a0或者0)和0($k0)的值
+write_data:
+	sw $a0 0($k0)
+	flush_lights()
+	jr $ra
+
+# 提示输入数据存在异常情况。
+exception_hint:
+	save_ra()
+	warn_data()
+	sleep(500)
+	warn_data()
+	load_ra()
+	jr $ra
+

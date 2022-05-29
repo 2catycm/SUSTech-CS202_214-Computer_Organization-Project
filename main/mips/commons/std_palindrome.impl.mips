@@ -1,0 +1,127 @@
+# developed by 叶璨铭，12011404@mail.sustech.edu.cn
+# CC-BY license
+
+.text 
+#判断a0是不是二进制回文数，返回值在v0
+# 为了练习，我们使用递归实现
+is_binary_palindrome: 
+    li $a1 0
+    move $t0 $a0
+    while_binary_palindrome:
+        addi $a1 $a1 1
+        srl $t0 $t0 1
+        bne $t0 $zero while_binary_palindrome
+    addi $sp $sp -4
+    sw $ra 0($sp) # 调用别人的时候，需要保存自己的ra
+    jal is_binary_palindrome_impl #早期人类实现重载、默认值的珍贵影像
+    lw $ra 0($sp)
+    addi $sp $sp 4
+    jr $ra
+is_binary_palindrome_impl: 
+    # 保存用到的寄存器：现在作为callee，需要保存ra和s
+    # addi $sp $sp -4
+    # sw $ra 0($sp)
+    bgt $a1 1 recursive_binary_palindrome
+        li $v0 1 #一定是回文
+        j end_if_binary_palindrome
+    recursive_binary_palindrome:
+        # 如果这一步不行，直接失败
+        addiu $t0 $a1 -1 # t0为移位的数量
+        srlv $t1 $a0 $t0 # t1 = a0>>>t0 第一位
+        andi $t0 $a0 1 # 最后一位
+        bne $t1 $t0 fails_binary_palindrome
+        #这一步成功了，看看递归成不成
+        addi $sp $sp -12
+        sw $a0 0($sp) # 作为调用者，需要保存a0，a1
+        sw $a1 4($sp)
+        sw $ra 8($sp)
+        # 裁剪a1
+        addi $a1 $a1 -2 # a1-=2
+        # 裁剪a0
+        # 先生成一个a1个1的掩码
+        li $t0 1
+        sllv $t0 $t0 $a1
+        addi $t0 $t0 -1
+        sll $t0 $t0 1
+        and $a0 $t0 $a0
+        srl $a0 $a0 1
+        #调用函数
+        jal is_binary_palindrome_impl
+        lw $a0 0($sp) # 作为调用者，需要恢复a0，a1
+        lw $a1 4($sp)
+        lw $ra 8($sp)
+        addi $sp $sp 12
+        # 看看v0怎么样
+        #li $v0 1
+        #bne $v0 $zero end_if # 如果不是false，那么就是true # 错误代码，应该直接以返回结果为准
+        j end_if_binary_palindrome
+        fails_binary_palindrome:
+            li $v0 0
+    end_if_binary_palindrome:
+    #恢复用到的寄存器：现在作为callee，需要恢复ra和s
+    # lw $ra 0($sp)
+    # addi $sp $sp 4
+    jr $ra
+
+is_hexadecimal_palindrome:
+    li $a1 0
+    move $t0 $a0
+    while_hexadecimal_palindrome:
+        addi $a1 $a1 1
+        srl $t0 $t0 4
+        bne $t0 $zero while_hexadecimal_palindrome
+    # a1 = a0有多少个4位
+    addi $sp $sp -4
+    sw $ra 0($sp) # 调用别人的时候，需要保存自己的ra
+    jal is_hexadecimal_palindrome_impl #早期人类实现重载、默认值的珍贵影像
+    lw $ra 0($sp)
+    addi $sp $sp 4
+    jr $ra
+is_hexadecimal_palindrome_impl:
+    # 保存用到的寄存器：现在作为callee，需要保存ra和s
+    # addi $sp $sp -4
+    # sw $ra 0($sp)
+    bgt $a1 1 recursive_hexadecimal_palindrome
+        li $v0 1 #一定是回文
+        j end_if_hexadecimal_palindrome
+    recursive_hexadecimal_palindrome:
+        # 如果这一步不行，直接失败
+        addiu $t0 $a1 -1 # t0为移位的数量
+        sll $t0 $t0 2 # 比如，t0为7，那么需要 28 位
+        srlv $t1 $a0 $t0 # t1 = a0>>>t0 前四位
+        andi $t0 $a0 15 # 最后四位
+        bne $t1 $t0 fails_hexadecimal_palindrome
+        #这一步成功了，看看递归成不成
+        addi $sp $sp -12
+        sw $a0 0($sp) # 作为调用者，需要保存a0，a1
+        sw $a1 4($sp)
+        sw $ra 8($sp)
+        # 裁剪a1
+        addi $a1 $a1 -2 # a1-=2
+        # 裁剪a0
+        sll $t0 $a1 2 # 比如，a1 = 5位。需要t0=20位的1
+        # 先生成一个a1个1的掩码
+        li $t1 1
+        sllv $t1 $t1 $t0
+        addi $t1 $t1 -1 # t1得到了20个1.
+        sll $t1 $t1 4 # 不要最低四位
+        and $a0 $t1 $a0
+        srl $a0 $a0 4 #推回去
+        #调用函数
+        jal is_hexadecimal_palindrome
+        lw $a0 0($sp) # 作为调用者，需要恢复a0，a1
+        lw $a1 4($sp)
+        lw $ra 8($sp)
+        addi $sp $sp 12
+        # 看看v0怎么样
+        #li $v0 1
+        # bne $v0 $zero end_if2 # 如果不是得到false，那么就是true，返回true 
+        # 荒谬可笑的逻辑-↑
+        j end_if_hexadecimal_palindrome
+        fails_hexadecimal_palindrome:
+            li $v0 0
+    end_if_hexadecimal_palindrome:
+    #恢复用到的寄存器：现在作为callee，需要恢复ra和s
+    # lw $ra 0($sp)
+    # addi $sp $sp 4
+    jr $ra

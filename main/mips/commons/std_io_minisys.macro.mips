@@ -1,0 +1,182 @@
+######################## 根基 宏。 此部分宏非常重要，在多处都会使用。######################## 
+
+# 让CPU 睡眠msec毫秒。
+# 调用这个函数的场景是，switch操作时信号可能不稳定，会出现短时0,1交替，导致计算逻辑有问题。
+# note:vivado 仿真时，不启用sleep。因为vivado模拟时没有信号不稳定的问题。
+.macro sleep(%msec)
+#not vivado
+	la $v0 %msec
+	jal sleep
+#vivado
+.end_macro
+
+#测试状态：可信
+# 从缓存内存的值写入到灯中。这是private方法，不要轻易调用。
+# 修改的寄存器：会修改t0的值和灯的值。
+.macro flush_lights()
+	lw $t0 4($k0)
+	sw $t0 0x62($gp)
+	lw $t0 0($k0)
+	sw $t0 0x60($gp)
+.end_macro
+
+#警告：请勿把这个放到循环当中。
+.macro save_before_call(%register)
+	addi $sp $sp -4
+	sw %register 0($sp)
+	#move $k1 $ra
+.end_macro
+#警告：请勿把这个放到循环当中。
+.macro load_before_return(%register)
+	lw %register 0($sp)
+	addi $sp $sp 4
+	#move $ra $k1 # 动用k1
+.end_macro
+
+.macro save_ra()
+	save_before_call($ra)
+.end_macro
+.macro load_ra()
+	load_before_return($ra)
+.end_macro
+
+######################## 快速IO宏。 此部分宏是为了让灯、开关的IO更加便捷。######################## 
+
+# 将 index 位置的左灯设置为1
+# 修改的寄存器：v1, t1, t0, t2. 
+.macro write_control_set_true(%index)
+	li $v0 %index 
+	li $v1 1
+	jal write_control_set
+.end_macro
+# 将 index 位置的左灯设置为0
+# 修改的寄存器：v1, t1, t0, t2. 
+.macro write_control_set_false(%index)
+	li $v0 %index 
+	li $v1 0
+	jal write_control_set
+.end_macro
+# 将 index 位置的左灯状态反转。 
+# 修改的寄存器: t1, t0, v1
+.macro write_control_negate(%index)
+	li $v0 %index 
+	jal write_control_negate
+.end_macro
+.macro set_s_to_be_seven_numbers()
+# 常数七子
+	li $s1 1
+	li $s2 2
+	li $s3 3
+	li $s4 4
+	li $s5 5
+	li $s6 6
+	li $s7 7
+.end_macro
+
+# 闪一闪左灯的2、3位和右灯。闪完之后恢复原来的灯样。
+# 修改t7, t8, a0, v1, t1, t0, t2
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro warn_data()
+	lw $t7 0($k0)
+	lw $t8 4($k0)
+
+	li $a0 0xFFFF
+	jal write_data
+
+	write_control_set_true(2)
+	write_control_set_true(3)
+	sleep(1000) # 保持状态1s
+
+# 恢复原样
+	move $a0 $t7
+	jal write_data
+
+	move $a0 $t8
+	jal write_control 
+
+.end_macro 
+
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro all_lights_on()
+	li $a0 0xFF
+	jal write_control
+	li $a0 0xFFFF
+	jal write_data
+.end_macro
+
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro all_lights_off()
+	li $a0 0
+	jal write_control
+	li $a0 0
+	jal write_data
+.end_macro
+
+
+
+# 从标准输入读取一个数，表示数据集编号
+# 将数据集的基地址放到 %register (建议是s1)
+# 修改的寄存器：a0 a1
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro getBase(%register)
+	jal read
+	andi $a0 $a0 3 # 只取最后两位。
+# todo  非法输入警告。
+    move %register $fp #base
+    for_case4:
+        beq $a0 $zero end_for_case4
+        add %register %register $s0 # 记得吗？s0 只读，永远是space=44
+        addi $a0 $a0 -1
+        j for_case4
+    end_for_case4:
+.end_macro
+
+# 从a0 读取case编号，书写到控制灯最左边三位
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+# 修改的寄存器：a0 v0 v1 v1， t1, t0, t2. 
+.macro hint_case_number()
+	andi $a0 $a0 0x7 # 只要最后三位
+	li $v0 5
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
+	srl $a0 $a0 1
+	li $v0 6
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+
+	srl $a0 $a0 1
+	li $v0 7
+	andi $v1 $a0 1 # 最后一位
+	jal write_control_set
+	# sleep(200)
+.end_macro
+######################## 有符号/无符号 有关处理宏 ######################## 
+
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro read_8_as_unsigned(%register)
+	jal read
+	andi $a0 $a0 0xFF
+	move %register $a0
+.end_macro
+
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro read_16_as_unsigned(%register)
+	jal read
+	andi $a0 $a0 0xFFFF  # 防止信号波动导致左边16位不是0
+	move %register $a0
+.end_macro
+
+# 把register当做8位整数输出到右灯。
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro write_data_8(%register)
+	andi $a0 %register 0xFF
+	jal write_data 
+.end_macro
+
+# 把register当做16位整数输出到右灯。
+# ra保存策略：本宏内调用了函数，若您为函数，请妥善保存自己的ra。
+.macro write_data_16(%register)
+	andi $a0 %register 0xFFFF
+	jal write_data 
+.end_macro
