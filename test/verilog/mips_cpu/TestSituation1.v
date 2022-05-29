@@ -5,7 +5,7 @@ reg[23:0]Minisys_Switches;
 wire [23:0]Minisys_Lights; 
 reg Minisys_Clock; 
 reg[4:0] Minisys_Button;
-    TOP_all  use_main(Minisys_Switches,Minisys_Lights,Minisys_Clock,Minisys_Button);
+    TopAll  use_main(Minisys_Switches,Minisys_Lights,Minisys_Clock,Minisys_Button);
     initial begin
     Minisys_Clock = 1'b0;
      Minisys_Button = 5'b00000;
