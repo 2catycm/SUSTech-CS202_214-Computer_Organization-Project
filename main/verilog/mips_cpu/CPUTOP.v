@@ -24,14 +24,6 @@ module CpuTop(
     output[7:0] oDigitalTubeNotEnable, //which tubs to light
     output[7:0] oDigitalTubeShape  //light what
 );
-///////////// Cpu Clock ///////////// 
-    wire cpu_clk;
-    cpuclk cpuclk_instance(
-        .clk_in1(iFpgaClk),
-        .clk_out1(cpu_clk),
-        .clk_out2(upg_clk)
-    );
-
 ///////////// UART Programmer Pinouts ///////////// 
     wire upg_clk, upg_clk_o;
     wire upg_wen_o; //Uart write out enable
@@ -62,7 +54,13 @@ module CpuTop(
         .upg_dat_o(upg_dat_o),
         .upg_done_o(upg_done_o)
     );
-
+///////////// Cpu Clock ///////////// 
+        wire cpu_clk;
+        cpuclk cpuclk_instance(
+            .clk_in1(iFpgaClk),
+            .clk_out1(cpu_clk),
+            .clk_out2(upg_clk)
+        );
 ///////////// Ifetc32 ºÍ progrom ///////////// 
     // Control signals
     wire Branch, nBranch, Jmp, Jal, Jr, Zero, RegWrite, RegDst;
