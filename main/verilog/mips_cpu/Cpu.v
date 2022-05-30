@@ -83,7 +83,7 @@ module Cpu (
         .oDataRead1(registerReadData1),
         .oDataRead2(registerReadData2),
         .iInstruction(cpuCurrentInstruction),
-        .iMemoryData(memoryOrIoData),
+        .iMemoryData(memOrIODataRead),
         .iAluResult(aluResult),
         .iIsJal(isJal),
         .iDoWriteReg(doWriteReg),
@@ -113,38 +113,33 @@ module Cpu (
         //means l-Type instruction except beq, bne, LW,sw
         .I_format(isArthIType),
         .Jr(isJr),
-        .Zero(isAluZero), //InstructionFetcher用到
+        .Zero(isAluZero), //InstructionFetcher锟矫碉拷
         .ALU_Result(aluResult),
         .Addr_Result(aluAddrResult),//This means that upper right output
         .PC_plus_4(branchBaseAddr)
     );
 //////////// DataManager ////////////
-    //输入
-    wire  doMemoryRead, doMemoryWrite;
-    wire doLedWrite, doSwitchRead, doTubeWrite;
-    //处理
-    wire doIoRead = doSwitchRead|| doSwitchRead;
-    wire doIoWrite = doLedWrite || doTubeWrite;
+    // From Controller, who commands DataManager to interact with IoManager outside Cpu.
+    wire doMemoryRead, doMemoryWrite;
+    wire doSwitchRead;
+    wire doLedWrite, doTubeWrite;
+    //output to     wire[31:0] memOrIODataRead; declared previously.
+    DataManager  dDataManager (
+        .iDoMemoryRead           ( doMemoryRead               ),
+        .iDoMemoryWrite          ( doMemoryWrite              ),
+        .iDoSwitchRead           ( doSwitchRead               ),
+        .iDoLedWrite             ( doLedWrite                 ),
+        .iDoTubeWrite            ( doTubeWrite                ),
+        .iAluResultAsAddress     ( aluResult           [31:0] ),
+        .iDataFromMemory         ( iMemoryFetched      [31:0] ),
+        .iSwitchDataRead         ( iSwitchDataRead      [15:0] ),
+        .iDataFromRegister       ( registerReadData2    [31:0] ),
 
-    //对io 输入的处理
-    wire[15:0] dataFromIo = iSwitchDataRead;
-    //对io 输出的处理
-    wire[31:0] dataToStore;
-    assign oDataToStore = dataToStore;
-    assign oLightDataToWrite = dataToStore[15:0];
-    assign oTubeDataToWrite  = dataToStore[15:0];
-    DataManager dDataManager(
-        .iDoMemoryRead(doMemoryRead) // read memory, from Controller
-        ,.iDoMemoryWrite(doMemoryWrite) // write memory, from Controller
-        ,.iDoIoRead(doIoRead) // read IO, from Controller
-        ,.iDoIoWrite(doIoWrite) // write IO, from Controller
-        ,.iAluResultAsAddress(aluResult) // from alu_result in ALU
-        ,.oDataMemoryAddress(oDmAddressRequested) // address to Data-Memory
-        ,.iDataFromMemory(iMemoryFetched) // data read from Data-Memory
-        ,.iDataFromIo(dataFromIo) // data read from IO,16 bits
-        ,.oMemOrIODataRead(memoryOrIoData) // data to Decoder(register file)
-        ,.iDataFromRegister(registerReadData2) // data read from Decoder(register file)
-        ,.oDataToStore(dataToStore) //其实就是 registerReadData2
+        .oDataMemoryAddress      ( oDmAddressRequested   [31:0] ),
+        .oMemOrIODataRead        ( memOrIODataRead     [31:0] ),
+        .oDataToStore            ( oDataToStore         [31:0] ),
+        .oLightDataToWrite       ( oLightDataToWrite    [15:0] ),
+        .oTubeDataToWrite        ( oTubeDataToWrite     [15:0] )
     );
 
 //////////// CpuController 压轴出场，把前面需求的输入信号都成功计算满足。////////////

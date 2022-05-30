@@ -6,8 +6,8 @@ endmodule //PianoDriver
 
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology å—æ–¹ç§‘æŠ€å¤§å­¦
-// Engineer: å¶ç’¨é“­
+// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
+// Engineer: Ò¶è²Ãú
 // 
 // Create Date: 2022/05/07 12:58:45
 // Project Name: MIPS Single Cycle CPU
@@ -15,12 +15,12 @@ endmodule //PianoDriver
 // Description: 
 // 
 //////////////////////////////////////////////////////////////////////////////////
-module PianoDriver (
-     input iFpgaClock, iCpuClock        // æ—¶é’Ÿä¿¡å·
-    ,input iCpuReset 		            // å¤ä½ä¿¡å·
-    ,input iDoPianoWrite		      	// ä»memorioæ¥çš„LEDç‰‡é€‰ä¿¡å·   !!!!!!!!!!!!!!
-    ,input[7:0] iPianoDataToWrite	  	// å†™åˆ°Pianoæ¨¡å—çš„æ•°æ®ï¼Œæ³¨æ„ä¸€æ¬¡æŒ‡ä»¤åªéœ€è¦8æ¯”ç‰¹ã€‚
-    ,output oFpgaSpeaker		        // å‘æ¿å­ä¸Šè¾“å‡ºçš„èœ‚é¸£å™¨ä¿¡å·
+module Piano (
+     input iFpgaClock, iCpuClock        // Ê±ÖÓĞÅºÅ
+    ,input iCpuReset 		            // ¸´Î»ĞÅºÅ
+    ,input iDoPianoWrite		      	// ´ÓmemorioÀ´µÄLEDÆ¬Ñ¡ĞÅºÅ   !!!!!!!!!!!!!!
+    ,input[7:0] iPianoDataToWrite	  	// Ğ´µ½PianoÄ£¿éµÄÊı¾İ£¬×¢ÒâÒ»´ÎÖ¸ÁîÖ»ĞèÒª8±ÈÌØ¡£
+    ,output oFpgaSpeaker		        // Ïò°å×ÓÉÏÊä³öµÄ·äÃùÆ÷ĞÅºÅ
 );
     reg [7:0] currentPianoCommand;
 
@@ -35,7 +35,7 @@ module PianoDriver (
 
     wire [5:0] track0, track1, track2, track3;
     TrackManager tm(
-        iFpgaClock, iCpuReset, currentPianoCommand
+        iFpgaClock, iCpuReset, currentPianoCommand,
             track0, track1, track2, track3);
     SongDriver   sd(
         iFpgaClock, iCpuReset, 

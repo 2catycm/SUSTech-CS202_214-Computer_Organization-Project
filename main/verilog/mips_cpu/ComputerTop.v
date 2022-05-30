@@ -21,6 +21,7 @@ module ComputerTop (
     ,output Minisys_Audio_Pwm
 );
 //////////////////////cpuclk//////////////////////
+//测试状态：无bug
     // 计算提供 cpu_clk和 upgClock
     wire cpuClock, upgClock;
     cpuclk cpuclk_instance(
@@ -29,6 +30,7 @@ module ComputerTop (
         ,.clk_out2(upgClock)
     );
 //////////////////////CoeMemory//////////////////////
+//测试状态：可编译
     //函数1：提供cpuReset
     wire cpuReset;
     //函数2: InstructionMemory
@@ -56,7 +58,8 @@ module ComputerTop (
         ,.oMemoryFetched(memoryFetched)
         ,.iDataToStore(dataToStore)
     );
-//////////////////////IoManager////////////////////// 
+//////////////////////IoManager//////////////////////
+//测试状态：可编译
     //灯写入函数
     wire doLedWrite;
     wire[1:0] lightAddress;
@@ -91,7 +94,7 @@ module ComputerTop (
         ,.Minisys_DigitalTube_Shape(Minisys_DigitalTube_Shape)
     );
 //////////////////////Cpu压轴登场，处理前面的设备////////////////////// 
-
+//测试状态：可编译
     Cpu dCpu(
         .iCpuClock(cpuClock)
         ,.iCpuReset(cpuReset)
