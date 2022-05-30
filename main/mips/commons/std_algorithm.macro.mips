@@ -26,13 +26,13 @@
 .end_macro
 	
 # 求IEEE 754 单精度浮点数编码的符号位和指数位 （一共1+8=9位）。
-# 输入 register(8位有符号整数)， 返回register
+# 输入 register(32位有符号整数)， 返回register
 # 建议的register是$a0
-.macro convert_signed8_to_float(%register)
-	andi %register %register 0xFF # 只关心最后8位。转换为8位有符号整数了。
+.macro convert_signed32_to_float(%register)
+	# 我们对32位有符号数做浮点数转换，而不是8位。这样数据集1和数据集3的处理才是统一的。
 
 	# 符号位 （1位）
-	srl $t0 %register 7 # 取第7位。 
+	srl $t0 %register 31 # 取第31位。 
 	andi $t0 $t0 1  # 现在t0为1表示是负数，否则是正数。
 	sll $t1 $t0 8 # 放在第8位，现在t1是结果的一部分。7..0留给指数位
 
@@ -40,9 +40,8 @@
 	# 取绝对值 到a0.
 	beq $t0 $zero end_if_getFloat # 如果是正数就不用管了。 a0就是答案。
 		# 如果是负数。
-		xori %register %register 0xFF  # 不是0x7F. 我们现在是8位有符号数，求相反数。
+		xori %register %register 0xFFFFFFFF  # 不是0x7FFFFFFF. 我们现在是32位有符号数，求相反数。
 		addi %register %register 1
-		andi %register %register 0xFF # 注意去掉溢出的1. 我们还是8位有符号数。
 	end_if_getFloat:
 
 
@@ -51,9 +50,10 @@
 	do_while_case6:
 		srl %register %register 1 # a0是8位有符号正数。
 		addi $t3 $t3 1
-	bne $t1 $zero do_while_case6
+	bne %register  $zero do_while_case6
+	addi $t3 $t3 -1
 	addi $t3 $t3 0x7f # 加上bias
-	andi $t3 $t3 0xFF #注意我们还是8位数，现在是浮点数的指数位。
+	andi $t3 $t3 0xFF #现在是浮点数的指数位, 只有8位，万一溢出了。
 
 	or %register $t3 $t1 # 合并两个数
 .end_macro

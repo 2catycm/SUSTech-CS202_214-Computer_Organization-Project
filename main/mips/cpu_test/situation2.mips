@@ -25,10 +25,10 @@ begin:
 
 # case0 测试状态：读入逻辑可信。 
 # 结果保存位置
-# n = 44($fp)，  array = $fp, $fp+4, $fp+8, ...
+# n = 176($fp)，  array = $fp, $fp+4, $fp+8, ...
 case0:
     read_8_as_unsigned($s1) # s1=n，表示数组长度
-    sw $s1 44($fp) # 44($fp) 为数组长度
+    sw $s1 176($fp) # 176($fp) 为数组长度
 
     bne $s1 $zero end_if_case0_0
         jal exception_hint  # 如果是0，只是警告，不重新输入。
@@ -62,7 +62,7 @@ case0:
     j begin
 case1:
     move $v0 $fp # 数据集0头
-    lw $s1 44($fp) # 数组实际长度n
+    lw $s1 176($fp) # 数组实际长度n
     sll $s1 $s1 2 # 数组长度左移两位乘4
     add $v1 $v0 $s1 # 数据集0尾
     
@@ -80,7 +80,7 @@ case1:
     j begin
 case2:
     move $v0 $fp # 数据集0头
-    lw $s1 44($fp) 
+    lw $s1 176($fp) 
     sll $s1 $s1 2 # 数组长度左移两位乘4
     
     add $v1 $v0 $s1 # 数据集0尾
@@ -95,7 +95,7 @@ case3:
     add $v0 $v0 $s0 # 数据集1头
     add $v0 $v0 $s0 # 数据集2头
 
-    lw $s1 44($fp) 
+    lw $s1 176($fp) 
     sll $s1 $s1 2 # 数组长度左移两位乘4
     add $v1 $v0 $s1 # 数据集2尾
 
@@ -113,10 +113,21 @@ case3:
     
 # 测试状态：危险
 case4:
+#debug
+    # lw $a0 44($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 48($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 52($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+
     getBase($s1)
     # s1 现在是 数据集头
     move $v0 $s1
-    lw $s2 44($fp) # n
+    lw $s2 176($fp) # n
     sll $s2 $s2 2 # 数组长度左移两位乘4
     add $s2 $v0 $s2 # 数据集尾
     move $v1 $s2
@@ -135,6 +146,17 @@ case4:
 
 # 测试状态： 对数据集0的数也不可以正确读取。
 case5:
+#debug
+    # lw $a0 88($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 92($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 96($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    
     getBase($s1)
     # s1 现在是 数据集头
     read_8_as_unsigned($a0)
@@ -149,15 +171,25 @@ case5:
 
 # 测试状态： 对数据集0的数可以正确读取，可以写出浮点数.
 case6:
+#debug
+    # lw $a0 132($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 136($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    # lw $a0 140($fp)
+    # write_data_8($a0)
+    # sleep(2000)
+    
     getBase($s1)
     # s1 现在是 数据集头
     read_8_as_unsigned($a0)
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
-    lw $s2 0($s1) # 目标数
-
-    andi $a0 $s2 0xFF # 只考虑8位
-    convert_signed8_to_float($a0)
+    lw $a0 0($s1) # 目标数
+	
+    convert_signed32_to_float($a0)
     jal write_data # 注意，不止8位, 用原生的jal write_data。 
     sleep(1000)
     j begin
@@ -179,7 +211,7 @@ case7:
         bne $a0 $a2 begin  # 如果case编号变化，回到begin
         
         move $a0 $s2
-        convert_signed8_to_float($a0)
+        convert_signed32_to_float($a0)
         jal write_data
         sleep(1250)
 

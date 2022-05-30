@@ -9,7 +9,7 @@ always begin
     #1 Minisys_Clock = ~Minisys_Clock;//这个是外部的clock
 end
 
-TOP_all  use_main(Minisys_Switches,Minisys_Lights,Minisys_Clock,Minisys_Button);
+TopAll  use_main(Minisys_Switches,Minisys_Lights,Minisys_Clock,Minisys_Button);
 
 initial begin
     Minisys_Clock = 1'b0;

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Southern University of Science and Technology ÄÏ·½¿Æ¼¼´óÑ§
-// Engineer: ÕÅÁ¦Óî, Ò¶è²Ãú
+// Company: Southern University of Science and Technology ï¿½Ï·ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½Ñ§
+// Engineer: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ò¶ï¿½ï¿½ï¿½
 // 
 // Create Date: 2022/05/07 12:58:45
 // Module Name: CPU_TOP
@@ -20,12 +20,10 @@ module CpuTop(
     // start Uart communicate at high level
     input iStartReceiveCoe, // Active HighÅÅ¹ if
     input iFpgaUartFromPc,// receive data by UART
-    output oFpgaUartToPc, // send data by UART // Êµ¼ÊÉÏÃ»ÓĞÓÃµ½¡£
+    output oFpgaUartToPc, // send data by UART // Êµï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½
     output[7:0] oDigitalTubeNotEnable, //which tubs to light
     output[7:0] oDigitalTubeShape  //light what
 );
-
-
 ///////////// UART Programmer Pinouts ///////////// 
     wire upg_clk, upg_clk_o;
     wire upg_wen_o; //Uart write out enable
@@ -63,7 +61,7 @@ module CpuTop(
             .clk_out1(cpu_clk),
             .clk_out2(upg_clk)
         );
-///////////// Ifetc32 ºÍ progrom ///////////// 
+///////////// Ifetc32 ï¿½ï¿½ progrom ///////////// 
     // Control signals
     wire Branch, nBranch, Jmp, Jal, Jr, Zero, RegWrite, RegDst;
     wire [31:0] branch_base_addr;
@@ -93,7 +91,7 @@ module CpuTop(
         .oProgromFetchAddr(rom_adr_o)
     );
     
-    // ÕâÀïÀûÓÃµ½µ½ÁËuart IP ºËµÄĞÅºÅ£¬ÓÃÀ´½ÓÊÜÊı¾İ¡£
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½uart IP ï¿½Ëµï¿½ï¿½ÅºÅ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¡ï¿½
     InstructionMemory dInstructionMemory(
         .iRomClock(cpu_clk),
         .iAddressRequested(rom_adr_o),
@@ -158,7 +156,7 @@ module CpuTop(
     assign m_wdata = write_data_fromMemoryIO;//ÄÅ¼Â™Ã¤Â¸ÅÃ¤Å¡ÂŸÄ‡Â˜Å»ior_data
     wire [31:0] ram_dat_o;
     wire [31:0] addr_out;
-    // ÕâÀïÀûÓÃµ½µ½ÁËuart IP ºËµÄĞÅºÅ£¬ÓÃÀ´½ÓÊÜÊı¾İ¡£
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½uart IP ï¿½Ëµï¿½ï¿½ÅºÅ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¡ï¿½
     DataMemory   dDataMemory(
         .ram_clk_i(cpu_clk),
         .ram_wen_i(MemWrite),
