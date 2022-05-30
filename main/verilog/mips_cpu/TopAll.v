@@ -30,6 +30,6 @@ CpuTop dCpuTop(
     .iFpgaUartFromPc( Minisys_Uart_FromPc),
     .oFpgaUartToPc( Minisys_Uart_ToPc),
     .oDigitalTubeNotEnable(Minisys_DigitalTubes_NotEnable),
-    .oDigitalTubeShape(Minisys_DigitalTube_Shape))
+    .oDigitalTubeShape(Minisys_DigitalTube_Shape)
 );
 endmodule
