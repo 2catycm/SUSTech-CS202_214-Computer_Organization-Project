@@ -201,6 +201,11 @@ case7:
     sll $a0 $a0 2 # 下标*4
     add $s1 $s1 $a0 # 目标地址
     lw $s2 0($s1) # 目标数. 不要用t系列，下面调用方法会改t系列寄存器。
+    
+    # 取出数据集2，用于做浮点数的转换
+    add $s3 $s1 $s0    # 数据集1的目标地址
+    add $s3 $s3 $s0    # 数据集2的目标地址
+    lw $s4 0($s3) # 目标数的32位有符号数形式
 
     while_case7: # 循环交替显示
         move $a0 $s2
@@ -210,7 +215,7 @@ case7:
         jal decode
         bne $a0 $a2 begin  # 如果case编号变化，回到begin
         
-        move $a0 $s2
+        move $a0 $s4
         convert_signed32_to_float($a0)
         jal write_data
         sleep(1250)

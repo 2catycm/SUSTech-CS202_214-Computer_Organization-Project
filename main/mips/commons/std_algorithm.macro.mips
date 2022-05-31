@@ -29,6 +29,10 @@
 # 输入 register(32位有符号整数)， 返回register
 # 建议的register是$a0
 .macro convert_signed32_to_float(%register)
+	# 如果是0，那就不用加bias. 不管正0还是-0，都认为是正0, 这就是浮点数表示了，直接返回。
+	beq %register $zero return_macro_to_float
+	    
+	
 	# 我们对32位有符号数做浮点数转换，而不是8位。这样数据集1和数据集3的处理才是统一的。
 
 	# 符号位 （1位）
@@ -56,4 +60,5 @@
 	andi $t3 $t3 0xFF #现在是浮点数的指数位, 只有8位，万一溢出了。
 
 	or %register $t3 $t1 # 合并两个数
+	return_macro_to_float:
 .end_macro
