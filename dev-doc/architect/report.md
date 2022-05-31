@@ -58,6 +58,47 @@ UART接口，UART模式切换接口按钮S4
 数码管LED，24位拨码开关，24位LED灯
 
 ## CPU内部结构
+## 测试说明
+### vivado模拟测试
+|测试方法|测试类型|测试样例描述|测试结果|测试结论|
+|--------|-------|----------|---------|-----|
+### asm和mips测试项目
+
+- demo_read_swtich_write_led.mips
+  - 期望行为：这是最简单的测试场景，当导入到我们的CPU上后，用户按什么按键就会亮什么灯。
+  - 验证的硬件功能：lw, sw, j的支持；MemOrIOn模块。
+- jal_test.mips
+  - 期望行为：右边的16盏灯全亮起来
+  - 验证的硬件功能：jal, jr, j, sw的支持；
+- demo_flow.mips
+  - 期望行为：左边的八个灯每隔1s轮流亮起来，形成流水灯。
+  - 验证的硬件功能：jal, jr, j, sw, lw的支持；
+  - 验证的软件功能：commons/stdio_minisys.mips 的 sleep, write_control函数。
+- situation1.asm
+  - 000状态下, 可以及时确定数码管及是否是回文数，001状态下可以保存2个数，保存的数字不会被刷新。具体测试样例：A是1000_0000_0001_1111, B 是0000_0000_0001_0011,值得说明的是110的情况下是0001_1111_1111_1111 ,然后111情况下是算术右移，结果是1111_1111_1111_1111，
+- new_situation1.mips
+  - 如project文档所述。
+- situation2.mips
+  - 如project文档所述。
+
+### 测试状态
+
+- demo_read_swtich_write_led.mips
+  - 通过
+- jal_test.mips
+  - 通过
+- demo_flow.mips
+  - 通过
+- situation1.asm
+  - 通过 
+  - ![img3](img3.png)
+  - ![img4](img4.png)
+- new_situation1.mips
+  - 通过。需要review。
+- situation2.mips
+  - 编写中。
+### 测试场景1：
+使用第一版的asm代码（第二版asm代码有使用宏定义和开机特效）
 
 
 

@@ -97,6 +97,7 @@ case5:
 case6:
 	srlv $6, $3, $5
 	sw $6, 0x60($20)
+	sw $6, 0x80($20)
 	j begin
 case7:
 	srav $6, $3, $5
