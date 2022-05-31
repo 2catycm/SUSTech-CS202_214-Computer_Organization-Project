@@ -222,16 +222,6 @@ module CpuTop(
             .Addr_Result(Addr_Result),//This means that upper right output
             .PC_plus_4(branch_base_addr)//pc+4
     );
-        
-    SwitchDriver dSwitchDriver(
-        .switclk(cpu_clk),
-        .switchrst(rst), 
-        .switchread(IORead), 
-        .switchctl(SwitchCtrl),
-        .switchaddr(addr_in[1:0]), 
-        .switchrdata(ioread_data), //čżä¸Şć?15ä˝ç
-        .switch_input(iSwitches)
-    );
                            
     LightDriver dLightDriver(
         .iCpuClock(cpu_clk), 
@@ -260,7 +250,9 @@ module CpuTop(
         ,.iPianoDataToWrite       ( write_data_fromMemoryIO[7:0] )
         ,.oFpgaSpeaker            ( oFpgaSpeaker             )
     );
-
+    
+    wire[15:0]  uartData;
+    wire[15:0]  switchrdata;
     UartDriver dUartDriver(
          .iFpgaClock ( iFpgaClk)
         ,.iCpuClock (cpu_clk)
@@ -268,8 +260,17 @@ module CpuTop(
         ,.iUartCtrl(UartCtrl)
         ,.iIoRead(IORead)
         ,.iUartFromPc(iFpgaUartFromPc)
-        ,.oUartData(ioread_data)
+        ,.oUartData(uartData)
     );
-
+    SwitchDriver dSwitchDriver(
+            .switclk(cpu_clk),
+            .switchrst(rst), 
+            .switchread(IORead), 
+            .switchctl(SwitchCtrl),
+            .switchaddr(addr_in[1:0]), 
+            .switchrdata(switchrdata), //čżä¸Şć?15ä˝ç
+            .switch_input(iSwitches)
+        );
+    assign ioread_data = UartCtrl?uartData:switchrdata;
         
 endmodule
