@@ -23,6 +23,7 @@ module CpuTop(
     output oFpgaUartToPc, // send data by UART // ʵ����û���õ���
     output[7:0] oDigitalTubeNotEnable, //which tubs to light
     output[7:0] oDigitalTubeShape  //light what
+    ,output oFpgaSpeaker
 );
 ///////////// UART Programmer Pinouts ///////////// 
     wire upg_clk, upg_clk_o;
@@ -177,6 +178,8 @@ module CpuTop(
     wire LEDCtrl;
     wire SwitchCtrl;
     wire TubeCtrl;
+    output PianoCtrl; //output
+    output UartCtrl; //input
     assign addr_in = ALU_Result; //čżä¸ćŽľĺçşŻäżćĺĺ­ç¸ĺ?
     MemOrIO  MemOrIO_instance(
         .mRead(MemRead), // read memory, from Controller
@@ -192,7 +195,9 @@ module CpuTop(
         .write_data(write_data_fromMemoryIO), // data to memor y or I/Oďźm_wdata, io_wdataďź?
         .LEDCtrl(LEDCtrl), // LED Chip Select
         .SwitchCtrl(SwitchCtrl), // Switch Chip Select
-        .TubeCtrl(TubeCtrl)
+        .TubeCtrl(TubeCtrl),
+        .PianoCtrl(PianoCtrl),
+        .UartCtrl(UartCtrl)
     );
 ///////////////////// CpuExecutor /////////////////////
     CpuExecutor dCpuExecutor(
@@ -241,6 +246,16 @@ module CpuTop(
         .oDigitalTubeNotEnable(oDigitalTubeNotEnable),
         .oDigitalTubeShape(oDigitalTubeShape),
         .in_num(write_data_fromMemoryIO)
+    );
+
+    PianoDriver  u_PianoDriver (
+        .iFpgaClock              ( iFpgaClk               ),
+        .iCpuClock               ( cpu_clk                ),
+        .iCpuReset               ( iCpuReset                ),
+        .iDoPianoWrite           ( PianoCtrl            ),
+        .iPianoDataToWrite       ( write_data_fromMemoryIO[7:0] ),
+
+        .oFpgaSpeaker            ( oFpgaSpeaker             )
     );
         
 endmodule

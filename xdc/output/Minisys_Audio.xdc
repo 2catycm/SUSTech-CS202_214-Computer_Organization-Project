@@ -1,0 +1,2 @@
+///////////////////////////////音频接口////////////////////////////////////////
+set_property -dict {PACKAGE_PIN A19 IOSTANDARD LVCMOS33} [get_ports Minisys_Audio_Pwm]

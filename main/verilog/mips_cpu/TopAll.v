@@ -19,6 +19,7 @@ module TopAll(
     output Minisys_Uart_ToPc,
     output[7:0] Minisys_DigitalTubes_NotEnable,
     output[7:0]Minisys_DigitalTube_Shape
+    ,output Minisys_Audio_Pwm
 );
 
 CpuTop dCpuTop(
@@ -31,5 +32,6 @@ CpuTop dCpuTop(
     .oFpgaUartToPc( Minisys_Uart_ToPc),
     .oDigitalTubeNotEnable(Minisys_DigitalTubes_NotEnable),
     .oDigitalTubeShape(Minisys_DigitalTube_Shape)
+    ,.oFpgaSpeaker(Minisys_Audio_Pwm)
 );
 endmodule
