@@ -1,0 +1,11 @@
+.include "../commons/std_io_minisys.macro.mips"
+.data
+.text
+jal static_initialization
+begin:
+	lw  $a0,0x90($gp)
+	sw $a0,0xa2($gp)
+	write_data_8($a0)
+	sleep(31) # 32Hz 拉取串口信息
+j begin
+.include "../commons/std_io_minisys.impl.mips"

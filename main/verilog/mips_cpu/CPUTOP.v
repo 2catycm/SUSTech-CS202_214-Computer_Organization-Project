@@ -45,6 +45,9 @@ module CpuTop(
     wire rst;
     assign rst = iFpgaRst | !upg_rst;
 
+    /* if kickOff is 1 means CPU work on normal mode, otherwise CPU work on Uart communication mode */
+    wire kickOff = upg_rst | (~upg_rst & upg_done_o );
+
     uart_bmpg_0 uart_instance(
         .upg_clk_i(upg_clk),
         .upg_rst_i(upg_rst),
@@ -178,8 +181,8 @@ module CpuTop(
     wire LEDCtrl;
     wire SwitchCtrl;
     wire TubeCtrl;
-    output PianoCtrl; //output
-    output UartCtrl; //input
+    wire PianoCtrl; //output
+    wire UartCtrl; //input
     assign addr_in = ALU_Result; //čżä¸ćŽľĺçşŻäżćĺĺ­ç¸ĺ?
     MemOrIO  MemOrIO_instance(
         .mRead(MemRead), // read memory, from Controller
@@ -248,14 +251,25 @@ module CpuTop(
         .in_num(write_data_fromMemoryIO)
     );
 
-    PianoDriver  u_PianoDriver (
-        .iFpgaClock              ( iFpgaClk               ),
-        .iCpuClock               ( cpu_clk                ),
-        .iCpuReset               ( iCpuReset                ),
-        .iDoPianoWrite           ( PianoCtrl            ),
-        .iPianoDataToWrite       ( write_data_fromMemoryIO[7:0] ),
-
-        .oFpgaSpeaker            ( oFpgaSpeaker             )
+    PianoDriver  dPianoDriver (
+        .iFpgaClock              ( iFpgaClk               )
+        ,.iCpuClock               ( cpu_clk                )
+        ,.iCpuReset               ( rst                )
+        ,.iDoPianoWrite           ( PianoCtrl            )
+        ,.iDoIOWrite(IOWrite)
+        ,.iPianoDataToWrite       ( write_data_fromMemoryIO[7:0] )
+        ,.oFpgaSpeaker            ( oFpgaSpeaker             )
     );
+
+    UartDriver dUartDriver(
+         .iFpgaClock ( iFpgaClk)
+        ,.iCpuClock (cpu_clk)
+        ,.iCpuReset ( rst )
+        ,.iUartCtrl(UartCtrl)
+        ,.iIoRead(IORead)
+        ,.iUartFromPc(iFpgaUartFromPc)
+        ,.oUartData(ioread_data)
+    );
+
         
 endmodule

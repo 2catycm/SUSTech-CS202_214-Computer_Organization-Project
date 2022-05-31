@@ -13,7 +13,7 @@
 module PianoDriver (
      input iFpgaClock, iCpuClock        // 时钟信号
     ,input iCpuReset 		            // 复位信号
-    ,input iDoPianoWrite		      	// 从memorio来的LED片选信号   !!!!!!!!!!!!!!
+    ,input iDoPianoWrite,iDoIOWrite		      	// 从memorio来的LED片选信号   !!!!!!!!!!!!!!
     ,input[7:0] iPianoDataToWrite	  	// 写到Piano模块的数据，注意一次指令只需要8比特。
     ,output oFpgaSpeaker		        // 向板子上输出的蜂鸣器信号
 );
@@ -23,7 +23,7 @@ module PianoDriver (
         if(iCpuReset) begin
             currentPianoCommand <= 8'b0;
         end
-		else if(iDoLedWrite && iDoPianoWrite) begin
+		else if(iDoIOWrite && iDoPianoWrite) begin
 			currentPianoCommand<=iPianoDataToWrite;
         end
     end
