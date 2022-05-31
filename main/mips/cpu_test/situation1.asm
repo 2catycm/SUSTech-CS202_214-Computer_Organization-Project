@@ -29,8 +29,11 @@ begin:	lw $2, 0x72($20) # read the sw23,22,21
 
 case0:
 	lw $1, 0x70($20)
-	sw $1, 0x60($20) # ����2��led�ƹܻ���ˢ��
-	add $4, $zero, $1 # ��һ���������?
+	sw $1, 0x60($20) # ??2?led??????
+	sw $1, 0x80($20)
+	add $4, $zero, $1 # ???????
+	sll $4,$4,16
+	srl $4,$4,16
 	addi $6, $zero, 0
 loop:
 	beq $4,$zero,exit #ȫ��0�˳�,4�������û��?
@@ -74,18 +77,22 @@ case1read2:
 case2:                                                                                                                                                   
 	and $6, $3, $5
 	sw $6, 0x60($20)
+	sw $6, 0x80($20)
 	j begin
 case3:
 	or $6, $3, $5
 	sw $6, 0x60($20)
+	sw $6, 0x80($20)
 	j begin
 case4:
 	xor $6, $3, $5
 	sw $6, 0x60($20)
+	sw $6, 0x80($20)
 	j begin
 case5:
 	sllv $6, $3, $5
 	sw $6, 0x60($20)
+	sw $6, 0x80($20)
 	j begin
 case6:
 	srlv $6, $3, $5
@@ -94,5 +101,6 @@ case6:
 case7:
 	srav $6, $3, $5
 	sw $6, 0x60($20)
+	sw $6, 0x80($20)
 	j begin
 .include "../commons/std_io_minisys.impl.mips"

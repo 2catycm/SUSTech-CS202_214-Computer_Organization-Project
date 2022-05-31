@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Southern University of Science and Technology �Ϸ��Ƽ���ѧ
-// Engineer: ������, Ҷ���
+// Engineer: ������, Ҷ���?
 // 
 // Create Date: 2022/05/07 12:58:45
 // Module Name: CPU_TOP
@@ -176,6 +176,7 @@ module CpuTop(
     wire [15:0] ioread_data;//čżä¸ŞćŻçťčżĺ¤çç16bitć°ćŽ
     wire LEDCtrl;
     wire SwitchCtrl;
+    wire TubeCtrl;
     assign addr_in = ALU_Result; //čżä¸ćŽľĺçşŻäżćĺĺ­ç¸ĺ?
     MemOrIO  MemOrIO_instance(
         .mRead(MemRead), // read memory, from Controller
@@ -190,7 +191,8 @@ module CpuTop(
         .r_rdata(read_data_2), // data read from Decoder(register file)
         .write_data(write_data_fromMemoryIO), // data to memor y or I/Oďźm_wdata, io_wdataďź?
         .LEDCtrl(LEDCtrl), // LED Chip Select
-        .SwitchCtrl(SwitchCtrl) // Switch Chip Select
+        .SwitchCtrl(SwitchCtrl), // Switch Chip Select
+        .TubeCtrl(TubeCtrl)
     );
 ///////////////////// CpuExecutor /////////////////////
     CpuExecutor dCpuExecutor(
@@ -224,18 +226,18 @@ module CpuTop(
     );
                            
     LightDriver dLightDriver(
-        .led_clk(cpu_clk), 
-        .ledrst(rst), 
-        .ledwrite(IOWrite),//äťcontrollerćĽç 
-        .ledcs(LEDCtrl),    
-        .ledaddr(addr_in[1:0]),
-        .ledwdata(write_data_fromMemoryIO[15:0]), 
-        .ledout(oLights)
+        .iCpuClock(cpu_clk), 
+        .iCpuReset(rst), 
+        .iDoIOWrite(IOWrite),//äťcontrollerćĽç 
+        .iDoLedWrite(LEDCtrl),    
+        .iLightAddress(addr_in[1:0]),
+        .iLightDataToWrite(write_data_fromMemoryIO[15:0]), 
+        .oFpgaLights(oLights)
     );
     TubeDriver dTubeDriver(
-        .clock(iFpgaClk),
+        .clock(cpu_clk),
         .reset(iFpgaRst),
-        .IOWrite(IOWrite),
+        .TubeCtrl(TubeCtrl),
         .oDigitalTubeNotEnable(oDigitalTubeNotEnable),
         .oDigitalTubeShape(oDigitalTubeShape),
         .in_num(write_data_fromMemoryIO)
