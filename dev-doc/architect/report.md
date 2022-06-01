@@ -91,8 +91,8 @@ UART接口，UART模式切换接口按钮S4
   - 通过
 - situation1.asm
   - 通过 
-  - ![img3](img3.png)
-  - ![img4](img4.png)
+  - ![img3](img3.jpg)
+  - ![img4](img4.jpg)
 - new_situation1.mips
   - 通过。需要review。
 - situation2.mips
