@@ -3,9 +3,13 @@
 .text
 jal static_initialization
 begin:
+	move $a0 $zero
 	lw  $a0,0x90($gp)
+	andi $a0 $a0 0x3F
+	#la $a0 0x20  # 32
 	sw $a0,0xa2($gp)
 	write_data_8($a0)
-	sleep(31) # 32Hz 拉取串口信息
+	#sleep(31) # 32Hz 拉取串口信息
+	sleep(15)
 j begin
 .include "../commons/std_io_minisys.impl.mips"
