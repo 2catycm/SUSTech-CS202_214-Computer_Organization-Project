@@ -2,9 +2,16 @@
 
 [toc]
 
-**叶璨铭 测试场景2，CPU全面升级,代码规范 ； 王睿 UART，测试场景2调配； 张力宇 测试场景1，基础CPU组装，基础功能仿真；贡献比平分**
+**叶璨铭 测试场景2，CPU全面升级 , 电子琴，代码规范 ； **
+
+**王睿 UART，基础CPU组装，测试场景1，2调试，七段数码管； **
+
+**张力宇 测试场景1，基础CPU组装，基础功能仿真；**
+
+**贡献比平分**
 
 ## GIT 
+
 [GITEE连接](https://gitee.com/yecanming/SUSTech-CS202_214-Computer_Organization-Project)
 采用gitee进行版本控制，主要是控制设计和仿真文件，约束xdc文件，ip核xci文件，asm和mips 文件。其中每一个文件都放在相对应的文件夹内，在vivado中导入即可快速复现工程。
 ![img0](img0.png)
@@ -14,8 +21,11 @@
 ![img1](img1.png)
 
 # CPU 特性（按照文档要求）
+
 ## ISA
+
 ### 基础ISA指令
+
 |我们实现的基础指令集是课件上指出的subset
 ![imgisa](ISA.png)
 调用方法是按照汇编调用
@@ -27,11 +37,17 @@
 ## 寻址空间设计：
 
 ### 哈佛结构，内存地址和指令地址分布于2个模块中
+
 ### 指令空间：
+
 [0x0000_0000-0xFFFF_FFFF]
+
 ### 数据空间：
+
 [0x0000_0000-0xFFFF_FC00)
+
 ### 外设IO寻址范围：
+
 | 设备编号 | 外设名称          | 外设类型 | 约定内存地址1 | 数据类型/行为描述                                            | 备注                    |
 | -------- | ----------------- | -------- | ------------- | ------------------------------------------------------------ | ----------------------- |
 | 0        | 左灯光(8)         | 输出设备 | 0xFFFFFC62    | 输出的32位数的低比特8位点亮左边的8盏灯                       | 不允许sw                |
@@ -43,11 +59,14 @@
 | 3        | 串口输出(8位)     | 输出设备 | 0xFFFFFC92    | 输入的32位数的低比特8位发送到上位机                          | 未实现                  |
 | 3        | 串口输入(8位)     | 输入设备 | 0xFFFFFC90    | 输入的32位数的低比特8位为最新的串口数据                      |                         |
 | 4        | 电子琴输出（8位） | 输出设备 | 0xFFFFFCa2    | 输出的32位数的低比特8位按照[2catycm标准电子琴格式](https://github.com/Two-Cats-Software-Organization/SUSTech-CS207-2021Summer-StudyPack/blob/master/project/Digital Design Project Report 12011404 叶璨铭.pdf)解析为音乐并播放。 | 支持36阶半音符，4音轨。 |
+
 ### CPI:
+
 CPI = 1
 单周期CPU
 
 ## CPU接口：
+
 时钟采用开发板自带的时钟接口
 
 复位按钮是S2
@@ -57,6 +76,7 @@ UART接口，UART模式切换接口按钮S4
 数码管LED，24位拨码开关，24位LED灯
 
 ## CPU内部结构
+
 CPU外部的接口的设置
 ![cpu_out](cpu_out.png)
 
@@ -70,21 +90,39 @@ CPU外部的接口的设置
 
 ![image-20220601144335172](image-20220601144335172.png)
 
+cpuDecoder模块主要用来解析指令，输出操作数，扩展的立即数等。
+
+
+
 #### InstructionMemory
 
 ![image-20220601144709411](image-20220601144709411.png)
+
+InstructionMemory模块主要用来存储指令，也可和uart接口做交互。
+
+
 
 #### DataMemory
 
 ![image-20220601151125742](image-20220601151125742.png)
 
+DataMemory模块主要用来存储数据，也可和uart接口做交互。
+
+
+
 #### CpuController
 
 ![image-20220601150032497](image-20220601150032497.png)
 
+CpuController模块主要根据指令中的Function_opcode和Opcode来输出各种控制信号给到其他模块。
+
+
+
 #### InstructionFetcher
 
 ![image-20220601150135205](image-20220601150135205.png)
+
+InstructionFetcher主要根据时钟更新PC寄存器的值来取出相应的指令。注意执行Jal指令时要先算出PC+4的值作保留，然后再更新PC的值
 
 #### CpuExecutor
 
@@ -145,11 +183,12 @@ Addr_Result主要可能是给到PC寄存器。Zero主要是辅助进行判断是
 ## 测试说明
 
 ### vivado模拟测试
-|测试方法|测试类型|测试样例描述|测试结果|测试结论|
-|--------|-------|----------|---------|-----|
-|仿真    | 单元   | 对OJ上分别写的模块进行测试|通过 | 各子模块功能没有问题|
-|仿真    |集成    |测试场景1 testSituation1.v（在test路径下verilog文件夹） | 通过 | 基础的指令没有问题|
-|仿真    |集成    |测试场景1 testNewSituation1.v（在test路径下verilog文件夹） | 通过 | asm文件没有问题|
+
+| 测试方法 | 测试类型 | 测试样例描述                                               | 测试结果 | 测试结论             |
+| -------- | -------- | ---------------------------------------------------------- | -------- | -------------------- |
+| 仿真     | 单元     | 对OJ上分别写的模块进行测试                                 | 通过     | 各子模块功能没有问题 |
+| 仿真     | 集成     | 测试场景1 testSituation1.v（在test路径下verilog文件夹）    | 通过     | 基础的指令没有问题   |
+| 仿真     | 集成     | 测试场景1 testNewSituation1.v（在test路径下verilog文件夹） | 通过     | asm文件没有问题      |
 
 ### asm和mips测试项目（上板测试）
 
@@ -177,25 +216,31 @@ Addr_Result主要可能是给到PC寄存器。Zero主要是辅助进行判断是
 ### 测试状态
 
 - demo_read_swtich_write_led.mips
+
   - 通过
-  
+
 - jal_test.mips
+
   - 通过
-  
+
 - demo_flow.mips
+
   - 通过
-  
+
 - situation1.asm
+
   - 通过 
-  
+
     <img src="img3_new.jpg" alt="img3_new" style="zoom:10%;transform:rotate(270deg);" />
-  
+
     <img src="img4.jpg" alt="img4" style="zoom:10%;transform:rotate(270deg);" />
-  
+
 - new_situation1.mips
+
   - 通过。
-  
+
 - situation2.mips
+
   - 通过。
 
 
@@ -222,11 +267,13 @@ RAM ram (
 
 3.以上仅仅是列举的一小部分规范，具体的规范请参考dev-dov/style 路径下的 Verilog style.md，里面有更加详细的规范说明
 
-### 2.最新CPU架构的UART 串口的巧妙设计
+### 2.最新CPU架构的串口通信的巧妙设计
 
-该设计还存在些许BUG，但是并不影响它的巧妙。
+这部分主要由叶璨铭同学在视频中介绍
 
-### 3.Pinao 的巧妙设计
+### 3.电子琴 的巧妙设计
+
+这部分主要由叶璨铭同学在视频中介绍
 
 ## 开发过程的问题及总结
 
